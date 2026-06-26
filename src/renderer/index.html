@@ -70,6 +70,7 @@ body{background:var(--ground);color:var(--txt);font:14px/1.55 'Inter',-apple-sys
 .pill{font-size:10.5px;font-weight:500;padding:2px 8px;border-radius:5px}
 .pill.global{background:var(--green-bg);color:var(--green)}.pill.demand{background:var(--s3);color:var(--txt2)}
 .pill.oss{background:var(--accent-soft);color:var(--accent2)}.pill.cold{background:var(--cold-bg);color:var(--cold)}
+.pill.upd{background:var(--accent-soft);color:var(--accent2)}.pill.port{background:var(--cold-bg);color:var(--cold)}.pill.local{background:var(--s3);color:var(--txt3)}.pill.ext{background:var(--cold-bg);color:var(--cold)}
 .gtag{font-size:11px;color:var(--txt3);margin-left:auto}
 .detail{position:fixed;top:38px;right:0;bottom:0;width:380px;background:var(--s1);border-left:1px solid var(--hair2);transform:translateX(100%);transition:.32s var(--ease);z-index:20;display:flex;flex-direction:column}
 .detail.open{transform:none;box-shadow:-8px 0 40px rgba(0,0,0,.3)}
@@ -108,6 +109,13 @@ body{background:var(--ground);color:var(--txt);font:14px/1.55 'Inter',-apple-sys
 .set-row{display:flex;align-items:center;gap:16px;padding:15px 2px;border-bottom:1px solid var(--hair)}.set-row .si{flex:1}.set-row .si b{font-size:13.5px;font-weight:500}.set-row .si p{font-size:12px;color:var(--txt3);margin-top:2px}.set-row .sv{font-size:12.5px;color:var(--txt2);font-family:'JetBrains Mono'}
 .toggle{width:38px;height:22px;border-radius:20px;background:var(--s3);position:relative;cursor:pointer;flex:none;transition:.15s}.toggle.on{background:var(--accent)}.toggle i{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.18s var(--ease)}.toggle.on i{left:18px}
 .empty{color:var(--txt3);padding:48px;text-align:center}
+.btn.danger{background:transparent;border-color:rgba(248,113,113,.4);color:var(--red)}.btn.danger:hover{background:rgba(248,113,113,.12)}
+.us-update{color:var(--yellow)}.us-ok{color:var(--green)}.us-err{color:var(--red)}
+.gsec{margin-top:16px;border-top:1px solid var(--hair);padding-top:6px}.gsec summary{cursor:pointer;font-size:12.5px;color:var(--txt3);padding:8px 0;list-style:none}.gsec summary::-webkit-details-marker{display:none}.gsec summary:hover{color:var(--txt2)}
+.inrow{display:flex;gap:8px;align-items:center;margin-top:8px}.inp{flex:1;background:var(--s1);border:1px solid var(--hair2);border-radius:var(--r6);color:var(--txt);padding:7px 11px;font-size:12.5px;font-family:'JetBrains Mono';outline:none}.inp:focus{border-color:var(--accent)}
+.onboard{max-width:540px;margin:14px auto;text-align:center}.onboard h2{font-size:19px;margin-bottom:8px}.onboard>p{font-size:13px;color:var(--txt3);margin-bottom:18px}.card2{background:var(--s1);border:1px solid var(--hair);border-radius:var(--r12);padding:18px;text-align:left;margin-bottom:12px}.card2>b{font-size:14px}.card2>p{font-size:12.5px;color:var(--txt3);margin:6px 0 12px}
+.rm{width:24px;height:24px;border-radius:6px;border:1px solid var(--hair2);display:grid;place-items:center;cursor:pointer;color:var(--txt2);flex:none}.rm:hover{border-color:var(--red);color:var(--red)}.rm svg{width:14px;height:14px}
+.actbtn{font-size:11.5px;padding:3px 9px;border-radius:5px;border:1px solid var(--hair2);background:transparent;color:var(--txt2);cursor:pointer;margin-left:6px}.actbtn:hover{border-color:var(--accent);color:var(--accent2)}.actbtn.danger:hover{border-color:var(--red);color:var(--red)}
 </style>
 </head>
 <body>
@@ -122,7 +130,6 @@ body{background:var(--ground);color:var(--txt);font:14px/1.55 'Inter',-apple-sys
     <aside class="side">
       <div class="brand"><div class="logo"><svg viewBox="0 0 24 24"><path d="M12 2l3 6 6 .8-4.5 4.2 1.2 6L12 16l-5.7 3 1.2-6L3 8.8 9 8z" fill="#fff" opacity=".95"/></svg></div><b class="disp">SkillHub</b></div>
       <nav class="nav" id="nav"></nav>
-      <div class="side-foot"><span>常驻 <b id="fG">·</b></span><span>开源 <b id="fO">·</b></span></div>
     </aside>
     <main class="main">
       <div class="topbar">
@@ -144,11 +151,11 @@ gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 13a1.6 1.6 0 0 0 .3 1.8l.1.1
 sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5"/>',
 moon:'<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',plus:'<path d="M12 5v14M5 12h14"/>',check:'<path d="M20 6L9 17l-5-5"/>'};
 const svg=(k,w=2)=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}">${IC[k]}</svg>`;
-const GCOLOR={tools:'#5E6AD2',utils:'#9CA3AF','web-creative':'#f0a868',media:'#e879a6',jarvis:'#4ade80',workbuddy:'#38bdf8',xhs:'#f87171',contracts:'#a78bfa',lark:'#34d399'};
+const GCOLOR={tools:'#5E6AD2',utils:'#9CA3AF','web-creative':'#f0a868',media:'#e879a6',jarvis:'#4ade80',workbuddy:'#38bdf8',xhs:'#f87171',contracts:'#a78bfa',lark:'#34d399',external:'#8B93E8'};
 const esc=s=>(s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 const TITLES={catalog:['技能目录','浏览 · 搜索 · 分层'],projects:['项目装配','选项目,逐个装 skill'],updates:['更新管理','开源 skill upstream 跟踪'],stats:['用量统计','久未使用排在最前'],settings:['设置','']};
-let HUB=null;const S={view:'catalog',q:'',tier:'all',group:'all',sel:null,proj:null,projInstalled:[]};
-const api=window.api;
+let HUB=null;const S={view:'catalog',q:'',tier:'all',group:'all',sel:null,proj:null,projInstalled:[],upd:null};
+const api=window.skapi;
 
 // 主题
 function setTheme(t){document.documentElement.dataset.theme=t;localStorage.setItem('theme',t);
@@ -163,15 +170,36 @@ $('nav').onclick=e=>{const a=e.target.closest('a[data-v]');if(!a)return;S.view=a
   $('searchBox').style.display=(S.view==='catalog'||S.view==='projects')?'block':'none';buildNav();render();};
 $('search').oninput=e=>{S.q=e.target.value.toLowerCase();render();};
 
+let CFG=null;
 async function load(){
-  if(api){try{HUB=await api.getData();}catch(e){HUB=null;}}
-  if(!HUB){$('content').innerHTML='<div class="empty">请在 SkillHub 应用内运行(需要主进程提供数据)。</div>';return;}
-  $('fG').textContent=HUB.stats.global;$('fO').textContent=HUB.stats.oss;
+  if(!api){$('content').innerHTML='<div class="empty">请在 SkillHub 应用内运行(需要主进程提供数据)。</div>';return;}
+  CFG=await api.getConfig();
+  if(!CFG.hasRegistry){renderOnboard();return;}
+  try{HUB=await api.getData();HUB._recent=await api.recentProjects();}catch(e){HUB=null;}
+  if(!HUB){$('content').innerHTML='<div class="empty">读取 hub 失败:'+esc(CFG.hubPath)+'</div>';return;}
   buildNav();render();
 }
+// 首次使用 / 没连 hub:克隆团队 hub 或指向本地已有 hub
+function renderOnboard(){
+  $('title').innerHTML='欢迎使用 SkillHub';$('searchBox').style.display='none';$('nav').innerHTML='';
+  $('content').innerHTML=`<div class="onboard"><h2 class="disp">还没有连接 skill hub</h2>
+   <p>hub 是一个 git 仓库,集中管理你/团队的全部 skill。选一种方式开始:</p>
+   <div class="card2"><b>① 克隆团队 hub</b><p>团队/导师给你一个 git 地址,克隆到本地就能用同一套 skill。</p>
+     <div class="inrow"><input class="inp" id="obUrl" placeholder="git@github.com:org/skill-hub.git"></div>
+     <div class="inrow"><input class="inp" id="obDest" value="~/skills"><button class="btn pri" id="obClone">克隆并连接</button></div>
+     <div id="obMsg" style="font-size:12px;color:var(--txt3);margin-top:8px"></div></div>
+   <div class="card2"><b>② 指向本地已有 hub</b><p>本机已经有一个 skill hub 目录,直接选中它。</p>
+     <button class="btn" id="obPick">${svg('folder')}选择目录…</button></div></div>`;
+  $('obClone').onclick=async()=>{const u=$('obUrl').value.trim(),d=$('obDest').value.trim()||'~/skills';if(!u){$('obMsg').textContent='请填 git 地址';return;}$('obMsg').textContent='克隆中…(取决于仓库大小)';const r=await api.cloneHub(u,d);if(r.ok){HUB=null;load();}else $('obMsg').innerHTML='<span style="color:var(--red)">✗ '+esc(r.err)+'</span>';};
+  $('obPick').onclick=async()=>{const p=await api.pickProject();if(!p)return;try{await api.setHubPath(p);HUB=null;load();}catch(e){$('obMsg')&&($('obMsg').textContent='');alert(String(e.message||e));}};
+}
 function render(){const t=TITLES[S.view];$('title').innerHTML=t[0]+(t[1]?` <small>${t[1]}</small>`:'');
-  $('content').innerHTML=({catalog:catalogView,projects:projectsView,updates:updatesView,stats:statsView,settings:settingsView})[S.view]();}
+  $('content').innerHTML=({catalog:catalogView,projects:projectsView,updates:updatesView,stats:statsView,settings:settingsView})[S.view]();
+  if(S.view==='settings')fillSettings();}
 const tierPill=s=>s.tier==='global'?'<span class="pill global">常驻</span>':'<span class="pill demand">按需</span>';
+const UCH={github:['可更新','upd'],'manual-port':['手工译','port'],local:['本地','local'],'lark-cli':['lark-cli','port'],'npx-skills':['npx skills','port'],external:['外部','local']};
+const updPill=s=>{const u=UCH[(s.update||{}).channel];return u?`<span class="pill ${u[1]}">${u[0]}</span>`:'';};
+const extPill=s=>s.external?'<span class="pill ext">外部托管</span>':'';
 const matchQ=s=>!S.q||s.name.toLowerCase().includes(S.q)||(s.desc||'').toLowerCase().includes(S.q);
 
 // 目录
@@ -182,7 +210,7 @@ function catalogView(){
   const cards=list.map(s=>`<div class="card ${S.sel===s.name?'sel':''}" data-name="${s.name}">
     <div class="cname"><span class="gdot" style="background:${GCOLOR[s.group]||'#888'}"></span>${s.name}</div>
     <div class="cdesc">${esc(s.desc)||'—'}</div>
-    <div class="tags">${tierPill(s)}${s.oss?'<span class="pill oss">OSS</span>':''}${cold(s)?`<span class="pill cold">${s.lastUsed===null?'未用过':'冷'+s.lastUsed+'天'}</span>`:''}<span class="gtag">${s.group}</span></div></div>`).join('');
+    <div class="tags">${tierPill(s)}${extPill(s)}${updPill(s)}${cold(s)&&!s.external?`<span class="pill cold">${s.lastUsed===null?'未用过':'冷'+s.lastUsed+'天'}</span>`:''}<span class="gtag">${s.group}</span></div></div>`).join('');
   return `<div class="filters">
     <span class="chip ${S.tier==='all'?'on':''}" data-t="all">全部<span class="n">${HUB.skills.length}</span></span>
     <span class="chip ${S.tier==='global'?'on':''}" data-t="global">常驻<span class="n">${HUB.stats.global}</span></span>
@@ -197,19 +225,24 @@ async function openDetail(name){const s=HUB.skills.find(x=>x.name===name);S.sel=
   const md=api?esc((await api.readSkillMd(name)).slice(0,1200)):'';
   $('detail').innerHTML=`<div class="dt-head"><div class="x" onclick="closeDetail()">${svg('plus').replace('M12 5v14M5 12h14','M6 6l12 12M18 6L6 18')}</div>
     <div class="dt-name disp"><span class="gdot" style="background:${GCOLOR[s.group]};display:inline-block;margin-right:8px"></span>${s.name}</div>
-    <div class="tags" style="margin-top:10px">${tierPill(s)}${s.oss?'<span class="pill oss">OSS</span>':''}<span class="gtag" style="margin-left:0">${s.group}</span></div></div>
+    <div class="tags" style="margin-top:10px">${tierPill(s)}${extPill(s)}${updPill(s)}<span class="gtag" style="margin-left:0">${s.group}</span></div></div>
    <div class="dt-body"><h4>描述</h4><div style="font-size:13px;line-height:1.6">${esc(s.desc)}</div>
     <h4>属性</h4>
     <div class="kv"><span>分层</span><b>${s.tier==='global'?'常驻 global':'按需 on-demand'}</b></div>
     <div class="kv"><span>分发 agent</span><b>${(s.agents||[]).join(' · ')}</b></div>
     ${s.oss?`<div class="kv"><span>upstream</span><b class="mono" style="font-size:11px;cursor:pointer;color:var(--accent2)" onclick="api&&api.openRepo('${s.repo}')">${s.repo.replace('github.com/','')}</b></div>`:''}
     <div class="kv"><span>最近使用</span><b>${s.lastUsed===null?'未用过':s.lastUsed+' 天前'}</b></div>
+    <h4>更新来源</h4>
+    <div class="kv"><span>渠道</span><b>${({github:'GitHub · 可自动更新',['manual-port']:'手工移植 · 需人工',local:'本地自制'})[(s.update||{}).channel]||'—'}</b></div>
+    ${s.update&&s.update.source&&s.update.source!=='self'?`<div class="kv"><span>来源</span><b class="mono" style="font-size:11px;color:${s.update.channel==='github'?'var(--accent2)':'var(--txt2)'};max-width:230px;text-align:right;word-break:break-all">${esc(s.update.source)}</b></div>`:''}
+    ${s.update?`<div class="kv"><span>如何更新</span><b style="font-size:11px;font-weight:400;text-align:right;max-width:230px;line-height:1.5">${esc(s.update.how)}</b></div>`:''}
     <h4>SKILL.md</h4><div class="md">${md||'—'}</div></div>
-   <div class="dt-foot"><button class="btn ${s.tier==='global'?'':'pri'}" onclick="toggleTier('${s.name}')">${s.tier==='global'?'转为按需':'设为常驻'}</button></div>`;
+   <div class="dt-foot">${s.external?`<div style="font-size:11.5px;color:var(--txt3);line-height:1.5;padding:2px">外部托管 · 此处只读。更新/卸载请用 <b class="mono" style="color:var(--txt2)">${esc((s.update||{}).how||'')}</b></div>`:`<button class="btn ${s.tier==='global'?'':'pri'}" onclick="toggleTier('${s.name}')">${s.tier==='global'?'转为按需':'设为常驻'}</button><button class="btn danger" onclick="delSkill('${s.name}')">删除</button>`}</div>`;
   $('detail').classList.add('open');$('scrim').classList.add('open');}
 function closeDetail(){$('detail').classList.remove('open');$('scrim').classList.remove('open');if(S.sel){S.sel=null;render();}}
 $('scrim').onclick=closeDetail;
-async function toggleTier(name){const s=HUB.skills.find(x=>x.name===name);if(api)await api.setTier(name,s.tier==='global'?'on-demand':'global');HUB=await api.getData();closeDetail();buildNav();render();}
+async function toggleTier(name){const s=HUB.skills.find(x=>x.name===name);if(!s||s.external)return;if(api)await api.setTier(name,s.tier==='global'?'on-demand':'global');HUB=await api.getData();closeDetail();buildNav();render();}
+async function delSkill(name){const s=HUB.skills.find(x=>x.name===name);if(!s||s.external)return;if(!confirm('删除 '+name+'?\n会移除该 skill 目录及其在 claude/codex/cursor 的所有软链,不可撤销。\n(改动需到「设置」里 git push 才同步到团队)'))return;if(api)await api.deleteSkill(name);HUB=await api.getData();closeDetail();buildNav();render();}
 
 // 项目:选项目 → 逐个装
 async function pickProject(){if(!api)return;const p=await api.pickProject();if(p)selectProject(p);}
@@ -222,46 +255,62 @@ function projectsView(){
     <button class="btn" id="pickBtn">${svg('folder')}选择目录…</button></div>${recentChips}`;
   if(!S.proj)return bar+'<div class="empty">先选一个项目 ↑</div>';
   const inst=new Set(S.projInstalled);
-  const los=Object.entries(HUB.loadouts).map(([n,m])=>`<span class="lochip" data-lo="${n}"><b>${n}</b><span>+${m.length}</span></span>`).join('');
-  const list=HUB.skills.filter(matchQ).sort((a,b)=>(inst.has(b.name)-inst.has(a.name))||a.name.localeCompare(b.name));
-  const rows=list.map(s=>`<div class="addrow"><span class="gdot" style="background:${GCOLOR[s.group]}"></span>
+  const row=(s,on)=>`<div class="addrow"><span class="gdot" style="background:${GCOLOR[s.group]}"></span>
     <span class="an">${s.name}</span><span class="ad">${esc(s.desc)}</span>
-    <div class="add-tog ${inst.has(s.name)?'on':''}" data-add="${s.name}">${inst.has(s.name)?svg('check'):svg('plus')}</div></div>`).join('');
+    <div class="add-tog ${on?'on':''}" data-add="${s.name}">${on?svg('check'):svg('plus')}</div></div>`;
+  const installed=HUB.skills.filter(s=>inst.has(s.name)&&matchQ(s)).sort((a,b)=>a.name.localeCompare(b.name));
+  const avail=HUB.skills.filter(s=>s.tier==='on-demand'&&!inst.has(s.name)&&matchQ(s)).sort((a,b)=>a.name.localeCompare(b.name));
+  const globals=HUB.skills.filter(s=>s.tier==='global').sort((a,b)=>a.name.localeCompare(b.name));
+  const los=Object.entries(HUB.loadouts).map(([n,m])=>`<span class="lochip" data-lo="${n}"><b>${n}</b><span>+${m.length}</span></span>`).join('');
+  const instBlock=installed.length?`<div class="section-title">本项目已装 <span class="c">${installed.length} 个 · 你加的 · 点 ✓ 移除</span></div><div class="addlist">${installed.map(s=>row(s,true)).join('')}</div>`:'';
+  const grows=globals.map(s=>`<div class="addrow inherited"><span class="gdot" style="background:${GCOLOR[s.group]}"></span><span class="an">${s.name}</span><span class="ad">${esc(s.desc)}</span><span class="pill global">自带</span></div>`).join('');
   return bar+`<div class="section-title">快捷套装 <span class="c">一键装一整组</span></div><div class="lochips">${los}</div>
-    <div class="section-title">逐个添加 <span class="c">${list.length} 个 · 已装的排在前</span></div><div class="addlist">${rows}</div>`;
+    ${instBlock}
+    <div class="section-title">可添加 <span class="c">${avail.length} 个按需 skill</span></div><div class="addlist">${avail.map(s=>row(s,false)).join('')||'<div class="empty">没有更多可加的</div>'}</div>
+    <details class="gsec"><summary>▸ 常驻 · 所有项目自带,无需单独装(${globals.length})</summary><div class="addlist">${grows}</div></details>`;
 }
 async function addSkill(name,on){if(api)await api.useInProject(name,S.proj,on);S.projInstalled=await api.projectInfo(S.proj);render();}
 async function addLoadout(n){const m=HUB.loadouts[n]||[];for(const x of m){if(api)await api.useInProject(x,S.proj,true);}S.projInstalled=await api.projectInfo(S.proj);render();}
 
 // 更新
+async function runCheck(){const b=$('checkBtn');if(b){b.disabled=true;b.textContent='检查中…';}try{S.upd=await api.checkUpdates();}catch(e){S.upd=[];}render();}
 function updatesView(){const oss=HUB.skills.filter(s=>s.oss).sort((a,b)=>a.name.localeCompare(b.name));
-  const rows=oss.map(s=>`<div class="up-row"><span class="st idle"></span><span class="un">${s.name}</span><span class="urepo mono">${s.repo.replace('github.com/','')}</span><span class="ustat us-idle">已登记 · 等每周检查</span></div>`).join('');
-  return `<div class="note">每周一 10:00 自动检查 upstream。<b style="color:var(--green)">green</b> 自动更 · <b style="color:var(--yellow)">yellow</b> 待你定 · <b style="color:var(--red)">red</b> 自动拒。飞书通知。<br>(实时检查更新需联网 gh,下一版接入。)</div>
+  const upd=S.upd,get=n=>upd&&upd.find(x=>x.name===n);
+  const stat=s=>{const u=get(s.name);if(!upd)return'<span class="ustat us-idle">已登记 · 等每周检查</span>';if(!u)return'<span class="ustat us-idle">—</span>';if(u.error)return'<span class="ustat us-err">检查失败:'+esc(u.error)+'</span>';return u.hasUpdate?`<span class="ustat us-update">有更新 → ${u.latest}</span>`:'<span class="ustat us-ok">已最新</span>';};
+  const rows=oss.map(s=>`<div class="up-row"><span class="st ${(get(s.name)||{}).hasUpdate?'yellow':'idle'}"></span><span class="un">${s.name}</span><span class="urepo mono">${s.repo.replace('github.com/','')}</span>${stat(s)}</div>`).join('');
+  const n=upd?upd.filter(x=>x.hasUpdate).length:null,err=upd?upd.filter(x=>x.error).length:0;
+  return `<div class="note" style="display:flex;align-items:center;gap:12px"><span style="flex:1">每周一 10:00 自动检查 upstream → 按 UPDATE_POLICY 判定 <b style="color:var(--green)">green</b> 自动更 / <b style="color:var(--yellow)">yellow</b> 待定 / <b style="color:var(--red)">red</b> 拒,飞书通知。下面可手动「立即检查」(只比对 sha,不自动改文件)。${n!==null?` <b style="color:var(--yellow)">本次 ${n} 个有更新</b>${err?` · ${err} 个失败(需 gh 登录)`:''}`:''}</span><button class="btn pri sm" id="checkBtn">立即检查</button></div>
     <div class="section-title">开源 skill <span class="c">${oss.length} 个跟踪中</span></div>${rows}`;}
 
 // 统计:久未使用排最前
 function statsView(){
-  const sorted=[...HUB.skills].sort((a,b)=>{const av=a.lastUsed===null?1e9:a.lastUsed,bv=b.lastUsed===null?1e9:b.lastUsed;return bv-av;});
-  const coldN=HUB.skills.filter(cold).length;
-  return `<div class="note">用量从 PostToolUse hook 启用起累计。久未使用 / 未用过排在最前 → 删除候选。</div>
+  const hub=HUB.skills.filter(s=>!s.external);
+  const sorted=[...hub].sort((a,b)=>{const av=a.lastUsed===null?1e9:a.lastUsed,bv=b.lastUsed===null?1e9:b.lastUsed;return bv-av;});
+  const coldN=hub.filter(cold).length;
+  return `<div class="note">用量从 PostToolUse hook 启用起累计。久未使用 / 未用过排在最前 → 删除候选,可直接在右侧「转按需 / 删除」。删除改动需到设置里 git push 才同步团队。${HUB.stats.external?`<br>另有 <b>${HUB.stats.external}</b> 个外部托管常驻 skill(lark-cli),不计入用量统计、此处不可删。`:''}</div>
    <div class="stat-cards">
-    <div class="sc"><div class="v">${HUB.stats.total}</div><div class="l">总 skill</div></div>
-    <div class="sc"><div class="v">${HUB.stats.global}</div><div class="l">常驻 global</div></div>
+    <div class="sc"><div class="v">${hub.length}</div><div class="l">本仓库 skill</div></div>
+    <div class="sc"><div class="v">${hub.filter(s=>s.tier==='global').length}</div><div class="l">常驻 global</div></div>
     <div class="sc"><div class="v cold">${coldN}</div><div class="l">冷门(≥90天/未用)</div></div>
     <div class="sc"><div class="v">${HUB.stats.oss}</div><div class="l">开源跟踪</div></div></div>
-   <table class="tbl"><thead><tr><th>Skill</th><th>分组</th><th>最近使用</th><th>分层</th></tr></thead><tbody>
-   ${sorted.slice(0,20).map(s=>`<tr><td><span class="gdot" style="background:${GCOLOR[s.group]};display:inline-block;margin-right:8px"></span>${s.name}</td><td style="color:var(--txt3)">${s.group}</td><td style="color:${cold(s)?'var(--cold)':'var(--txt2)'}">${s.lastUsed===null?'未用过':s.lastUsed+' 天前'}</td><td>${s.tier==='global'?'常驻':'按需'}</td></tr>`).join('')}
+   <table class="tbl"><thead><tr><th>Skill</th><th>分组</th><th>最近使用</th><th>分层</th><th style="text-align:right">操作</th></tr></thead><tbody>
+   ${sorted.slice(0,30).map(s=>`<tr><td><span class="gdot" style="background:${GCOLOR[s.group]};display:inline-block;margin-right:8px"></span>${s.name}</td><td style="color:var(--txt3)">${s.group}</td><td style="color:${cold(s)?'var(--cold)':'var(--txt2)'}">${s.lastUsed===null?'未用过':s.lastUsed+' 天前'}</td><td>${s.tier==='global'?'常驻':'按需'}</td><td style="text-align:right;white-space:nowrap"><button class="actbtn" onclick="quickTier('${s.name}')">${s.tier==='global'?'转按需':'设常驻'}</button><button class="actbtn danger" onclick="delSkill('${s.name}')">删除</button></td></tr>`).join('')}
    </tbody></table>`;}
+async function quickTier(name){const s=HUB.skills.find(x=>x.name===name);if(!s||s.external)return;if(api)await api.setTier(name,s.tier==='global'?'on-demand':'global');HUB=await api.getData();buildNav();render();}
 
 // 设置
-function settingsView(){const sr=(b,p,v,tog)=>`<div class="set-row"><div class="si"><b>${b}</b><p>${p}</p></div>${v?`<span class="sv">${v}</span>`:''}${tog!==undefined?`<div class="toggle ${tog?'on':''}"><i></i></div>`:''}</div>`;
-  return `<div style="max-width:660px">
-   ${sr('Hub 路径','单一源 git 仓库','~/skills')}
-   ${sr('GitHub 远端','跨设备同步','ivesyi/skill-hub')}
-   ${sr('每周自动更新','周一 10:00 headless 判定','launchd',true)}
-   ${sr('飞书通知','更新周报','lark-cli',true)}
-   <div style="margin-top:18px;display:flex;gap:10px"><button class="btn pri" id="pushBtn">立即 git push</button></div>
-   <div id="pushMsg" style="font-size:12px;color:var(--txt3);margin-top:10px"></div></div>`;}
+function settingsView(){
+  return `<div style="max-width:680px">
+   <div class="set-row"><div class="si"><b>Hub 路径</b><p>集中管理 skill 的本地 git 仓库;换机/团队成员各自指向自己的克隆</p></div><span class="sv">${esc(CFG?CFG.hubPath:'~/skills')}</span><button class="btn sm" id="changeHub">更换…</button></div>
+   <div class="set-row" style="border:0;padding-bottom:4px"><div class="si"><b>GitHub 远端 origin</b><p>跨设备 / 团队同步的 git 地址。「验证」会用 git ls-remote 确认你有访问权限</p></div></div>
+   <div class="inrow"><input class="inp" id="remoteInp" placeholder="加载中…"><button class="btn sm" id="saveRemote">保存</button><button class="btn sm" id="valRemote">验证</button></div>
+   <div id="remoteMsg" style="font-size:12px;color:var(--txt3);margin:8px 0 4px"></div>
+   <div class="set-row"><div class="si"><b>同步</b><p>拉取团队最新(git pull --ff-only)并重新分发常驻 skill · 或推送我的改动</p></div><button class="btn sm" id="pullBtn">⤓ 拉取</button><button class="btn sm pri" id="pushBtn">↥ 推送</button></div>
+   <div id="syncMsg" style="font-size:12px;color:var(--txt3);margin:8px 0 4px"></div><div id="pushMsg" style="font-size:12px;color:var(--txt3)"></div>
+   <div class="set-row"><div class="si"><b>每周自动更新</b><p>周一 10:00 headless 判定 OSS upstream(launchd + skill-update-bot)</p></div><span class="sv">launchd</span></div>
+   <div class="set-row"><div class="si"><b>飞书通知</b><p>更新周报推送</p></div><span class="sv">lark-cli</span></div>
+   </div>`;}
+async function fillSettings(){const i=$('remoteInp');if(!i||!api)return;const r=await api.getRemote();i.value=r||'';i.placeholder='git@github.com:org/skill-hub.git';}
 
 // 事件委托
 $('content').onclick=async e=>{
@@ -273,9 +322,14 @@ $('content').onclick=async e=>{
   const rp=t.closest('i[data-proj]');if(rp)return selectProject(rp.dataset.proj);
   const ad=t.closest('.add-tog[data-add]');if(ad)return addSkill(ad.dataset.add,!ad.classList.contains('on'));
   const lo=t.closest('.lochip[data-lo]');if(lo)return addLoadout(lo.dataset.lo);
-  if(t.closest('#pushBtn')){$('pushMsg').textContent='推送中…';const r=await api.gitPush();$('pushMsg').textContent=r.ok?'✓ 已推送':'✗ '+r.msg;}
+  if(t.closest('#checkBtn'))return runCheck();
+  if(t.closest('#changeHub')){const p=await api.pickProject();if(!p)return;try{await api.setHubPath(p);HUB=null;S.upd=null;load();}catch(e){alert(String(e.message||e));}return;}
+  if(t.closest('#saveRemote')){const u=$('remoteInp').value.trim();if(!u)return;$('remoteMsg').textContent='保存中…';const r=await api.setRemote(u);$('remoteMsg').innerHTML=r.ok?'✓ 已保存':'<span style="color:var(--red)">✗ '+esc(r.err)+'</span>';return;}
+  if(t.closest('#valRemote')){$('remoteMsg').textContent='验证中…';const r=await api.validateRemote();$('remoteMsg').innerHTML=r.ok?'<span style="color:var(--green)">✓ 可访问,有权限</span>':'<span style="color:var(--red)">✗ 无法访问:'+esc(r.err)+'</span>';return;}
+  if(t.closest('#pullBtn')){$('syncMsg').textContent='拉取中…';const r=await api.gitPull();$('syncMsg').innerHTML=r.ok?'✓ 已同步:'+esc(r.msg):'<span style="color:var(--red)">✗ '+esc(r.msg)+'</span>';if(r.ok){HUB=await api.getData();buildNav();}return;}
+  if(t.closest('#pushBtn')){$('pushMsg').textContent='推送中…';const r=await api.gitPush();$('pushMsg').innerHTML=r.ok?'✓ 已推送':'<span style="color:var(--red)">✗ '+esc(r.msg)+'</span>';}
 };
-load().then(async()=>{if(api){HUB._recent=await api.recentProjects();}});
+load();
 </script>
 </body>
 </html>
