@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<title>SkillHub</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;450;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ground:#08090A;--s1:#16171C;--s2:#1E1F25;--s3:#26272E;
+  --hair:rgba(255,255,255,.06);--hair2:rgba(255,255,255,.10);
+  --txt:#F7F8F8;--txt2:#9CA3AF;--txt3:#6B7280;
+  --accent:#5E6AD2;--accent2:#8B93E8;--accent-soft:rgba(94,106,210,.16);
+  --green:#4ade80;--yellow:#fbbf24;--red:#f87171;--cold:#7dd3fc;
+  --green-bg:rgba(74,222,128,.13);--cold-bg:rgba(125,211,252,.12);
+  --r6:6px;--r12:12px;--ease:cubic-bezier(.22,1,.36,1);
+}
+[data-theme="light"]{
+  --ground:#f6f7f9;--s1:#ffffff;--s2:#f1f2f5;--s3:#e7e9ee;
+  --hair:rgba(0,0,0,.08);--hair2:rgba(0,0,0,.13);
+  --txt:#1a1b1e;--txt2:#596070;--txt3:#8b909c;
+  --accent:#5E6AD2;--accent2:#5E6AD2;--accent-soft:rgba(94,106,210,.12);
+  --green:#16a34a;--cold:#0284c7;--green-bg:rgba(22,163,74,.10);--cold-bg:rgba(2,132,199,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0}html,body{height:100%}
+body{background:var(--ground);color:var(--txt);font:14px/1.55 'Inter',-apple-system,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+.mono{font-family:'JetBrains Mono',monospace}.disp{font-family:'Inter Tight',sans-serif;letter-spacing:-.02em}
+::-webkit-scrollbar{width:9px;height:9px}::-webkit-scrollbar-thumb{background:var(--s3);border-radius:6px}::-webkit-scrollbar-track{background:transparent}
+.win{height:100vh;display:flex;flex-direction:column}
+.titlebar{height:38px;flex:none;display:flex;align-items:center;gap:8px;padding:0 14px 0 86px;background:var(--ground);border-bottom:1px solid var(--hair);-webkit-app-region:drag;user-select:none}
+.tb-title{font-size:12.5px;color:var(--txt3);font-weight:500}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:10px;-webkit-app-region:no-drag}
+.iconbtn{width:28px;height:28px;border-radius:7px;display:grid;place-items:center;color:var(--txt2);cursor:pointer;border:1px solid transparent}
+.iconbtn:hover{background:var(--s2);color:var(--txt)}.iconbtn svg{width:16px;height:16px}
+.body{flex:1;display:flex;min-height:0}
+.side{width:212px;flex:none;background:var(--ground);border-right:1px solid var(--hair);display:flex;flex-direction:column;padding:14px 10px}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 8px 16px}
+.logo{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--accent),#3b45a8);display:grid;place-items:center}.logo svg{width:15px;height:15px}
+.brand b{font-size:15px;font-weight:600}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav a{display:flex;align-items:center;gap:11px;padding:8px 9px;border-radius:var(--r6);color:var(--txt2);cursor:pointer;font-size:13.5px;font-weight:450;transition:.13s var(--ease)}
+.nav a svg{width:17px;height:17px;flex:none;opacity:.85}
+.nav a:hover{background:var(--s1);color:var(--txt)}
+.nav a.on{background:var(--accent-soft);color:var(--txt)}.nav a.on svg{opacity:1;color:var(--accent2)}
+.nav .badge{margin-left:auto;font-size:11px;background:var(--s2);color:var(--txt2);padding:1px 7px;border-radius:20px}
+.side-foot{margin-top:auto;padding-top:10px;border-top:1px solid var(--hair);font-size:11.5px;color:var(--txt3);display:flex;justify-content:space-between;padding:10px 9px 2px}
+.side-foot b{color:var(--txt)}
+.main{flex:1;min-width:0;display:flex;flex-direction:column;background:var(--ground)}
+.topbar{flex:none;padding:18px 26px 14px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--hair)}
+.h1{font-size:19px;font-weight:600}.h1 small{font-size:12.5px;color:var(--txt3);font-weight:400;margin-left:9px}
+.search{margin-left:auto;position:relative;width:240px}
+.search input{width:100%;background:var(--s1);border:1px solid var(--hair);border-radius:var(--r6);color:var(--txt);padding:7px 11px 7px 31px;font-size:13px;outline:none;transition:.13s}
+.search input:focus{border-color:var(--accent);background:var(--s2)}
+.search svg{position:absolute;left:9px;top:8px;width:15px;height:15px;color:var(--txt3)}
+.btn{background:var(--s2);border:1px solid var(--hair2);color:var(--txt);padding:7px 13px;border-radius:var(--r6);font-size:13px;font-weight:500;cursor:pointer;transition:.13s;display:inline-flex;align-items:center;gap:7px;white-space:nowrap;flex:none;line-height:1}
+.btn svg{width:15px;height:15px;flex:none}
+.btn:hover{background:var(--s3)}.btn.pri{background:var(--accent);border-color:transparent;color:#fff}.btn.pri:hover{background:#6d78d8}
+.btn.sm{padding:4px 10px;font-size:12px}
+.content{flex:1;overflow:auto;padding:18px 26px 40px}
+.filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px;align-items:center}
+.chip{font-size:12.5px;color:var(--txt2);background:var(--s1);border:1px solid var(--hair);padding:5px 11px;border-radius:20px;cursor:pointer;transition:.12s;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.chip:hover{color:var(--txt);border-color:var(--hair2)}.chip.on{background:var(--accent-soft);color:var(--txt);border-color:transparent}
+.chip .n{color:var(--txt3);font-size:11px}.gdot{width:7px;height:7px;border-radius:50%;flex:none}
+.sep{width:1px;height:16px;background:var(--hair);margin:0 4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:12px}
+.card{background:var(--s1);border:1px solid var(--hair);border-radius:var(--r12);padding:14px 15px;cursor:pointer;transition:.15s var(--ease)}
+.card:hover{border-color:var(--hair2);background:var(--s2);transform:translateY(-1px)}.card.sel{border-color:var(--accent)}
+.cname{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.cdesc{font-size:12.5px;color:var(--txt2);line-height:1.5;height:38px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;margin:6px 0 11px}
+.tags{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.pill{font-size:10.5px;font-weight:500;padding:2px 8px;border-radius:5px}
+.pill.global{background:var(--green-bg);color:var(--green)}.pill.demand{background:var(--s3);color:var(--txt2)}
+.pill.oss{background:var(--accent-soft);color:var(--accent2)}.pill.cold{background:var(--cold-bg);color:var(--cold)}
+.gtag{font-size:11px;color:var(--txt3);margin-left:auto}
+.detail{position:fixed;top:38px;right:0;bottom:0;width:380px;background:var(--s1);border-left:1px solid var(--hair2);transform:translateX(100%);transition:.32s var(--ease);z-index:20;display:flex;flex-direction:column}
+.detail.open{transform:none;box-shadow:-8px 0 40px rgba(0,0,0,.3)}
+.dt-head{padding:20px 22px 16px;border-bottom:1px solid var(--hair);position:relative}
+.dt-head .x{position:absolute;right:16px;top:16px;width:26px;height:26px;border-radius:6px;display:grid;place-items:center;color:var(--txt3);cursor:pointer}.dt-head .x:hover{background:var(--s3);color:var(--txt)}
+.dt-name{font-size:18px;font-weight:600}
+.dt-body{flex:1;overflow:auto;padding:18px 22px}
+.dt-body h4{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--txt3);margin:18px 0 8px;font-weight:600}.dt-body h4:first-child{margin-top:0}
+.kv{display:flex;justify-content:space-between;font-size:12.5px;padding:5px 0;border-bottom:1px solid var(--hair)}.kv span{color:var(--txt3)}
+.md{background:var(--ground);border:1px solid var(--hair);border-radius:var(--r6);padding:12px;font-size:12px;color:var(--txt2);line-height:1.6;max-height:200px;overflow:auto;white-space:pre-wrap}
+.dt-foot{flex:none;padding:14px 22px;border-top:1px solid var(--hair);display:flex;gap:9px}.dt-foot .btn{flex:1;justify-content:center}
+.scrim{position:fixed;inset:38px 0 0 0;background:rgba(0,0,0,.3);opacity:0;pointer-events:none;transition:.3s;z-index:15}.scrim.open{opacity:1;pointer-events:auto}
+.section-title{font-size:13px;font-weight:600;margin:22px 0 12px;display:flex;align-items:center;gap:9px}.section-title:first-child{margin-top:0}.section-title .c{font-size:11.5px;color:var(--txt3);font-weight:400}
+/* 项目 */
+.proj-bar{background:var(--s1);border:1px solid var(--hair);border-radius:var(--r12);padding:14px 16px;display:flex;align-items:center;gap:14px;margin-bottom:8px}
+.proj-bar .pp-ic{width:36px;height:36px;border-radius:9px;background:var(--s3);display:grid;place-items:center;color:var(--txt2)}
+.proj-bar b{font-size:14px}.proj-bar p{font-size:12px;color:var(--txt3);margin-top:2px}
+.recent{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin:6px 0 4px}.recent .lbl{font-size:12px;color:var(--txt3)}
+.recent i{font-style:normal;font-size:12.5px;color:var(--txt2);background:var(--s1);border:1px solid var(--hair);padding:5px 11px;border-radius:6px;cursor:pointer}.recent i:hover{border-color:var(--accent);color:var(--txt)}.recent i.on{background:var(--accent-soft);color:var(--txt);border-color:var(--accent)}
+.addlist{display:flex;flex-direction:column;gap:1px}
+.addrow{display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:var(--r6);transition:.1s}.addrow:hover{background:var(--s1)}
+.addrow .an{font-size:13.5px;font-weight:500}.addrow .ad{font-size:12px;color:var(--txt3);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.add-tog{width:24px;height:24px;border-radius:6px;border:1px solid var(--hair2);display:grid;place-items:center;cursor:pointer;color:var(--txt2);flex:none}
+.add-tog:hover{border-color:var(--accent);color:var(--accent2)}.add-tog.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.lochips{display:flex;gap:7px;flex-wrap:wrap}.lochip{font-size:12px;background:var(--s1);border:1px solid var(--hair);border-radius:20px;padding:5px 12px;cursor:pointer;color:var(--txt2)}.lochip:hover{border-color:var(--accent);color:var(--txt)}.lochip b{color:var(--txt);font-weight:600;text-transform:capitalize}.lochip span{color:var(--txt3);margin-left:4px}
+/* 更新 */
+.up-row{display:flex;align-items:center;gap:14px;padding:13px 15px;background:var(--s1);border:1px solid var(--hair);border-radius:var(--r12);margin-bottom:9px}
+.st{width:9px;height:9px;border-radius:50%;flex:none}.st.green{background:var(--green)}.st.yellow{background:var(--yellow)}.st.idle{background:var(--s3)}
+.up-row .un{font-size:13.5px;font-weight:500;min-width:170px}.up-row .urepo{font-size:11.5px;color:var(--txt3);flex:1}.up-row .ustat{font-size:11.5px;font-weight:500}.us-green{color:var(--green)}.us-yellow{color:var(--yellow)}.us-idle{color:var(--txt3)}
+.note{font-size:11.5px;color:var(--txt3);background:var(--s1);border:1px solid var(--hair);border-radius:var(--r6);padding:8px 12px;margin-bottom:14px}
+/* 统计 */
+.stat-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:6px}
+.sc{background:var(--s1);border:1px solid var(--hair);border-radius:var(--r12);padding:16px}.sc .v{font-size:26px;font-weight:600;font-family:'Inter Tight'}.sc .l{font-size:12px;color:var(--txt3);margin-top:3px}.sc .v.cold{color:var(--cold)}
+.tbl{width:100%;border-collapse:collapse;margin-top:6px}.tbl th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--txt3);font-weight:600;padding:8px 12px;border-bottom:1px solid var(--hair)}.tbl td{padding:9px 12px;font-size:13px;border-bottom:1px solid var(--hair)}.tbl tr:hover td{background:var(--s1)}
+/* 设置 */
+.set-row{display:flex;align-items:center;gap:16px;padding:15px 2px;border-bottom:1px solid var(--hair)}.set-row .si{flex:1}.set-row .si b{font-size:13.5px;font-weight:500}.set-row .si p{font-size:12px;color:var(--txt3);margin-top:2px}.set-row .sv{font-size:12.5px;color:var(--txt2);font-family:'JetBrains Mono'}
+.toggle{width:38px;height:22px;border-radius:20px;background:var(--s3);position:relative;cursor:pointer;flex:none;transition:.15s}.toggle.on{background:var(--accent)}.toggle i{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.18s var(--ease)}.toggle.on i{left:18px}
+.empty{color:var(--txt3);padding:48px;text-align:center}
+</style>
+</head>
+<body>
+<div class="win">
+  <div class="titlebar">
+    <span class="tb-title disp">SkillHub</span>
+    <div class="tb-right">
+      <div class="iconbtn" id="themeBtn" title="切换主题"></div>
+    </div>
+  </div>
+  <div class="body">
+    <aside class="side">
+      <div class="brand"><div class="logo"><svg viewBox="0 0 24 24"><path d="M12 2l3 6 6 .8-4.5 4.2 1.2 6L12 16l-5.7 3 1.2-6L3 8.8 9 8z" fill="#fff" opacity=".95"/></svg></div><b class="disp">SkillHub</b></div>
+      <nav class="nav" id="nav"></nav>
+      <div class="side-foot"><span>常驻 <b id="fG">·</b></span><span>开源 <b id="fO">·</b></span></div>
+    </aside>
+    <main class="main">
+      <div class="topbar">
+        <div class="h1 disp" id="title"></div>
+        <div class="search" id="searchBox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg><input id="search" placeholder="搜索…"></div>
+      </div>
+      <div class="content" id="content"><div class="empty">加载中…</div></div>
+    </main>
+  </div>
+</div>
+<div class="scrim" id="scrim"></div>
+<div class="detail" id="detail"></div>
+<script>
+const $=id=>document.getElementById(id);
+const IC={grid:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+folder:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h6a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+refresh:'<path d="M21 12a9 9 0 1 1-3-6.7M21 4v5h-5"/>',chart:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 13a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V19a2 2 0 1 1-4 0a1.6 1.6 0 0 0-2.7-1.1l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 4 13a2 2 0 1 1 0-4a1.6 1.6 0 0 0 1.1-2.7l-.1-.1A2 2 0 1 1 7.7 3.4l.1.1A1.6 1.6 0 0 0 10 4V4a2 2 0 1 1 4 0a1.6 1.6 0 0 0 2.7 1.1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1A1.6 1.6 0 0 0 20 9a2 2 0 1 1 0 4z"/>',
+sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5"/>',
+moon:'<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',plus:'<path d="M12 5v14M5 12h14"/>',check:'<path d="M20 6L9 17l-5-5"/>'};
+const svg=(k,w=2)=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}">${IC[k]}</svg>`;
+const GCOLOR={tools:'#5E6AD2',utils:'#9CA3AF','web-creative':'#f0a868',media:'#e879a6',jarvis:'#4ade80',workbuddy:'#38bdf8',xhs:'#f87171',contracts:'#a78bfa',lark:'#34d399'};
+const esc=s=>(s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const TITLES={catalog:['技能目录','浏览 · 搜索 · 分层'],projects:['项目装配','选项目,逐个装 skill'],updates:['更新管理','开源 skill upstream 跟踪'],stats:['用量统计','久未使用排在最前'],settings:['设置','']};
+let HUB=null;const S={view:'catalog',q:'',tier:'all',group:'all',sel:null,proj:null,projInstalled:[]};
+const api=window.api;
+
+// 主题
+function setTheme(t){document.documentElement.dataset.theme=t;localStorage.setItem('theme',t);
+  $('themeBtn').innerHTML=svg(t==='dark'?'sun':'moon');if(api)api.setTheme(t);}
+$('themeBtn').onclick=()=>setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');
+setTheme(localStorage.getItem('theme')||'dark');
+
+// 导航
+function buildNav(){const items=[['catalog','grid','技能目录',HUB?HUB.skills.length:''],['projects','folder','项目装配',''],['updates','refresh','更新管理',HUB?HUB.skills.filter(s=>s.oss).length:''],['stats','chart','用量统计',''],['settings','gear','设置','']];
+  $('nav').innerHTML=items.map(([v,ic,t,b])=>`<a data-v="${v}" class="${S.view===v?'on':''}">${svg(ic)}<span>${t}</span>${b!==''?`<span class="badge">${b}</span>`:''}</a>`).join('');}
+$('nav').onclick=e=>{const a=e.target.closest('a[data-v]');if(!a)return;S.view=a.dataset.v;S.sel=null;closeDetail();
+  $('searchBox').style.display=(S.view==='catalog'||S.view==='projects')?'block':'none';buildNav();render();};
+$('search').oninput=e=>{S.q=e.target.value.toLowerCase();render();};
+
+async function load(){
+  if(api){try{HUB=await api.getData();}catch(e){HUB=null;}}
+  if(!HUB){$('content').innerHTML='<div class="empty">请在 SkillHub 应用内运行(需要主进程提供数据)。</div>';return;}
+  $('fG').textContent=HUB.stats.global;$('fO').textContent=HUB.stats.oss;
+  buildNav();render();
+}
+function render(){const t=TITLES[S.view];$('title').innerHTML=t[0]+(t[1]?` <small>${t[1]}</small>`:'');
+  $('content').innerHTML=({catalog:catalogView,projects:projectsView,updates:updatesView,stats:statsView,settings:settingsView})[S.view]();}
+const tierPill=s=>s.tier==='global'?'<span class="pill global">常驻</span>':'<span class="pill demand">按需</span>';
+const matchQ=s=>!S.q||s.name.toLowerCase().includes(S.q)||(s.desc||'').toLowerCase().includes(S.q);
+
+// 目录
+function catalogView(){
+  const groups=HUB.stats.groups;
+  const gc=groups.map(g=>`<span class="chip ${S.group===g?'on':''}" data-g="${g}"><span class="gdot" style="background:${GCOLOR[g]||'#888'}"></span>${g}<span class="n">${HUB.skills.filter(x=>x.group===g).length}</span></span>`).join('');
+  const list=HUB.skills.filter(s=>(S.tier==='all'||s.tier===S.tier)&&(S.group==='all'||s.group===S.group)&&matchQ(s)).sort((a,b)=>a.name.localeCompare(b.name));
+  const cards=list.map(s=>`<div class="card ${S.sel===s.name?'sel':''}" data-name="${s.name}">
+    <div class="cname"><span class="gdot" style="background:${GCOLOR[s.group]||'#888'}"></span>${s.name}</div>
+    <div class="cdesc">${esc(s.desc)||'—'}</div>
+    <div class="tags">${tierPill(s)}${s.oss?'<span class="pill oss">OSS</span>':''}${cold(s)?`<span class="pill cold">${s.lastUsed===null?'未用过':'冷'+s.lastUsed+'天'}</span>`:''}<span class="gtag">${s.group}</span></div></div>`).join('');
+  return `<div class="filters">
+    <span class="chip ${S.tier==='all'?'on':''}" data-t="all">全部<span class="n">${HUB.skills.length}</span></span>
+    <span class="chip ${S.tier==='global'?'on':''}" data-t="global">常驻<span class="n">${HUB.stats.global}</span></span>
+    <span class="chip ${S.tier==='on-demand'?'on':''}" data-t="on-demand">按需<span class="n">${HUB.skills.length-HUB.stats.global}</span></span>
+    <span class="sep"></span><span class="chip ${S.group==='all'?'on':''}" data-g="all">全部分组</span>${gc}</div>
+    <div class="grid">${cards||'<div class="empty">没有匹配的 skill</div>'}</div>`;
+}
+const cold=s=>s.lastUsed===null||s.lastUsed>=90;
+
+// 详情
+async function openDetail(name){const s=HUB.skills.find(x=>x.name===name);S.sel=name;render();
+  const md=api?esc((await api.readSkillMd(name)).slice(0,1200)):'';
+  $('detail').innerHTML=`<div class="dt-head"><div class="x" onclick="closeDetail()">${svg('plus').replace('M12 5v14M5 12h14','M6 6l12 12M18 6L6 18')}</div>
+    <div class="dt-name disp"><span class="gdot" style="background:${GCOLOR[s.group]};display:inline-block;margin-right:8px"></span>${s.name}</div>
+    <div class="tags" style="margin-top:10px">${tierPill(s)}${s.oss?'<span class="pill oss">OSS</span>':''}<span class="gtag" style="margin-left:0">${s.group}</span></div></div>
+   <div class="dt-body"><h4>描述</h4><div style="font-size:13px;line-height:1.6">${esc(s.desc)}</div>
+    <h4>属性</h4>
+    <div class="kv"><span>分层</span><b>${s.tier==='global'?'常驻 global':'按需 on-demand'}</b></div>
+    <div class="kv"><span>分发 agent</span><b>${(s.agents||[]).join(' · ')}</b></div>
+    ${s.oss?`<div class="kv"><span>upstream</span><b class="mono" style="font-size:11px;cursor:pointer;color:var(--accent2)" onclick="api&&api.openRepo('${s.repo}')">${s.repo.replace('github.com/','')}</b></div>`:''}
+    <div class="kv"><span>最近使用</span><b>${s.lastUsed===null?'未用过':s.lastUsed+' 天前'}</b></div>
+    <h4>SKILL.md</h4><div class="md">${md||'—'}</div></div>
+   <div class="dt-foot"><button class="btn ${s.tier==='global'?'':'pri'}" onclick="toggleTier('${s.name}')">${s.tier==='global'?'转为按需':'设为常驻'}</button></div>`;
+  $('detail').classList.add('open');$('scrim').classList.add('open');}
+function closeDetail(){$('detail').classList.remove('open');$('scrim').classList.remove('open');if(S.sel){S.sel=null;render();}}
+$('scrim').onclick=closeDetail;
+async function toggleTier(name){const s=HUB.skills.find(x=>x.name===name);if(api)await api.setTier(name,s.tier==='global'?'on-demand':'global');HUB=await api.getData();closeDetail();buildNav();render();}
+
+// 项目:选项目 → 逐个装
+async function pickProject(){if(!api)return;const p=await api.pickProject();if(p)selectProject(p);}
+async function selectProject(p){S.proj=p;S.projInstalled=api?await api.projectInfo(p):[];render();}
+function projectsView(){
+  const recent=(HUB._recent||[]);
+  const recentChips=recent.length?`<div class="recent"><span class="lbl">最近:</span>${recent.map(p=>`<i class="${S.proj===p?'on':''}" data-proj="${esc(p)}">${esc(p.split('/').pop())}</i>`).join('')}</div>`:'';
+  const bar=`<div class="proj-bar"><div class="pp-ic">${svg('folder')}</div>
+    <div style="flex:1">${S.proj?`<b class="mono">${esc(S.proj)}</b><p>已装 ${S.projInstalled.length} 个 · 软链进 .claude / .codex / .cursor</p>`:'<b>未选择项目</b><p>选一个项目目录,然后逐个装 skill</p>'}</div>
+    <button class="btn" id="pickBtn">${svg('folder')}选择目录…</button></div>${recentChips}`;
+  if(!S.proj)return bar+'<div class="empty">先选一个项目 ↑</div>';
+  const inst=new Set(S.projInstalled);
+  const los=Object.entries(HUB.loadouts).map(([n,m])=>`<span class="lochip" data-lo="${n}"><b>${n}</b><span>+${m.length}</span></span>`).join('');
+  const list=HUB.skills.filter(matchQ).sort((a,b)=>(inst.has(b.name)-inst.has(a.name))||a.name.localeCompare(b.name));
+  const rows=list.map(s=>`<div class="addrow"><span class="gdot" style="background:${GCOLOR[s.group]}"></span>
+    <span class="an">${s.name}</span><span class="ad">${esc(s.desc)}</span>
+    <div class="add-tog ${inst.has(s.name)?'on':''}" data-add="${s.name}">${inst.has(s.name)?svg('check'):svg('plus')}</div></div>`).join('');
+  return bar+`<div class="section-title">快捷套装 <span class="c">一键装一整组</span></div><div class="lochips">${los}</div>
+    <div class="section-title">逐个添加 <span class="c">${list.length} 个 · 已装的排在前</span></div><div class="addlist">${rows}</div>`;
+}
+async function addSkill(name,on){if(api)await api.useInProject(name,S.proj,on);S.projInstalled=await api.projectInfo(S.proj);render();}
+async function addLoadout(n){const m=HUB.loadouts[n]||[];for(const x of m){if(api)await api.useInProject(x,S.proj,true);}S.projInstalled=await api.projectInfo(S.proj);render();}
+
+// 更新
+function updatesView(){const oss=HUB.skills.filter(s=>s.oss).sort((a,b)=>a.name.localeCompare(b.name));
+  const rows=oss.map(s=>`<div class="up-row"><span class="st idle"></span><span class="un">${s.name}</span><span class="urepo mono">${s.repo.replace('github.com/','')}</span><span class="ustat us-idle">已登记 · 等每周检查</span></div>`).join('');
+  return `<div class="note">每周一 10:00 自动检查 upstream。<b style="color:var(--green)">green</b> 自动更 · <b style="color:var(--yellow)">yellow</b> 待你定 · <b style="color:var(--red)">red</b> 自动拒。飞书通知。<br>(实时检查更新需联网 gh,下一版接入。)</div>
+    <div class="section-title">开源 skill <span class="c">${oss.length} 个跟踪中</span></div>${rows}`;}
+
+// 统计:久未使用排最前
+function statsView(){
+  const sorted=[...HUB.skills].sort((a,b)=>{const av=a.lastUsed===null?1e9:a.lastUsed,bv=b.lastUsed===null?1e9:b.lastUsed;return bv-av;});
+  const coldN=HUB.skills.filter(cold).length;
+  return `<div class="note">用量从 PostToolUse hook 启用起累计。久未使用 / 未用过排在最前 → 删除候选。</div>
+   <div class="stat-cards">
+    <div class="sc"><div class="v">${HUB.stats.total}</div><div class="l">总 skill</div></div>
+    <div class="sc"><div class="v">${HUB.stats.global}</div><div class="l">常驻 global</div></div>
+    <div class="sc"><div class="v cold">${coldN}</div><div class="l">冷门(≥90天/未用)</div></div>
+    <div class="sc"><div class="v">${HUB.stats.oss}</div><div class="l">开源跟踪</div></div></div>
+   <table class="tbl"><thead><tr><th>Skill</th><th>分组</th><th>最近使用</th><th>分层</th></tr></thead><tbody>
+   ${sorted.slice(0,20).map(s=>`<tr><td><span class="gdot" style="background:${GCOLOR[s.group]};display:inline-block;margin-right:8px"></span>${s.name}</td><td style="color:var(--txt3)">${s.group}</td><td style="color:${cold(s)?'var(--cold)':'var(--txt2)'}">${s.lastUsed===null?'未用过':s.lastUsed+' 天前'}</td><td>${s.tier==='global'?'常驻':'按需'}</td></tr>`).join('')}
+   </tbody></table>`;}
+
+// 设置
+function settingsView(){const sr=(b,p,v,tog)=>`<div class="set-row"><div class="si"><b>${b}</b><p>${p}</p></div>${v?`<span class="sv">${v}</span>`:''}${tog!==undefined?`<div class="toggle ${tog?'on':''}"><i></i></div>`:''}</div>`;
+  return `<div style="max-width:660px">
+   ${sr('Hub 路径','单一源 git 仓库','~/skills')}
+   ${sr('GitHub 远端','跨设备同步','ivesyi/skill-hub')}
+   ${sr('每周自动更新','周一 10:00 headless 判定','launchd',true)}
+   ${sr('飞书通知','更新周报','lark-cli',true)}
+   <div style="margin-top:18px;display:flex;gap:10px"><button class="btn pri" id="pushBtn">立即 git push</button></div>
+   <div id="pushMsg" style="font-size:12px;color:var(--txt3);margin-top:10px"></div></div>`;}
+
+// 事件委托
+$('content').onclick=async e=>{
+  const t=e.target;
+  const card=t.closest('.card[data-name]');if(card)return openDetail(card.dataset.name);
+  const c=t.closest('.chip[data-t]');if(c){S.tier=c.dataset.t;return render();}
+  const g=t.closest('.chip[data-g]');if(g){S.group=g.dataset.g;return render();}
+  if(t.closest('#pickBtn'))return pickProject();
+  const rp=t.closest('i[data-proj]');if(rp)return selectProject(rp.dataset.proj);
+  const ad=t.closest('.add-tog[data-add]');if(ad)return addSkill(ad.dataset.add,!ad.classList.contains('on'));
+  const lo=t.closest('.lochip[data-lo]');if(lo)return addLoadout(lo.dataset.lo);
+  if(t.closest('#pushBtn')){$('pushMsg').textContent='推送中…';const r=await api.gitPush();$('pushMsg').textContent=r.ok?'✓ 已推送':'✗ '+r.msg;}
+};
+load().then(async()=>{if(api){HUB._recent=await api.recentProjects();}});
+</script>
+</body>
+</html>

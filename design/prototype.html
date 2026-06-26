@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SkillHub Desktop — 原型</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;450;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ground:#08090A; --s1:#16171C; --s2:#1E1F25; --s3:#26272E;
+  --hair:rgba(255,255,255,.06); --hair2:rgba(255,255,255,.10);
+  --txt:#F7F8F8; --txt2:#9CA3AF; --txt3:#6B7280;
+  --accent:#5E6AD2; --accent2:#8B93E8; --accent-soft:rgba(94,106,210,.14);
+  --green:#4ade80; --yellow:#fbbf24; --red:#f87171; --cold:#7dd3fc;
+  --r6:6px; --r12:12px; --r16:16px;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--ground);color:var(--txt);font:14px/1.55 'Inter',-apple-system,sans-serif;
+  -webkit-font-smoothing:antialiased;overflow:hidden;letter-spacing:.005em}
+.mono{font-family:'JetBrains Mono',monospace}
+.disp{font-family:'Inter Tight',sans-serif;letter-spacing:-.02em}
+::-webkit-scrollbar{width:9px;height:9px}::-webkit-scrollbar-thumb{background:var(--s3);border-radius:6px}
+::-webkit-scrollbar-thumb:hover{background:#33343c}::-webkit-scrollbar-track{background:transparent}
+
+/* 窗口外壳 */
+.win{height:100vh;display:flex;flex-direction:column}
+.titlebar{height:38px;flex:none;display:flex;align-items:center;gap:8px;padding:0 14px;
+  background:var(--ground);border-bottom:1px solid var(--hair);-webkit-app-region:drag;user-select:none}
+.lights{display:flex;gap:8px}.lights i{width:12px;height:12px;border-radius:50%}
+.lights .r{background:#ff5f57}.lights .y{background:#febc2e}.lights .g{background:#28c840}
+.tb-title{font-size:12.5px;color:var(--txt3);margin-left:6px;font-weight:500}
+.tb-sync{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--txt3)}
+.tb-sync .dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+.body{flex:1;display:flex;min-height:0}
+
+/* 侧栏 */
+.side{width:220px;flex:none;background:var(--ground);border-right:1px solid var(--hair);
+  display:flex;flex-direction:column;padding:14px 10px}
+.brand{display:flex;align-items:center;gap:10px;padding:6px 8px 16px}
+.logo{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--accent),#3b45a8);
+  display:grid;place-items:center;box-shadow:0 1px 2px rgba(0,0,0,.4)}
+.logo svg{width:15px;height:15px}
+.brand b{font-size:14.5px;font-weight:600}.brand span{display:block;font-size:10.5px;color:var(--txt3);font-weight:400}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav a{display:flex;align-items:center;gap:11px;padding:8px 9px;border-radius:var(--r6);color:var(--txt2);
+  cursor:pointer;font-size:13.5px;font-weight:450;transition:.13s var(--ease)}
+.nav a svg{width:17px;height:17px;flex:none;opacity:.85}
+.nav a:hover{background:var(--s1);color:var(--txt)}
+.nav a.on{background:var(--accent-soft);color:#fff}
+.nav a.on svg{opacity:1;color:var(--accent2)}
+.nav .badge{margin-left:auto;font-size:11px;background:var(--s2);color:var(--txt2);padding:1px 7px;border-radius:20px}
+.nav a.on .badge{background:var(--accent);color:#fff}
+.side-foot{margin-top:auto;padding:10px 9px 4px;border-top:1px solid var(--hair)}
+.side-foot .row{display:flex;justify-content:space-between;font-size:11.5px;color:var(--txt3);margin-top:6px}
+.side-foot b{color:var(--txt);font-weight:600}
+
+/* 主区 */
+.main{flex:1;min-width:0;display:flex;flex-direction:column;background:var(--ground)}
+.topbar{flex:none;padding:18px 26px 14px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--hair)}
+.h1{font-size:19px;font-weight:600}.h1 small{font-size:12.5px;color:var(--txt3);font-weight:400;margin-left:9px}
+.search{margin-left:auto;position:relative;width:260px}
+.search input{width:100%;background:var(--s1);border:1px solid var(--hair);border-radius:var(--r6);
+  color:var(--txt);padding:7px 11px 7px 31px;font-size:13px;outline:none;transition:.13s}
+.search input:focus{border-color:var(--accent);background:var(--s2)}
+.search svg{position:absolute;left:9px;top:8px;width:15px;height:15px;color:var(--txt3)}
+.btn{background:var(--s2);border:1px solid var(--hair2);color:var(--txt);padding:7px 13px;border-radius:var(--r6);
+  font-size:13px;font-weight:500;cursor:pointer;transition:.13s;display:inline-flex;align-items:center;gap:7px}
+.btn:hover{background:var(--s3)}
+.btn.pri{background:var(--accent);border-color:transparent}.btn.pri:hover{background:#6d78d8}
+.content{flex:1;overflow:auto;padding:18px 26px 40px}
+
+/* 过滤条 */
+.filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px;align-items:center}
+.chip{font-size:12.5px;color:var(--txt2);background:var(--s1);border:1px solid var(--hair);
+  padding:5px 11px;border-radius:20px;cursor:pointer;transition:.12s;white-space:nowrap}
+.chip:hover{color:var(--txt);border-color:var(--hair2)}
+.chip.on{background:var(--accent-soft);color:#fff;border-color:transparent}
+.chip .n{color:var(--txt3);margin-left:5px;font-size:11px}
+.sep{width:1px;height:16px;background:var(--hair);margin:0 4px}
+
+/* 卡片网格 */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:12px}
+.card{background:var(--s1);border:1px solid var(--hair);border-radius:var(--r12);padding:14px 15px;
+  cursor:pointer;transition:.15s var(--ease);position:relative;overflow:hidden}
+.card:hover{border-color:var(--hair2);background:var(--s2);transform:translateY(-1px)}
+.card.sel{border-color:var(--accent);background:var(--s2)}
+.card .cname{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.gdot{width:7px;height:7px;border-radius:50%;flex:none}
+.card .cdesc{font-size:12.5px;color:var(--txt2);line-height:1.5;height:38px;overflow:hidden;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;margin:6px 0 11px}
+.tags{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.pill{font-size:10.5px;font-weight:500;padding:2px 8px;border-radius:5px;letter-spacing:.01em}
+.pill.global{background:rgba(74,222,128,.13);color:var(--green)}
+.pill.demand{background:var(--s3);color:var(--txt2)}
+.pill.oss{background:var(--accent-soft);color:var(--accent2)}
+.pill.cold{background:rgba(125,211,252,.12);color:var(--cold)}
+.gtag{font-size:11px;color:var(--txt3);margin-left:auto}
+
+/* 详情面板 */
+.detail{position:fixed;top:38px;right:0;bottom:0;width:380px;background:var(--s1);border-left:1px solid var(--hair2);
+  transform:translateX(100%);transition:.32s var(--ease);z-index:20;display:flex;flex-direction:column;
+  box-shadow:-8px 0 40px rgba(0,0,0,.4)}
+.detail.open{transform:none}
+.dt-head{padding:20px 22px 16px;border-bottom:1px solid var(--hair)}
+.dt-head .x{position:absolute;right:16px;top:16px;width:26px;height:26px;border-radius:6px;display:grid;place-items:center;
+  color:var(--txt3);cursor:pointer}.dt-head .x:hover{background:var(--s3);color:var(--txt)}
+.dt-name{font-size:18px;font-weight:600;letter-spacing:-.01em}
+.dt-body{flex:1;overflow:auto;padding:18px 22px}
+.dt-body h4{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--txt3);margin:18px 0 8px;font-weight:600}
+.dt-body h4:first-child{margin-top:0}
+.dt-desc{font-size:13px;color:var(--txt);line-height:1.6}
+.kv{display:flex;justify-content:space-between;font-size:12.5px;padding:5px 0;border-bottom:1px solid var(--hair)}
+.kv span{color:var(--txt3)}.kv b{font-weight:500}
+.md{background:var(--ground);border:1px solid var(--hair);border-radius:var(--r6);padding:12px;font-size:12px;
+  color:var(--txt2);line-height:1.6;max-height:160px;overflow:auto}
+.md .mh{color:var(--txt);font-weight:600;font-family:'Inter Tight'}
+.dt-foot{flex:none;padding:14px 22px;border-top:1px solid var(--hair);display:flex;gap:9px}
+.dt-foot .btn{flex:1;justify-content:center}
+.scrim{position:fixed;inset:38px 0 0 0;background:rgba(0,0,0,.3);opacity:0;pointer-events:none;transition:.3s;z-index:15}
+.scrim.open{opacity:1;pointer-events:auto}
+
+/* 项目/统计/设置 通用块 */
+.section-title{font-size:13px;font-weight:600;color:var(--txt);margin:22px 0 12px;display:flex;align-items:center;gap:9px}
+.section-title:first-child{margin-top:0}
+.section-title .c{font-size:11.5px;color:var(--txt3);font-weight:400}
+.lo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:11px}
+.lo{background:var(--s1);border:1px solid var(--hair);border-radius:var(--r12);padding:15px;transition:.14s}
+.lo:hover{border-color:var(--hair2);background:var(--s2)}
+.lo .ln{font-size:14px;font-weight:600;text-transform:capitalize}
+.lo .lc{font-size:12px;color:var(--txt3);margin:4px 0 12px}
+.lo .members{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px}
+.lo .members i{font-size:10.5px;background:var(--s3);color:var(--txt2);padding:2px 7px;border-radius:5px;font-style:normal}
+.proj-pick{background:var(--s1);border:1px dashed var(--hair2);border-radius:var(--r12);padding:18px;
+  display:flex;align-items:center;gap:14px;margin-bottom:6px}
+.proj-pick .pp-ic{width:38px;height:38px;border-radius:9px;background:var(--s3);display:grid;place-items:center;color:var(--txt2)}
+.proj-pick b{font-size:14px}.proj-pick p{font-size:12px;color:var(--txt3);margin-top:2px}
+.recent{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.recent i{font-style:normal;font-size:12px;color:var(--txt2);background:var(--s1);border:1px solid var(--hair);
+  padding:5px 10px;border-radius:6px;cursor:pointer}.recent i:hover{border-color:var(--accent);color:#fff}
+
+/* 更新列表 */
+.up-row{display:flex;align-items:center;gap:14px;padding:13px 15px;background:var(--s1);border:1px solid var(--hair);
+  border-radius:var(--r12);margin-bottom:9px;transition:.13s}
+.up-row:hover{background:var(--s2)}
+.st{width:9px;height:9px;border-radius:50%;flex:none}
+.st.green{background:var(--green);box-shadow:0 0 8px rgba(74,222,128,.5)}
+.st.yellow{background:var(--yellow);box-shadow:0 0 8px rgba(251,191,36,.5)}
+.st.red{background:var(--red)}
+.st.idle{background:var(--s3)}
+.up-row .un{font-size:13.5px;font-weight:500;min-width:160px}
+.up-row .urepo{font-size:11.5px;color:var(--txt3);flex:1}
+.up-row .ustat{font-size:11.5px;font-weight:500}
+.us-green{color:var(--green)}.us-yellow{color:var(--yellow)}.us-idle{color:var(--txt3)}
+
+/* 统计 */
+.stat-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:6px}
+.sc{background:var(--s1);border:1px solid var(--hair);border-radius:var(--r12);padding:16px}
+.sc .v{font-size:26px;font-weight:600;font-family:'Inter Tight';letter-spacing:-.02em}
+.sc .l{font-size:12px;color:var(--txt3);margin-top:3px}
+.sc .v.cold{color:var(--cold)}
+.tbl{width:100%;border-collapse:collapse;margin-top:6px}
+.tbl th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--txt3);
+  font-weight:600;padding:8px 12px;border-bottom:1px solid var(--hair)}
+.tbl td{padding:9px 12px;font-size:13px;border-bottom:1px solid var(--hair)}
+.tbl tr:hover td{background:var(--s1)}
+.note{font-size:11.5px;color:var(--txt3);background:var(--s1);border:1px solid var(--hair);border-radius:var(--r6);
+  padding:8px 12px;margin-bottom:14px}
+
+/* 设置 */
+.set-row{display:flex;align-items:center;gap:16px;padding:15px 0;border-bottom:1px solid var(--hair)}
+.set-row .si{flex:1}.set-row .si b{font-size:13.5px;font-weight:500}.set-row .si p{font-size:12px;color:var(--txt3);margin-top:2px}
+.set-row .sv{font-size:12.5px;color:var(--txt2);font-family:'JetBrains Mono'}
+.toggle{width:38px;height:22px;border-radius:20px;background:var(--s3);position:relative;cursor:pointer;flex:none;transition:.15s}
+.toggle.on{background:var(--accent)}
+.toggle i{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.18s var(--ease)}
+.toggle.on i{left:18px}
+.agent-dot{width:18px;height:18px;border-radius:5px;display:inline-grid;place-items:center;font-size:9px;font-weight:600;
+  background:var(--s3);color:var(--txt2)}
+.adots{display:flex;gap:3px;margin-left:auto}
+</style>
+</head>
+<body>
+<div class="win">
+  <div class="titlebar">
+    <div class="lights"><i class="r"></i><i class="y"></i><i class="g"></i></div>
+    <span class="tb-title disp">SkillHub Desktop</span>
+    <div class="tb-sync"><span class="dot"></span> 已同步 · ivesyi/skill-hub</div>
+  </div>
+  <div class="body">
+    <aside class="side">
+      <div class="brand">
+        <div class="logo"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2l3 6 6 .8-4.5 4.2 1.2 6L12 16l-5.7 3 1.2-6L3 8.8 9 8z" fill="#fff" opacity=".95"/></svg></div>
+        <div><b class="disp">SkillHub</b><span>59 skills · 3 agents</span></div>
+      </div>
+      <nav class="nav" id="nav"></nav>
+      <div class="side-foot">
+        <div class="row"><span>常驻 global</span><b>6</b></div>
+        <div class="row"><span>开源 OSS</span><b>15</b></div>
+        <div class="row"><span>本周自动更新</span><b style="color:var(--green)">2</b></div>
+      </div>
+    </aside>
+    <main class="main">
+      <div class="topbar">
+        <div class="h1 disp" id="title">技能目录 <small id="subtitle">浏览、搜索、分层管理全部 skill</small></div>
+        <div class="search" id="searchBox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+          <input id="search" placeholder="搜索 skill 名称或描述…"></div>
+        <button class="btn pri" id="addBtn">安装 skill</button>
+      </div>
+      <div class="content" id="content"></div>
+    </main>
+  </div>
+</div>
+<div class="scrim" id="scrim"></div>
+<div class="detail" id="detail"></div>
+
+<script>
+window.HUB={"skills": [{"name": "agent-cli-creator", "tier": "on-demand", "group": "tools", "oss": true, "repo": "github.com/better-world-ai/agent-cli-creator", "desc": "Use when the user wants to build a CLI tool to automate browser interactions on a specific website using kimi-webbridge. Invoke when user sa", "agents": ["claude", "codex", "cursor"], "lastUsed": 57}, {"name": "chatprd", "tier": "on-demand", "group": "tools", "oss": false, "repo": "", "desc": "Use ChatPRD via Kimi WebBridge for PRDs, briefs, tech specs, launch docs, templates, projects, and existing ChatPRD content.", "agents": ["claude", "codex", "cursor"], "lastUsed": null}, {"name": "chronicle", "tier": "on-demand", "group": "utils", "oss": false, "repo": "", "desc": "View recent screen history when local visual context is needed to understand what Yihu was doing.", "agents": ["claude", "codex", "cursor"], "lastUsed": null}, {"name": "contract-review", "tier": "on-demand", "group": "contracts", "oss": false, "repo": "", "desc": "专业合同审查全流程 Skill，适用于律师、法务人员对合同文件进行系统性审查。", "agents": ["claude", "codex", "cursor"], "lastUsed": 108}, {"name": "contract-review-v3", "tier": "on-demand", "group": "contracts", "oss": false, "repo": "", "desc": "Review contracts and turn risks into signing decisions, negotiation points, clause rewrites, and Feishu-ready action memos.", "agents": ["claude", "codex", "cursor"], "lastUsed": null}, {"name": "dashboard", "tier": "on-demand", "group": "web-creative", "oss": false, "repo": "", "desc": "Admin / analytics dashboard in a single HTML file. Fixed left sidebar,", "agents": ["claude", "codex", "cursor"], "lastUsed": null}, {"name": "find-docs", "tier": "global", "group": "tools", "oss": false, "repo": "", "desc": "Retrieves up-to-date documentation, API references, and code examples for any", "agents": ["claude", "codex", "cursor"], "lastUsed": 118}, {"name": "frontend-design", "tier": "on-demand", "group": "web-creative", "oss": false, "repo": "", "desc": "Create distinctive production-grade web UI, pages, components, artifacts, posters, and app screens.", "agents": ["claude", "codex", "cursor"], "lastUsed": 35}, {"name": "guizang-ppt-skill", "tier": "on-demand", "group": "web-creative", "oss": true, "repo": "github.com/op7418/guizang-ppt-skill", "desc": "生成横向翻页网页 PPT（单 HTML 文件），含 WebGL 背景、章节幕封、数据大字报、图片网格等模板。提供两种风格：① \"电子杂志 × 电子墨水\"（衬线 + 流体背景 + 暖色） ② \"瑞士国际主义\"（无衬线 + 网格点阵 + IKB/柠檬黄/柠檬绿/安全橙高亮）。当用户需", "agents": ["claude", "codex", "cursor"], "lastUsed": 99}, {"name": "humanizer", "tier": "global", "group": "utils", "oss": true, "repo": "github.com/blader/humanizer", "desc": "Rewrite or review text to remove AI-writing tells and make it sound natural and human-written.", "agents": ["claude", "codex", "cursor"], "lastUsed": 44}, {"name": "ian-xiaohei-illustrations", "tier": "on-demand", "group": "web-creative", "oss": true, "repo": "github.com/helloianneo/ian-xiaohei-illustrations", "desc": "生成 Ian 风格的中文正文配图。用于用户要求为中文文章、帖子、博客、Notion 文档、工作流文档、方法论、流程、结构、状态、隐喻或观点生成“怪诞”“小黑”“手绘”“正文配图”“文章插图”“配图建议”“shot list”“去标题/改图”等任务；默认使用小黑 IP、纯白手绘、少", "agents": ["claude", "codex", "cursor"], "lastUsed": 109}, {"name": "image-asset-pipeline", "tier": "on-demand", "group": "media", "oss": false, "repo": "", "desc": "Batch-produce bitmap asset sets such as icons, sprites, UI graphics, illustrations, cutouts, and textures.", "agents": ["claude", "codex", "cursor"], "lastUsed": null}, {"name": "jarvis-class-presentation", "tier": "on-demand", "group": "jarvis", "oss": false, "repo": "", "desc": "Turn teaching material, articles, PRDs, notes, or lesson ideas into class-ready HTML presentations or scripts.", "agents": ["claude", "codex", "cursor"], "lastUsed": 124}, {"name": "jarvis-daguan-closing-package", "tier": "on-demand", "group": "jarvis", "oss": false, "repo": "", "desc": "Offline, reviewable packaging generator for the Daguan miniapp 12800 MVP closing and delivery package.", "agents": ["claude", "codex", "cursor"], "lastUsed": null}, {"name": "jarvis-daguan-miniapp-smoke", "tier": "on-demand", "group": "jarvis", "oss": false, "repo": "", "desc": "Local offline smoke packaging for Daguan miniapp runnable delivery evidence without publishing or modifying the repo.", "agents": ["claude", "codex", "cursor"], "lastUsed": 139}, {"name": "jarvis-kb-retriever", "tier": "on-demand", "group": "jarvis", "oss": false, "repo": "", "desc": "Retrieve and answer from Yihu's J.A.R.V.I.S-Knowledge vault, wiki pages, prior notes, and retrieval indexes.", "agents": ["claude", "codex", "cursor"], "lastUsed": null}, {"name": "jarvis-provenance-check", "tier": "on-demand", "group": "jarvis", "oss": false, "repo": "", "desc": "Verify imported or changed J.A.R.V.I.S-Knowledge wiki pages include source provenance.", "agents": ["claude", "codex", "cursor"], "lastUsed": 125}, {"name": "jarvis-safe-ingest-guard", "tier": "on-demand", "group": "jarvis", "oss": false, "repo": "", "desc": "Preflight local Notion, Feishu, Yuque, Markdown, PDF, CSV, or note sources before J.A.R.V.I.S. ingestion.", "agents": ["claude", "codex", "cursor"], "lastUsed": 107}, {"name": "jarvis-source-ingest", "tier": "on-demand", "group": "jarvis", "oss": false, "repo": "", "desc": "Import bounded local or exported sources into J.A.R.V.I.S-Knowledge with provenance and safe merge behavior.", "agents": ["claude", "codex", "cursor"], "lastUsed": 37}, {"name": "jarvis-wiki-lint", "tier": "on-demand", "group": "jarvis", "oss": false, "repo": "", "desc": "Lint J.A.R.V.I.S-Knowledge wiki Markdown for structure, provenance, secrets, links, and heading issues.", "agents": ["claude", "codex", "cursor"], "lastUsed": null}, {"name": "jarvis-wiki-merge", "tier": "on-demand", "group": "jarvis", "oss": false, "repo": "", "desc": "Merge new knowledge into existing J.A.R.V.I.S-Knowledge wiki pages without clobbering prior notes.", "agents": ["claude", "codex", "cursor"], "lastUsed": 56}, {"name": "jarvis-workbuddy-law-workshop-webpage", "tier": "on-demand", "group": "jarvis", "oss": false, "repo": "", "desc": "Offline, reviewable packaging and static checks for the WorkBuddy legal AI workshop webpage deliverable.", "agents": ["claude", "codex", "cursor"], "lastUsed": 97}, {"name": "jarvis-workbuddy-legal-ai-workshop-webpage", "tier": "on-demand", "group": "jarvis", "oss": false, "repo": "", "desc": "Offline, reviewable packaging for the Jiao Tong law school WorkBuddy Skills workshop webpage and materials.", "agents": ["claude", "codex", "cursor"], "lastUsed": 88}, {"name": "keep-codex-fast", "tier": "on-demand", "group": "utils", "oss": true, "repo": "github.com/vibeforge1111/keep-codex-fast", "desc": "Safely inspect and maintain local Codex state: sessions, logs, worktrees, config, backups, and metadata bloat.", "agents": ["claude", "codex", "cursor"], "lastUsed": null}, {"name": "kimi-webbridge", "tier": "global", "group": "tools", "oss": true, "repo": "github.com/efrg123/kimi-webbridge", "desc": "Control Yihu's logged-in real browser through Kimi WebBridge for websites that need existing sessions.", "agents": ["claude", "codex", "cursor"], "lastUsed": null}, {"name": "live-dashboard", "tier": "on-demand", "group": "web-creative", "oss": false, "repo": "", "desc": "Notion-style team dashboard rendered as a Live Artifact. A single-page,", "agents": ["claude", "codex", "cursor"], "lastUsed": 66}, {"name": "mac-network-tuneup", "tier": "on-demand", "group": "utils", "oss": false, "repo": "", "desc": "Diagnose and safely tune macOS network, Wi-Fi, DNS, proxy, or VPN behavior with reversible checks.", "agents": ["claude", "codex", "cursor"], "lastUsed": 56}, {"name": "md2wechat-local", "tier": "on-demand", "group": "web-creative", "oss": false, "repo": "", "desc": "本地把 Markdown 转成微信公众号图文 HTML，并通过微信官方 API 创建草稿。完全本地化，零依赖 md2wechat.cn（不调用任何第三方排版服务）。当用户要把 Markdown / 文章排版成公众号样式、生成预览、或直接发到公众号草稿箱时使用。", "agents": ["claude", "codex", "cursor"], "lastUsed": 65}, {"name": "minimax-tts", "tier": "on-demand", "group": "media", "oss": false, "repo": "", "desc": "Generate MiniMax/Hailuo text-to-speech audio through Yihu's logged-in browser session.", "agents": ["claude", "codex", "cursor"], "lastUsed": null}, {"name": "newapi-imagegen", "tier": "on-demand", "group": "media", "oss": false, "repo": "", "desc": "Generate images via Yihu's New API gateway using the fixed gpt-image-2 route.", "agents": ["claude", "codex", "cursor"], "lastUsed": 115}, {"name": "pdf", "tier": "global", "group": "utils", "oss": false, "repo": "", "desc": "Read, create, or review PDFs when rendering, layout, extraction, or visual checks matter.", "agents": ["claude", "codex", "cursor"], "lastUsed": 9}, {"name": "pm-spec", "tier": "on-demand", "group": "web-creative", "oss": false, "repo": "", "desc": "Product spec / PRD as a single page — problem, success metrics, scope,", "agents": ["claude", "codex", "cursor"], "lastUsed": 104}, {"name": "qr-poster-compositor", "tier": "on-demand", "group": "web-creative", "oss": false, "repo": "", "desc": "Replace a poster QR placeholder with a provided QR image and validate scan quality deterministically.", "agents": ["claude", "codex", "cursor"], "lastUsed": null}, {"name": "skill-distributor", "tier": "on-demand", "group": "utils", "oss": false, "repo": "", "desc": "把一个本地 Agent skill 分发到 Yihu 的三个渠道——WorkBuddy 本地安装、飞书 wiki「<你的索引页标题>」索引页(挂 zip + 加目录行/介绍节)、GitHub 仓库 <owner>/<repo>。发布前先审计个人信息、打纯净无版本号 zip、校验 ", "agents": ["claude", "codex", "cursor"], "lastUsed": 77}, {"name": "social-media-dashboard", "tier": "on-demand", "group": "web-creative", "oss": false, "repo": "", "desc": "Creator-facing social media analytics dashboard in a single HTML file.", "agents": ["claude", "codex", "cursor"], "lastUsed": 99}, {"name": "tailscale-direct-connect", "tier": "on-demand", "group": "utils", "oss": false, "repo": "", "desc": "Diagnose, fix, and verify Tailscale peer-to-peer (direct) connectivity between", "agents": ["claude", "codex", "cursor"], "lastUsed": null}, {"name": "taobao-baiyi-jianlou", "tier": "on-demand", "group": "utils", "oss": false, "repo": "", "desc": "通过 USB+adb 自动化用户的安卓手机，在淘宝「百亿补贴」里盯盘捡漏（监控某商品某 SKU 的实时可买价，", "agents": ["claude", "codex", "cursor"], "lastUsed": 98}, {"name": "teaching-goal-contract-harness", "tier": "on-demand", "group": "utils", "oss": false, "repo": "", "desc": "Offline, inspectable harness for TeachingGoalContract: validate contract JSON,", "agents": ["claude", "codex", "cursor"], "lastUsed": null}, {"name": "video-dissection-local", "tier": "on-demand", "group": "media", "oss": false, "repo": "", "desc": "视频解剖（本地版）。输入抖音链接（douyin.com / v.douyin.com）、抖音分享口令，", "agents": ["claude", "codex", "cursor"], "lastUsed": null}, {"name": "web-design-engineer", "tier": "global", "group": "web-creative", "oss": true, "repo": "github.com/ConardLi/garden-skills", "desc": "Build polished browser-rendered web artifacts: pages, dashboards, prototypes, animations, UI mockups, and visualizations.", "agents": ["claude", "codex", "cursor"], "lastUsed": 115}, {"name": "web-video-presentation", "tier": "on-demand", "group": "web-creative", "oss": true, "repo": "github.com/ConardLi/garden-skills", "desc": "把一篇文章或口播稿，做成\"看起来像视频\"的点击驱动 16:9 网页演示，可选合成口播音频。流程：原始文章 → **一次产出**口播稿 + outline 开发计划 → 用户**一次对齐** 5 件事（稿子 / outline / 主题 / 素材 / 开发模式）→ 网页开发（逐章 ", "agents": ["claude", "codex", "cursor"], "lastUsed": null}, {"name": "wechat-finder", "tier": "on-demand", "group": "tools", "oss": false, "repo": "", "desc": "维护一份关注公众号清单（accounts.json），按需/定时汇出各账号近24小时新文并读取完整正文，一步到位输出\"标题+摘要+原文链接+正文内容\"。自包含、免登录、无 cookie：用语鲸 public API 发现新文，用自带搜狗脚本反查 mp 原文链接，用自带脚本纯 HT", "agents": ["claude", "codex", "cursor"], "lastUsed": 25}, {"name": "workbuddy-tencent-esign", "tier": "on-demand", "group": "workbuddy", "oss": false, "repo": "", "desc": "盘点并适配 WorkBuddy 已安装的「腾讯电子签合同 AI」skill：提供只读预检与使用边界说明（不触发任何腾讯侧写操作，不泄露任何 token）。", "agents": ["claude", "codex", "cursor"], "lastUsed": null}, {"name": "workbuddy-tencent-inventory", "tier": "on-demand", "group": "workbuddy", "oss": false, "repo": "", "desc": "Local read-only inventory helper for Tencent-related WorkBuddy SkillHub installs, marketplace metadata, and bundled CLIs.", "agents": ["claude", "codex", "cursor"], "lastUsed": null}, {"name": "workbuddy-tmeet", "tier": "on-demand", "group": "workbuddy", "oss": false, "repo": "", "desc": "从 WorkBuddy 本地缓存直接调用腾讯会议 CLI（tmeet），并提供不泄露 token 的只读检查包装。", "agents": ["claude", "codex", "cursor"], "lastUsed": null}, {"name": "xhs-bounty-image-generator", "tier": "on-demand", "group": "xhs", "oss": false, "repo": "", "desc": "Generate One Piece style bounty poster images for xhs_needs_site demands using google-generativeai (Gemini) via the Antigravity proxy. Saves", "agents": ["claude", "codex", "cursor"], "lastUsed": 49}, {"name": "xhs-manual-bounty-run", "tier": "on-demand", "group": "xhs", "oss": false, "repo": "", "desc": "Use when asked to 手动跑一轮、找小红书需求、执行 Scout/Judge/Artist/Scribe，或更新 xhs_needs_site 的需求数据与 round/notes 记录。", "agents": ["claude", "codex", "cursor"], "lastUsed": 45}, {"name": "xiaozhi-activation-code", "tier": "on-demand", "group": "tools", "oss": false, "repo": "", "desc": "Use when a user needs a 6-digit activation/verification code for Xiaozhi device binding via the official OTA endpoint, especially outside an", "agents": ["claude", "codex", "cursor"], "lastUsed": null}, {"name": "humanizer-zh", "tier": "on-demand", "group": "tools", "oss": false, "repo": "", "desc": "去除文本中的 AI 生成痕迹。适用于编辑或审阅文本，使其听起来更自然、更像人类书写。", "agents": ["claude", "codex", "cursor"], "lastUsed": null}, {"name": "vercel-react-best-practices", "tier": "on-demand", "group": "web-creative", "oss": false, "repo": "", "desc": "React and Next.js performance optimization guidelines from Vercel Engineering. This skill should be used when writing, reviewing, or refacto", "agents": ["claude", "codex", "cursor"], "lastUsed": null}, {"name": "web-design-guidelines", "tier": "on-demand", "group": "web-creative", "oss": false, "repo": "", "desc": "Review UI code for Web Interface Guidelines compliance. Use when asked to \"review my UI\", \"check accessibility\", \"audit design\", \"review UX\"", "agents": ["claude", "codex", "cursor"], "lastUsed": 19}, {"name": "lark-accounts", "tier": "global", "group": "lark", "oss": false, "repo": "", "desc": "Yihu 的两个飞书账号(yihu=易虎 / ivey=Ivey)与切换方式。当用户说「切到 ivey / 切到易虎 / 切换飞书账号 / 切到某账号」,或需要确认当前用哪个飞书身份操作时使用。这是自定义补充,与官方 lark-cli skill 解耦,不会被 lark-cli ", "agents": ["claude", "codex", "cursor"], "lastUsed": 4}, {"name": "stop-slop", "tier": "on-demand", "group": "tools", "oss": true, "repo": "github.com/hardikpandya/stop-slop", "desc": "Remove AI writing patterns from prose. Use when drafting, editing, or reviewing text to eliminate predictable AI tells.", "agents": ["claude", "codex", "cursor"], "lastUsed": null}, {"name": "guizang-social-card-skill", "tier": "on-demand", "group": "web-creative", "oss": true, "repo": "github.com/op7418/guizang-social-card-skill", "desc": "Generate Guizang-style social card image sets and WeChat official account cover pairs from articles, scripts, screenshots, product notes, su", "agents": ["claude", "codex", "cursor"], "lastUsed": null}, {"name": "content-research-writer", "tier": "on-demand", "group": "tools", "oss": true, "repo": "github.com/ComposioHQ/awesome-claude-skills", "desc": "Assists in writing high-quality content by conducting research, adding citations, improving hooks, iterating on outlines, and providing real", "agents": ["claude", "codex", "cursor"], "lastUsed": 36}, {"name": "notebooklm", "tier": "on-demand", "group": "tools", "oss": true, "repo": "github.com/PleasePrompto/notebooklm-skill", "desc": "Use this skill to query your Google NotebookLM notebooks directly from Claude Code for source-grounded, citation-backed answers from Gemini.", "agents": ["claude", "codex", "cursor"], "lastUsed": null}, {"name": "punk-cover", "tier": "on-demand", "group": "web-creative", "oss": true, "repo": "github.com/adrianpunk/Punk-Skill", "desc": "Generate cover images and reusable image prompts from the shared Punk style library for articles, Xiaohongshu notes, WeChat public account p", "agents": ["claude", "codex", "cursor"], "lastUsed": 108}, {"name": "punk-avatar", "tier": "on-demand", "group": "web-creative", "oss": true, "repo": "github.com/adrianpunk/Punk-Skill", "desc": "Generate avatar images and reusable avatar image prompts from the shared Punk style library for people, pets, objects, profile pictures, pet", "agents": ["claude", "codex", "cursor"], "lastUsed": null}, {"name": "yao-meta-skill", "tier": "on-demand", "group": "tools", "oss": true, "repo": "github.com/yaojingang/yao-meta-skill", "desc": "Create, refactor, evaluate, and package agent skills from workflows, prompts, transcripts, docs, or notes. Use for skill creation, reusable ", "agents": ["claude", "codex", "cursor"], "lastUsed": 117}], "loadouts": {"web": ["web-design-engineer", "frontend-design", "qr-poster-compositor", "guizang-ppt-skill"], "media": ["image-asset-pipeline", "minimax-tts", "newapi-imagegen", "video-dissection-local"], "jarvis": ["jarvis-class-presentation", "jarvis-daguan-closing-package", "jarvis-daguan-miniapp-smoke", "jarvis-kb-retriever", "jarvis-provenance-check", "jarvis-safe-ingest-guard", "jarvis-source-ingest", "jarvis-wiki-lint", "jarvis-wiki-merge", "jarvis-workbuddy-law-workshop-webpage", "jarvis-workbuddy-legal-ai-workshop-webpage"], "xhs": ["xhs-bounty-image-generator", "xhs-manual-bounty-run"], "workbuddy": ["workbuddy-tencent-esign", "workbuddy-tencent-inventory", "workbuddy-tmeet"], "contracts": ["contract-review", "contract-review-v3"]}, "stats": {"total": 59, "global": 6, "oss": 15, "groups": ["contracts", "jarvis", "lark", "media", "tools", "utils", "web-creative", "workbuddy", "xhs"]}};
+</script>
+<script>
+function icon(n){const I={
+ grid:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>',
+ folder:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h6a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>',
+ refresh:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7M21 4v5h-5"/></svg>',
+ chart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
+ gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.3l2-1.5-2-3.5-2.3 1a7 7 0 0 0-2.3-1.3L13.8 2h-3.6l-.4 2.4a7 7 0 0 0-2.3 1.3l-2.3-1-2 3.5 2 1.5A7 7 0 0 0 5 12c0 .4 0 .9.1 1.3l-2 1.5 2 3.5 2.3-1a7 7 0 0 0 2.3 1.3l.4 2.4h3.6l.4-2.4a7 7 0 0 0 2.3-1.3l2.3 1 2-3.5-2-1.5c.1-.4.1-.9.1-1.3z"/></svg>',
+ plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>'};
+ return I[n]||''}
+// 因为 HTML 里用了 ${icon(..)} 模板写法,先把 nav 重渲染
+document.getElementById('nav').innerHTML=`
+ <a data-v="catalog" class="on">${icon('grid')}<span>技能目录</span><span class="badge">59</span></a>
+ <a data-v="projects">${icon('folder')}<span>项目装配</span></a>
+ <a data-v="updates">${icon('refresh')}<span>更新管理</span><span class="badge" style="background:rgba(251,191,36,.18);color:var(--yellow)">2</span></a>
+ <a data-v="stats">${icon('chart')}<span>用量统计</span></a>
+ <a data-v="settings">${icon('gear')}<span>设置</span></a>`;
+document.getElementById('searchBox').querySelector('svg').outerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>';
+document.getElementById('addBtn').innerHTML=icon('plus')+'<span>安装 skill</span>';
+
+const HUB=window.HUB, GROUPS=HUB.stats.groups;
+const GCOLOR={'tools':'#5E6AD2','utils':'#9CA3AF','web-creative':'#f0a868','media':'#e879a6','jarvis':'#4ade80','workbuddy':'#38bdf8','xhs':'#f87171','contracts':'#a78bfa','lark':'#34d399'};
+const S={view:'catalog',q:'',tier:'all',group:'all',sel:null};
+const TITLES={catalog:['技能目录','浏览、搜索、分层管理全部 skill'],projects:['项目装配','像配技能一样,把 skill 装进项目'],updates:['更新管理','开源 skill 的 upstream 跟踪 · 绿/黄/红 策略'],stats:['用量统计','找出常年不用、可删的冷门 skill'],settings:['设置','hub 路径 · agent 目录 · 通知 · 同步']};
+
+document.getElementById('nav').addEventListener('click',e=>{const a=e.target.closest('a[data-v]');if(!a)return;
+  S.view=a.dataset.v;S.sel=null;closeDetail();
+  [...document.querySelectorAll('.nav a')].forEach(x=>x.classList.toggle('on',x===a));
+  document.getElementById('searchBox').style.display=S.view==='catalog'?'block':'none';
+  document.getElementById('addBtn').style.display=(S.view==='catalog')?'inline-flex':'none';
+  render()});
+document.getElementById('search').addEventListener('input',e=>{S.q=e.target.value.toLowerCase();render()});
+
+function render(){
+  const t=TITLES[S.view];document.getElementById('title').innerHTML=t[0]+' <small>'+t[1]+'</small>';
+  document.getElementById('content').innerHTML=({catalog:catalogView,projects:projectsView,updates:updatesView,stats:statsView,settings:settingsView})[S.view]();
+}
+function tierPill(s){return s.tier==='global'?'<span class="pill global">常驻</span>':'<span class="pill demand">按需</span>'}
+function filtered(){return HUB.skills.filter(s=>
+  (S.tier==='all'||s.tier===S.tier)&&(S.group==='all'||s.group===S.group)&&
+  (!S.q||s.name.toLowerCase().includes(S.q)||(s.desc||'').toLowerCase().includes(S.q)))}
+
+function catalogView(){
+  const groupChips=GROUPS.map(g=>`<span class="chip ${S.group===g?'on':''}" onclick="setGroup('${g}')"><span class="gdot" style="background:${GCOLOR[g]||'#888'};display:inline-block;margin-right:6px"></span>${g}<span class="n">${HUB.skills.filter(x=>x.group===g).length}</span></span>`).join('');
+  const list=filtered();
+  const cards=list.map(s=>`<div class="card ${S.sel===s.name?'sel':''}" onclick="openDetail('${s.name}')">
+    <div class="cname"><span class="gdot" style="background:${GCOLOR[s.group]||'#888'}"></span>${s.name}</div>
+    <div class="cdesc">${esc(s.desc)||'—'}</div>
+    <div class="tags">${tierPill(s)}${s.oss?'<span class="pill oss">OSS</span>':''}${s.lastUsed===null?'<span class="pill cold">未用过</span>':(s.lastUsed>=90?'<span class="pill cold">冷'+s.lastUsed+'天</span>':'')}<span class="gtag">${s.group}</span></div>
+  </div>`).join('');
+  return `<div class="filters">
+    <span class="chip ${S.tier==='all'?'on':''}" onclick="setTier('all')">全部<span class="n">${HUB.skills.length}</span></span>
+    <span class="chip ${S.tier==='global'?'on':''}" onclick="setTier('global')">常驻<span class="n">${HUB.stats.global}</span></span>
+    <span class="chip ${S.tier==='on-demand'?'on':''}" onclick="setTier('on-demand')">按需<span class="n">${HUB.skills.length-HUB.stats.global}</span></span>
+    <span class="sep"></span>
+    <span class="chip ${S.group==='all'?'on':''}" onclick="setGroup('all')">全部分组</span>${groupChips}
+  </div>
+  <div class="grid">${cards||'<div style="color:var(--txt3);padding:40px">没有匹配的 skill</div>'}</div>`;
+}
+function setTier(t){S.tier=t;render()}function setGroup(g){S.group=g;render()}
+
+function openDetail(name){const s=HUB.skills.find(x=>x.name===name);S.sel=name;render();
+  const d=document.getElementById('detail');
+  d.innerHTML=`<div class="dt-head"><div class="x" onclick="closeDetail()">✕</div>
+    <div class="dt-name disp"><span class="gdot" style="background:${GCOLOR[s.group]};display:inline-block;margin-right:8px"></span>${s.name}</div>
+    <div class="tags" style="margin-top:10px">${tierPill(s)}${s.oss?'<span class="pill oss">OSS</span>':''}<span class="gtag" style="margin-left:0">${s.group}</span></div></div>
+   <div class="dt-body">
+     <h4>描述</h4><div class="dt-desc">${esc(s.desc)}</div>
+     <h4>属性</h4>
+     <div class="kv"><span>分层</span><b>${s.tier==='global'?'常驻(global) — 自动软链进各 agent':'按需(on-demand)'}</b></div>
+     <div class="kv"><span>分发 agent</span><b>${(s.agents||[]).join(' · ')}</b></div>
+     ${s.oss?`<div class="kv"><span>upstream</span><b class="mono" style="font-size:11px">${s.repo.replace('github.com/','')}</b></div>`:''}
+     <div class="kv"><span>最近使用</span><b>${s.lastUsed===null?'未用过':s.lastUsed+' 天前'}</b></div>
+     <h4>SKILL.md 预览</h4>
+     <div class="md"><div class="mh"># ${s.name}</div><br>${esc(s.desc)}<br><br><span style="color:var(--txt3)">## 用法 / references 在此渲染…</span></div>
+   </div>
+   <div class="dt-foot">
+     <button class="btn ${s.tier==='global'?'':'pri'}">${s.tier==='global'?'转为按需':'设为常驻'}</button>
+     <button class="btn">装入项目…</button>
+   </div>`;
+  d.classList.add('open');document.getElementById('scrim').classList.add('open');
+}
+function closeDetail(){document.getElementById('detail').classList.remove('open');document.getElementById('scrim').classList.remove('open');if(S.sel){S.sel=null;if(S.view==='catalog')render()}}
+document.getElementById('scrim').addEventListener('click',closeDetail);
+
+function projectsView(){
+  const los=Object.entries(HUB.loadouts).map(([n,m])=>`<div class="lo">
+    <div class="ln">${n}</div><div class="lc">${m.length} 个 skill</div>
+    <div class="members">${m.slice(0,4).map(x=>`<i>${x}</i>`).join('')}${m.length>4?`<i>+${m.length-4}</i>`:''}</div>
+    <button class="btn pri" style="width:100%;justify-content:center">一键装入当前项目</button></div>`).join('');
+  return `<div class="proj-pick"><div class="pp-ic">${icon('folder')}</div>
+     <div style="flex:1"><b>当前项目:<span class="mono" style="font-weight:500"> ~/WorkSpace/jarvis</span></b><p>已装 11 个按需 skill · 软链进 .claude / .codex / .cursor</p></div>
+     <button class="btn">切换项目…</button></div>
+   <div class="recent">最近: <i>jarvis</i><i>seewow</i><i>bbwy-app</i><i>skillhub-desktop</i></div>
+   <div class="section-title">Loadout 预设 <span class="c">选一套,一键装进项目</span></div>
+   <div class="lo-grid">${los}</div>`;
+}
+function updatesView(){
+  const oss=HUB.skills.filter(s=>s.oss);
+  // 示例:给两个标记有更新
+  const upd={'humanizer':['green','有新版本 · 纯提示词增强 → 自动更新'],'guizang-ppt-skill':['yellow','有新版本 · diff 较大 → 待你定夺']};
+  const rows=oss.map(s=>{const u=upd[s.name];const st=u?u[0]:'idle';const tx=u?u[1]:'已是最新';
+    return `<div class="up-row"><span class="st ${st}"></span>
+      <span class="un">${s.name}</span><span class="urepo mono">${s.repo.replace('github.com/','')}</span>
+      <span class="ustat us-${st==='idle'?'idle':(st==='green'?'green':'yellow')}">${tx}</span>
+      ${u?`<button class="btn ${st==='green'?'pri':''}" style="padding:5px 11px">${st==='green'?'更新':'查看 diff'}</button>`:''}</div>`}).join('');
+  return `<div class="note">每周一 10:00 自动检查。<b style="color:var(--green)">green</b> 自动更并提交 · <b style="color:var(--yellow)">yellow</b> 待你定夺 · <b style="color:var(--red)">red</b> 自动拒。结果飞书通知 yihu。</div>
+    <div class="section-title">开源 skill <span class="c">${oss.length} 个跟踪中 · 2 个有更新</span></div>${rows}`;
+}
+function statsView(){
+  const cold=HUB.skills.filter(s=>s.lastUsed===null||s.lastUsed>=90);
+  const used=HUB.skills.filter(s=>s.lastUsed!==null).sort((a,b)=>a.lastUsed-b.lastUsed).slice(0,8);
+  return `<div class="note">用量从 PostToolUse hook 启用起累计;下表为<b>示例数据</b>用于展示界面。</div>
+   <div class="stat-cards">
+    <div class="sc"><div class="v">${HUB.skills.length}</div><div class="l">总 skill</div></div>
+    <div class="sc"><div class="v">${HUB.stats.global}</div><div class="l">常驻 global</div></div>
+    <div class="sc"><div class="v cold">${cold.length}</div><div class="l">冷门(可删)</div></div>
+    <div class="sc"><div class="v">${HUB.stats.oss}</div><div class="l">开源跟踪</div></div></div>
+   <div class="section-title">❄️ 冷门清单 <span class="c">${cold.length} 个 · 90 天未用或从未用过 → 删除候选</span></div>
+   <table class="tbl"><thead><tr><th>Skill</th><th>分组</th><th>最近使用</th><th></th></tr></thead><tbody>
+   ${cold.slice(0,12).map(s=>`<tr><td><span class="gdot" style="background:${GCOLOR[s.group]};display:inline-block;margin-right:8px"></span>${s.name}</td><td style="color:var(--txt3)">${s.group}</td><td style="color:var(--cold)">${s.lastUsed===null?'未用过':s.lastUsed+' 天前'}</td><td><button class="btn" style="padding:4px 10px;font-size:12px">删除</button></td></tr>`).join('')}
+   </tbody></table>`;
+}
+function settingsView(){
+  const sr=(b,p,v,tog)=>`<div class="set-row"><div class="si"><b>${b}</b><p>${p}</p></div>${v?`<span class="sv">${v}</span>`:''}${tog!==undefined?`<div class="toggle ${tog?'on':''}"><i></i></div>`:''}</div>`;
+  return `<div style="max-width:680px">
+   <div class="section-title">仓库与目录</div>
+   ${sr('Hub 路径','单一源 git 仓库','~/skills')}
+   ${sr('GitHub 远端','跨设备同步','ivesyi/skill-hub')}
+   <div class="set-row"><div class="si"><b>分发到 agent</b><p>global skill 软链进这些目录</p></div>
+     <div class="adots"><span class="agent-dot" style="background:var(--accent-soft);color:var(--accent2)">CC</span><span class="agent-dot" style="background:var(--accent-soft);color:var(--accent2)">CX</span><span class="agent-dot" style="background:var(--accent-soft);color:var(--accent2)">CU</span></div></div>
+   <div class="section-title">自动化</div>
+   ${sr('每周自动更新','周一 10:00 · headless claude 按策略判定','launchd',true)}
+   ${sr('飞书通知','更新周报发给 yihu','lark-cli',true)}
+   ${sr('用量统计 hook','记录 skill 实际调用','PostToolUse',true)}
+   <div class="section-title">同步</div>
+   ${sr('改动后自动提交推送','操作后自动 git push','',false)}
+   <div style="margin-top:18px;display:flex;gap:10px"><button class="btn pri">立即 git push</button><button class="btn">新设备复刻(skillctl link)</button></div>
+  </div>`;
+}
+function esc(s){return (s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+render();
+</script>
+</body>
+</html>
