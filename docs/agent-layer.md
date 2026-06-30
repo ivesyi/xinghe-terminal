@@ -38,8 +38,14 @@
 两种都要做(Demo 两种都演),触达强度递进:
 
 - **菜单栏 + 系统通知**(形态②):SkillHub 缩进菜单栏后台常驻,读 CC/Codex 会话,对的时机弹**原生 OS 通知**——用户在 CC 里写代码也能被戳到。点通知→执行。
-- **注入 CC/Codex 会话**(形态③):经 **Claude Code hook** 把一行建议直接注入用户正在用的会话里(建议出现在用户已经在的地方,无需切窗口)。
-  - ⚠️ **可行性待验**:CC hook 能否稳定向活动会话注入提示,是形态③触达的前提。阶段二**先验证再开发**。Codex 侧同理待查。
+- **经 CC 会话冒出建议**(形态③):建议出现在用户正在用的 CC 终端里,无需切窗口。
+  - ✅ **已验证机制(2026-06-30,查 CC 官方 hooks 文档确认)**:CC hook **纯被动、事件驱动**,外部进程**无法**主动 push 进活动会话。可行的近似——**SkillHub 写 pending 文件 + CC hook 事件触发读取**:
+    1. SkillHub 后台检测到重复操作 → 写 `~/.skillhub/pending-suggestion.json`。
+    2. 用户在 CC 里下一次 **Stop / UserPromptSubmit** 触发用户配置的 hook 脚本 → 脚本读 pending 文件 → 返回 `systemMessage`(**用户终端可见**)。
+    3. 用户在下一条 prompt 回 "yes" → hook(UserPromptSubmit)检测到 → 回传 SkillHub 执行萃取。
+  - **关键字段**:`systemMessage`=显示给用户(终端可见);`additionalContext`=注入给模型(用户看不到)。二者可同时返回。
+  - **限制(要诚实)**:不是同步对话框,**无法阻塞等待即时回应**,是"异步提示→用户下一步回应"。对演示无碍(你控制何时触发 Stop);对产品需说明这是异步流。
+  - **Codex 侧未确认**:Codex CLI 是否有等价 hook/注入机制待查;不阻塞——CC 是主演示路径。
 
 ## 与现有 PRD 的冲突点(需决断)
 
@@ -56,7 +62,7 @@
 
 - [ ] 项目装配界面:**✨ AI 推荐 loadout** 按钮 + Pi 读项目→出工作流 loadout(形态①)
 - [ ] 菜单栏常驻 + 后台读 CC/Codex 会话 + 系统通知补刀(形态②)
-- [ ] **先验证** CC hook 注入会话可行性 → 重复操作检测 → 萃取成 skill 入库(形态③)
+- [x] ~~先验证 CC hook 注入会话可行性~~ → **已验证(见触达机制)**:用 pending 文件 + Stop/UserPromptSubmit hook 返回 systemMessage 实现;接下来实现重复操作检测 → 写 pending → hook 提示 → 用户 yes → 萃取成 skill 入库(形态③)
 - [ ] Pi 嵌入:限定工具集 + Loop + 边界(只动 `~/skills` / 授权目录,写操作确认)
 - [ ] `demo-checkpoint` 分支 + 三段成品态 + 兜底录屏
 - [ ] PRD Non-Goal 注澄清(agent 生成 ≠ 在线编辑器)
