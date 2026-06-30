@@ -55,7 +55,7 @@
 
 - **真跳 Pi**:三段各保留一个真环节(①点按钮真读项目 / ②真弹通知 / ③真萃取入库)。
 - **检查点成品态**(`demo-checkpoint` 分支,铁律):① 已推荐好的工作流 loadout、② 已弹出的系统通知态、③ 已注入 CC 的建议 + 已造好的示例 skill。Pi 现场全程翻车也能靠成品态把结果演完。
-- **示例数据**(待换成 Yihu 真实重复操作):② 文档转公众号格式、③ 发票 PDF 转 Excel 台账;确认③的 skill 确实不在 registry。
+- **示例数据(已确认 Yihu 真实工作流)**:整场挂在「用 Claude Code 搭的网站缺图片素材」这个普遍场景上(几乎所有人玩 coding 都会撞上)。① 段一:空网站项目 → ✨推荐 `image-asset-pipeline` + `kimi-webbridge` 素材工作流;② 段二:手动给网站找图调图 → 提示装 `image-asset-pipeline`;③ 段三:反复「`kimi-webbridge` 抓图 + `image-asset-pipeline` 抠透明」→ 萃取成一个**新的合成 skill**(从站点抓图并自动抠透明素材),确认该合成 skill 不在 registry;用它给空网站一把填满素材,**当场从半成品变成品**。
 - 录三段干净跑通做兜底视频;彩排两遍掐表。
 
 ## 阶段二开发清单
