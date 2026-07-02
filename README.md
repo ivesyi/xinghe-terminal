@@ -1,4 +1,6 @@
-# SkillHub Desktop
+# 星核(技能终端)
+
+> 产品名「星核」,原名 SkillHub(GitHub 上 `skillhub-club/skillhub-desktop` 同名已占用,遂扶正星核)。本地目录暂名 skillhub-desktop,release 时仓库改名 `xinghe-terminal`。
 
 跨 AI Agent(Claude Code / Codex / Cursor)的 **Skill 管理桌面应用**。是命令行 skill hub(`~/skills` + `registry.json` + `skillctl`)的图形界面 —— 读写同一份 `registry.json`,与 CLI 完全互通。
 

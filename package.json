@@ -1,5 +1,5 @@
 {
-  "name": "skillhub-desktop",
+  "name": "xinghe-terminal",
   "version": "0.1.0",
   "description": "跨 AI Agent 的 Skill 统一管理桌面应用 — GUI for the ~/skills hub",
   "author": "yihu",
@@ -17,8 +17,8 @@
     "electron-builder": "^25.1.8"
   },
   "build": {
-    "appId": "io.skillhub.desktop",
-    "productName": "SkillHub",
+    "appId": "io.xinghe.terminal",
+    "productName": "星核",
     "directories": {
       "output": "release",
       "buildResources": "build"

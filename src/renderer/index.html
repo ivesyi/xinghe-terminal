@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>SkillHub · 星核终端</title>
+<title>星核 · 技能终端</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Noto+Sans+SC:wght@300;400;500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
@@ -385,7 +385,7 @@ main{flex:1;overflow:hidden;position:relative}
   <header>
     <div class="logo">
       <div class="mark"><div class="core"></div></div>
-      <div><h1>SKILLHUB</h1><div class="sub">星核 · 技能终端</div></div>
+      <div><h1>星核</h1><div class="sub">技能终端</div></div>
     </div>
     <div class="hdr-spacer"></div>
     <div class="hud-readout">
@@ -544,7 +544,7 @@ const isInstalled=n=>S.installed.includes(n);
 
 /* ---- boot ---- */
 async function load(){
-  if(!api){$('inv-grid').innerHTML='<div class="empty">请在 SkillHub 应用内运行(需要主进程提供数据)。</div>';return;}
+  if(!api){$('inv-grid').innerHTML='<div class="empty">请在星核应用内运行(需要主进程提供数据)。</div>';return;}
   CFG=await api.getConfig();
   if(!CFG.hasRegistry)return renderOnboard();
   try{HUB=await api.getData();}catch(e){$('inv-grid').innerHTML='<div class="empty">读取 hub 失败:'+esc(CFG.hubPath)+'</div>';return;}

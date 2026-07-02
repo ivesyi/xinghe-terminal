@@ -1,4 +1,4 @@
-# SkillHub 本地可用 + Release 方案(已拍板,2026-07-02)
+# 星核 本地可用 + Release 方案(已拍板,2026-07-02)
 
 > 目标:① 周日论坛演示(原则二环节)稳定可用;② 讲后发公开 release。
 > **三个决策(Yihu 拍板)**:视觉接 `game-starrail` / release 公开 GitHub / agent 魔法按钮**真做**。
@@ -34,7 +34,7 @@
 
 ### 讲后 | D:公开 Release
 - [ ] electron-builder 打 dmg(mac 优先),tag `v0.1.0`
-- [ ] GitHub 公开仓 + README(截图、安装、和 skillctl 的关系)
+- [ ] GitHub 公开仓 + README(截图、安装、和 skillctl 的关系)。本地目录暂名 skillhub-desktop,release 时仓库改名 xinghe-terminal
 - [ ] 讲完把链接留群里(呼应收尾"清单留群里"+ OPC 生态共建者身份)
 
 ## 风险台账
@@ -47,7 +47,7 @@
 
 ## 讲后路线:吸附模式(Dock Mode,Yihu 2026-07-02 提出)
 
-**需求原意**:SkillHub 应能"吸附"在正在用的工具(如 Warp 终端)旁边,窄条置顶随手可用,
+**需求原意**:星核应能"吸附"在正在用的工具(如 Warp 终端)旁边,窄条置顶随手可用,
 而不是一个要专门切换过去的大窗口——skill 管理是工作流的伴随动作,不是目的地。
 
 - **v1 吸附条**:全局快捷键切换普通窗口 ↔ 吸附条;吸附时窗口收成 ~360px 窄条、
