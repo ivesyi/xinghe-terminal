@@ -1,334 +1,824 @@
 <!DOCTYPE html>
-<html lang="zh" data-theme="dark">
+<html lang="zh-CN">
 <head>
-<meta charset="utf-8">
-<title>SkillHub</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;450;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<title>SkillHub · 星核终端</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Noto+Sans+SC:wght@300;400;500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
+/* token 来源:design/FINAL.md(starrail 定稿),勿私改 */
 :root{
-  --ground:#08090A;--s1:#16171C;--s2:#1E1F25;--s3:#26272E;
-  --hair:rgba(255,255,255,.06);--hair2:rgba(255,255,255,.10);
-  --txt:#F7F8F8;--txt2:#9CA3AF;--txt3:#6B7280;
-  --accent:#5E6AD2;--accent2:#8B93E8;--accent-soft:rgba(94,106,210,.16);
-  --green:#4ade80;--yellow:#fbbf24;--red:#f87171;--cold:#7dd3fc;
-  --green-bg:rgba(74,222,128,.13);--cold-bg:rgba(125,211,252,.12);
-  --r6:6px;--r12:12px;--ease:cubic-bezier(.22,1,.36,1);
+  --bg0:#05060e; --bg1:#0a0e1f; --bg2:#0f1530;
+  --cyan:#5ff7ff; --cyan-d:#1aa6c7; --azure:#3a9bff;
+  --violet:#a88bff; --violet-d:#7a5cff; --magenta:#ff6fd8;
+  --gold:#ffd27a; --gold-d:#f5a623;
+  --ok:#7cffb2; --warn:#ffd27a; --lock:#8b95c9;
+  --ink:#eaf2ff; --ink-dim:#9fb0d8; --ink-faint:#5d6da0;
+  --line:rgba(120,160,255,.16); --line-bright:rgba(120,200,255,.4);
+  --panel:rgba(13,20,46,.66);
+  --src-github:#6fe3ff; --src-self:#ffb85c; --src-web:#9b8bff;
+  --glow-c:0 0 18px rgba(95,247,255,.55);
 }
-[data-theme="light"]{
-  --ground:#f6f7f9;--s1:#ffffff;--s2:#f1f2f5;--s3:#e7e9ee;
-  --hair:rgba(0,0,0,.08);--hair2:rgba(0,0,0,.13);
-  --txt:#1a1b1e;--txt2:#596070;--txt3:#8b909c;
-  --accent:#5E6AD2;--accent2:#5E6AD2;--accent-soft:rgba(94,106,210,.12);
-  --green:#16a34a;--cold:#0284c7;--green-bg:rgba(22,163,74,.10);--cold-bg:rgba(2,132,199,.10);
-}
-*{box-sizing:border-box;margin:0;padding:0}html,body{height:100%}
-body{background:var(--ground);color:var(--txt);font:14px/1.55 'Inter',-apple-system,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
-.mono{font-family:'JetBrains Mono',monospace}.disp{font-family:'Inter Tight',sans-serif;letter-spacing:-.02em}
-::-webkit-scrollbar{width:9px;height:9px}::-webkit-scrollbar-thumb{background:var(--s3);border-radius:6px}::-webkit-scrollbar-track{background:transparent}
-.win{height:100vh;display:flex;flex-direction:column}
-.titlebar{height:38px;flex:none;display:flex;align-items:center;gap:8px;padding:0 14px 0 86px;background:var(--ground);border-bottom:1px solid var(--hair);-webkit-app-region:drag;user-select:none}
-.tb-title{font-size:12.5px;color:var(--txt3);font-weight:500}
-.tb-right{margin-left:auto;display:flex;align-items:center;gap:10px;-webkit-app-region:no-drag}
-.iconbtn{width:28px;height:28px;border-radius:7px;display:grid;place-items:center;color:var(--txt2);cursor:pointer;border:1px solid transparent}
-.iconbtn:hover{background:var(--s2);color:var(--txt)}.iconbtn svg{width:16px;height:16px}
-.body{flex:1;display:flex;min-height:0}
-.side{width:212px;flex:none;background:var(--ground);border-right:1px solid var(--hair);display:flex;flex-direction:column;padding:14px 10px}
-.brand{display:flex;align-items:center;gap:10px;padding:4px 8px 16px}
-.logo{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--accent),#3b45a8);display:grid;place-items:center}.logo svg{width:15px;height:15px}
-.brand b{font-size:15px;font-weight:600}
-.nav{display:flex;flex-direction:column;gap:2px}
-.nav a{display:flex;align-items:center;gap:11px;padding:8px 9px;border-radius:var(--r6);color:var(--txt2);cursor:pointer;font-size:13.5px;font-weight:450;transition:.13s var(--ease)}
-.nav a svg{width:17px;height:17px;flex:none;opacity:.85}
-.nav a:hover{background:var(--s1);color:var(--txt)}
-.nav a.on{background:var(--accent-soft);color:var(--txt)}.nav a.on svg{opacity:1;color:var(--accent2)}
-.nav .badge{margin-left:auto;font-size:11px;background:var(--s2);color:var(--txt2);padding:1px 7px;border-radius:20px}
-.side-foot{margin-top:auto;padding-top:10px;border-top:1px solid var(--hair);font-size:11.5px;color:var(--txt3);display:flex;justify-content:space-between;padding:10px 9px 2px}
-.side-foot b{color:var(--txt)}
-.main{flex:1;min-width:0;display:flex;flex-direction:column;background:var(--ground)}
-.topbar{flex:none;padding:18px 26px 14px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--hair)}
-.h1{font-size:19px;font-weight:600}.h1 small{font-size:12.5px;color:var(--txt3);font-weight:400;margin-left:9px}
-.search{margin-left:auto;position:relative;width:240px}
-.search input{width:100%;background:var(--s1);border:1px solid var(--hair);border-radius:var(--r6);color:var(--txt);padding:7px 11px 7px 31px;font-size:13px;outline:none;transition:.13s}
-.search input:focus{border-color:var(--accent);background:var(--s2)}
-.search svg{position:absolute;left:9px;top:8px;width:15px;height:15px;color:var(--txt3)}
-.btn{background:var(--s2);border:1px solid var(--hair2);color:var(--txt);padding:7px 13px;border-radius:var(--r6);font-size:13px;font-weight:500;cursor:pointer;transition:.13s;display:inline-flex;align-items:center;gap:7px;white-space:nowrap;flex:none;line-height:1}
-.btn svg{width:15px;height:15px;flex:none}
-.btn:hover{background:var(--s3)}.btn.pri{background:var(--accent);border-color:transparent;color:#fff}.btn.pri:hover{background:#6d78d8}
-.btn.sm{padding:4px 10px;font-size:12px}
-.content{flex:1;overflow:auto;padding:18px 26px 40px}
-.filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px;align-items:center}
-.chip{font-size:12.5px;color:var(--txt2);background:var(--s1);border:1px solid var(--hair);padding:5px 11px;border-radius:20px;cursor:pointer;transition:.12s;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
-.chip:hover{color:var(--txt);border-color:var(--hair2)}.chip.on{background:var(--accent-soft);color:var(--txt);border-color:transparent}
-.chip .n{color:var(--txt3);font-size:11px}.gdot{width:7px;height:7px;border-radius:50%;flex:none}
-.sep{width:1px;height:16px;background:var(--hair);margin:0 4px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:12px}
-.card{background:var(--s1);border:1px solid var(--hair);border-radius:var(--r12);padding:14px 15px;cursor:pointer;transition:.15s var(--ease)}
-.card:hover{border-color:var(--hair2);background:var(--s2);transform:translateY(-1px)}.card.sel{border-color:var(--accent)}
-.cname{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;margin-bottom:3px}
-.cdesc{font-size:12.5px;color:var(--txt2);line-height:1.5;height:38px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;margin:6px 0 11px}
-.tags{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-.pill{font-size:10.5px;font-weight:500;padding:2px 8px;border-radius:5px}
-.pill.global{background:var(--green-bg);color:var(--green)}.pill.demand{background:var(--s3);color:var(--txt2)}
-.pill.oss{background:var(--accent-soft);color:var(--accent2)}.pill.cold{background:var(--cold-bg);color:var(--cold)}
-.pill.upd{background:var(--accent-soft);color:var(--accent2)}.pill.port{background:var(--cold-bg);color:var(--cold)}.pill.local{background:var(--s3);color:var(--txt3)}.pill.ext{background:var(--cold-bg);color:var(--cold)}
-.gtag{font-size:11px;color:var(--txt3);margin-left:auto}
-.detail{position:fixed;top:38px;right:0;bottom:0;width:380px;background:var(--s1);border-left:1px solid var(--hair2);transform:translateX(100%);transition:.32s var(--ease);z-index:20;display:flex;flex-direction:column}
-.detail.open{transform:none;box-shadow:-8px 0 40px rgba(0,0,0,.3)}
-.dt-head{padding:20px 22px 16px;border-bottom:1px solid var(--hair);position:relative}
-.dt-head .x{position:absolute;right:16px;top:16px;width:26px;height:26px;border-radius:6px;display:grid;place-items:center;color:var(--txt3);cursor:pointer}.dt-head .x:hover{background:var(--s3);color:var(--txt)}
-.dt-name{font-size:18px;font-weight:600}
-.dt-body{flex:1;overflow:auto;padding:18px 22px}
-.dt-body h4{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--txt3);margin:18px 0 8px;font-weight:600}.dt-body h4:first-child{margin-top:0}
-.kv{display:flex;justify-content:space-between;font-size:12.5px;padding:5px 0;border-bottom:1px solid var(--hair)}.kv span{color:var(--txt3)}
-.md{background:var(--ground);border:1px solid var(--hair);border-radius:var(--r6);padding:12px;font-size:12px;color:var(--txt2);line-height:1.6;max-height:200px;overflow:auto;white-space:pre-wrap}
-.dt-foot{flex:none;padding:14px 22px;border-top:1px solid var(--hair);display:flex;gap:9px}.dt-foot .btn{flex:1;justify-content:center}
-.scrim{position:fixed;inset:38px 0 0 0;background:rgba(0,0,0,.3);opacity:0;pointer-events:none;transition:.3s;z-index:15}.scrim.open{opacity:1;pointer-events:auto}
-.section-title{font-size:13px;font-weight:600;margin:22px 0 12px;display:flex;align-items:center;gap:9px}.section-title:first-child{margin-top:0}.section-title .c{font-size:11.5px;color:var(--txt3);font-weight:400}
-/* 项目 */
-.proj-bar{background:var(--s1);border:1px solid var(--hair);border-radius:var(--r12);padding:14px 16px;display:flex;align-items:center;gap:14px;margin-bottom:8px}
-.proj-bar .pp-ic{width:36px;height:36px;border-radius:9px;background:var(--s3);display:grid;place-items:center;color:var(--txt2)}
-.proj-bar b{font-size:14px}.proj-bar p{font-size:12px;color:var(--txt3);margin-top:2px}
-.recent{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin:6px 0 4px}.recent .lbl{font-size:12px;color:var(--txt3)}
-.recent i{font-style:normal;font-size:12.5px;color:var(--txt2);background:var(--s1);border:1px solid var(--hair);padding:5px 11px;border-radius:6px;cursor:pointer}.recent i:hover{border-color:var(--accent);color:var(--txt)}.recent i.on{background:var(--accent-soft);color:var(--txt);border-color:var(--accent)}
-.addlist{display:flex;flex-direction:column;gap:1px}
-.addrow{display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:var(--r6);transition:.1s}.addrow:hover{background:var(--s1)}
-.addrow .an{font-size:13.5px;font-weight:500}.addrow .ad{font-size:12px;color:var(--txt3);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.add-tog{width:24px;height:24px;border-radius:6px;border:1px solid var(--hair2);display:grid;place-items:center;cursor:pointer;color:var(--txt2);flex:none}
-.add-tog:hover{border-color:var(--accent);color:var(--accent2)}.add-tog.on{background:var(--accent);border-color:var(--accent);color:#fff}
-.lochips{display:flex;gap:7px;flex-wrap:wrap}.lochip{font-size:12px;background:var(--s1);border:1px solid var(--hair);border-radius:20px;padding:5px 12px;cursor:pointer;color:var(--txt2)}.lochip:hover{border-color:var(--accent);color:var(--txt)}.lochip b{color:var(--txt);font-weight:600;text-transform:capitalize}.lochip span{color:var(--txt3);margin-left:4px}
-/* 更新 */
-.up-row{display:flex;align-items:center;gap:14px;padding:13px 15px;background:var(--s1);border:1px solid var(--hair);border-radius:var(--r12);margin-bottom:9px}
-.st{width:9px;height:9px;border-radius:50%;flex:none}.st.green{background:var(--green)}.st.yellow{background:var(--yellow)}.st.idle{background:var(--s3)}
-.up-row .un{font-size:13.5px;font-weight:500;min-width:170px}.up-row .urepo{font-size:11.5px;color:var(--txt3);flex:1}.up-row .ustat{font-size:11.5px;font-weight:500}.us-green{color:var(--green)}.us-yellow{color:var(--yellow)}.us-idle{color:var(--txt3)}
-.note{font-size:11.5px;color:var(--txt3);background:var(--s1);border:1px solid var(--hair);border-radius:var(--r6);padding:8px 12px;margin-bottom:14px}
-/* 统计 */
-.stat-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:6px}
-.sc{background:var(--s1);border:1px solid var(--hair);border-radius:var(--r12);padding:16px}.sc .v{font-size:26px;font-weight:600;font-family:'Inter Tight'}.sc .l{font-size:12px;color:var(--txt3);margin-top:3px}.sc .v.cold{color:var(--cold)}
-.tbl{width:100%;border-collapse:collapse;margin-top:6px}.tbl th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--txt3);font-weight:600;padding:8px 12px;border-bottom:1px solid var(--hair)}.tbl td{padding:9px 12px;font-size:13px;border-bottom:1px solid var(--hair)}.tbl tr:hover td{background:var(--s1)}
-/* 设置 */
-.set-row{display:flex;align-items:center;gap:16px;padding:15px 2px;border-bottom:1px solid var(--hair)}.set-row .si{flex:1}.set-row .si b{font-size:13.5px;font-weight:500}.set-row .si p{font-size:12px;color:var(--txt3);margin-top:2px}.set-row .sv{font-size:12.5px;color:var(--txt2);font-family:'JetBrains Mono'}
-.toggle{width:38px;height:22px;border-radius:20px;background:var(--s3);position:relative;cursor:pointer;flex:none;transition:.15s}.toggle.on{background:var(--accent)}.toggle i{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.18s var(--ease)}.toggle.on i{left:18px}
-.empty{color:var(--txt3);padding:48px;text-align:center}
-.btn.danger{background:transparent;border-color:rgba(248,113,113,.4);color:var(--red)}.btn.danger:hover{background:rgba(248,113,113,.12)}
-.us-update{color:var(--yellow)}.us-ok{color:var(--green)}.us-err{color:var(--red)}
-.gsec{margin-top:16px;border-top:1px solid var(--hair);padding-top:6px}.gsec summary{cursor:pointer;font-size:12.5px;color:var(--txt3);padding:8px 0;list-style:none}.gsec summary::-webkit-details-marker{display:none}.gsec summary:hover{color:var(--txt2)}
-.inrow{display:flex;gap:8px;align-items:center;margin-top:8px}.inp{flex:1;background:var(--s1);border:1px solid var(--hair2);border-radius:var(--r6);color:var(--txt);padding:7px 11px;font-size:12.5px;font-family:'JetBrains Mono';outline:none}.inp:focus{border-color:var(--accent)}
-.onboard{max-width:540px;margin:14px auto;text-align:center}.onboard h2{font-size:19px;margin-bottom:8px}.onboard>p{font-size:13px;color:var(--txt3);margin-bottom:18px}.card2{background:var(--s1);border:1px solid var(--hair);border-radius:var(--r12);padding:18px;text-align:left;margin-bottom:12px}.card2>b{font-size:14px}.card2>p{font-size:12.5px;color:var(--txt3);margin:6px 0 12px}
-.rm{width:24px;height:24px;border-radius:6px;border:1px solid var(--hair2);display:grid;place-items:center;cursor:pointer;color:var(--txt2);flex:none}.rm:hover{border-color:var(--red);color:var(--red)}.rm svg{width:14px;height:14px}
-.actbtn{font-size:11.5px;padding:3px 9px;border-radius:5px;border:1px solid var(--hair2);background:transparent;color:var(--txt2);cursor:pointer;margin-left:6px}.actbtn:hover{border-color:var(--accent);color:var(--accent2)}.actbtn.danger:hover{border-color:var(--red);color:var(--red)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Noto Sans SC',system-ui,sans-serif;color:var(--ink);background:var(--bg0);
+  overflow:hidden;-webkit-font-smoothing:antialiased;letter-spacing:.2px;user-select:none}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+/* ---------- ambient backdrop ---------- */
+.stage{position:fixed;inset:0;overflow:hidden;z-index:0}
+.bg-grad{position:absolute;inset:-20%;
+  background:
+   radial-gradient(60% 50% at 18% 12%, rgba(58,155,255,.22), transparent 60%),
+   radial-gradient(55% 55% at 86% 18%, rgba(168,139,255,.20), transparent 60%),
+   radial-gradient(70% 60% at 50% 110%, rgba(26,166,199,.18), transparent 60%),
+   linear-gradient(160deg,#05060e,#0a0e1f 45%,#080a18);
+  animation:drift 26s ease-in-out infinite alternate;}
+@keyframes drift{0%{transform:translate(0,0) scale(1)}100%{transform:translate(-3%,-2%) scale(1.06)}}
+.bg-grid{position:absolute;inset:0;opacity:.5;
+  background-image:linear-gradient(rgba(95,160,255,.06) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(95,160,255,.06) 1px,transparent 1px);
+  background-size:46px 46px;
+  mask:radial-gradient(120% 90% at 50% 30%,#000 30%,transparent 85%);
+  animation:gridpan 40s linear infinite;}
+@keyframes gridpan{0%{background-position:0 0}100%{background-position:46px 92px}}
+.bg-scan{position:absolute;inset:0;pointer-events:none;mix-blend-mode:overlay;opacity:.5;
+  background:repeating-linear-gradient(0deg,rgba(120,200,255,.05) 0 1px,transparent 1px 3px);
+  animation:scanmove 8s linear infinite;}
+@keyframes scanmove{0%{background-position:0 0}100%{background-position:0 120px}}
+.bg-beam{position:absolute;left:0;right:0;height:160px;top:-160px;pointer-events:none;
+  background:linear-gradient(180deg,transparent,rgba(95,247,255,.10),transparent);
+  animation:beam 9s linear infinite;}
+@keyframes beam{0%{top:-160px}100%{top:120%}}
+.particles{position:absolute;inset:0;pointer-events:none}
+.particles i{position:absolute;width:3px;height:3px;border-radius:50%;
+  background:var(--cyan);box-shadow:var(--glow-c);opacity:.0;animation:rise linear infinite;}
+@keyframes rise{0%{transform:translateY(0);opacity:0}10%{opacity:.9}90%{opacity:.5}100%{transform:translateY(-120vh);opacity:0}}
+.vig{position:absolute;inset:0;pointer-events:none;
+  box-shadow:inset 0 0 220px rgba(0,0,0,.85), inset 0 0 60px rgba(0,0,0,.6);}
+/* ---------- shell ---------- */
+.app{position:relative;z-index:2;height:100%;display:flex;flex-direction:column}
+header{display:flex;align-items:center;gap:18px;padding:14px 26px 12px 86px;
+  border-bottom:1px solid var(--line);-webkit-app-region:drag;
+  background:linear-gradient(180deg,rgba(10,16,38,.7),rgba(10,16,38,.15));backdrop-filter:blur(8px);}
+.logo{display:flex;align-items:center;gap:13px}
+.logo .mark{width:40px;height:40px;position:relative;flex:0 0 auto}
+.logo .mark::before,.logo .mark::after{content:"";position:absolute;inset:0;
+  border:1.5px solid var(--cyan);transform:rotate(45deg);border-radius:6px;
+  box-shadow:0 0 14px rgba(95,247,255,.6),inset 0 0 10px rgba(95,247,255,.3);}
+.logo .mark::after{inset:9px;border-color:var(--violet);box-shadow:0 0 10px rgba(168,139,255,.7);
+  animation:spin 7s linear infinite;}
+@keyframes spin{to{transform:rotate(405deg)}}
+.logo .core{position:absolute;inset:16px;border-radius:50%;background:var(--cyan);
+  box-shadow:0 0 16px var(--cyan);animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.6;transform:scale(.8)}50%{opacity:1;transform:scale(1.15)}}
+.logo h1{font-family:'Orbitron',sans-serif;font-size:21px;font-weight:900;letter-spacing:3px;
+  background:linear-gradient(90deg,#fff,var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
+.logo .sub{font-family:'Rajdhani';font-size:11px;letter-spacing:5px;color:var(--ink-faint);margin-top:1px}
+.hdr-spacer{flex:1}
+.hud-readout{display:flex;gap:18px;align-items:center;-webkit-app-region:no-drag}
+.stat-chip{position:relative;padding:7px 15px 7px 14px;min-width:78px;
+  background:linear-gradient(180deg,rgba(20,30,64,.6),rgba(12,18,40,.5));
+  border:1px solid var(--line);clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);}
+.stat-chip b{display:block;font-family:'Orbitron';font-size:18px;color:var(--cyan);line-height:1;text-shadow:0 0 12px rgba(95,247,255,.5)}
+.stat-chip span{font-size:10px;letter-spacing:2px;color:var(--ink-faint);text-transform:uppercase}
+.stat-chip.v b{color:var(--gold);text-shadow:0 0 12px rgba(245,166,35,.5)}
+.stat-chip.g b{color:var(--lock);text-shadow:0 0 12px rgba(139,149,201,.5)}
+.commander{display:flex;align-items:center;gap:10px;padding-left:6px}
+.commander .av{width:38px;height:38px;border-radius:11px;flex:0 0 auto;
+  background:conic-gradient(from 0deg,var(--cyan),var(--violet),var(--magenta),var(--cyan));
+  padding:2px;animation:spin 12s linear infinite}
+.commander .av i{display:block;width:100%;height:100%;border-radius:9px;
+  background:radial-gradient(circle at 35% 30%,#1a2350,#0a0e1f);display:grid;place-items:center;font-size:17px;font-style:normal}
+.commander .nm{font-size:12px;font-weight:700;color:var(--ink)}
+.commander .lv{font-family:'Rajdhani';font-size:11px;color:var(--gold);letter-spacing:1px}
+/* nav tabs */
+nav{display:flex;gap:6px;padding:10px 22px 0;border-bottom:1px solid var(--line);background:rgba(8,12,28,.4)}
+.tab{position:relative;font-family:'Rajdhani';font-weight:700;font-size:14px;letter-spacing:2px;
+  color:var(--ink-dim);padding:11px 22px 13px;cursor:pointer;border:none;background:none;
+  clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%);transition:.25s;display:flex;gap:8px;align-items:center}
+.tab em{font-style:normal;font-size:15px;opacity:.85}
+.tab .cn{font-family:'Noto Sans SC';font-weight:700}
+.tab:hover{color:var(--ink)}
+.tab.active{color:#04121b;background:linear-gradient(180deg,var(--cyan),var(--cyan-d));
+  box-shadow:0 0 22px rgba(95,247,255,.4),0 6px 18px rgba(0,0,0,.4)}
+.tab .badge{font-family:'Orbitron';font-size:10px;background:rgba(0,0,0,.25);padding:1px 6px;border-radius:8px}
+.tab:not(.active) .badge{background:rgba(120,160,255,.12);color:var(--cyan)}
+main{flex:1;overflow:hidden;position:relative}
+.screen{position:absolute;inset:0;overflow-y:auto;padding:22px 26px 40px;
+  opacity:0;pointer-events:none;transform:translateY(10px);transition:.4s cubic-bezier(.2,.8,.2,1)}
+.screen.show{opacity:1;pointer-events:auto;transform:none}
+.screen::-webkit-scrollbar{width:9px}
+.screen::-webkit-scrollbar-thumb{background:linear-gradient(var(--cyan-d),var(--violet-d));border-radius:8px}
+.screen::-webkit-scrollbar-track{background:rgba(255,255,255,.03)}
+/* section title */
+.sec-h{display:flex;align-items:center;gap:12px;margin:6px 0 16px}
+.sec-h h2{font-family:'Orbitron';font-size:16px;letter-spacing:3px;color:var(--ink);text-transform:uppercase}
+.sec-h .cn{font-size:13px;color:var(--ink-faint);letter-spacing:3px;font-weight:500}
+.sec-h .ln{flex:1;height:1px;background:linear-gradient(90deg,var(--line-bright),transparent)}
+.sec-h .tag{font-family:'Rajdhani';font-size:12px;color:var(--cyan);border:1px solid var(--line);padding:3px 10px;
+  letter-spacing:1px;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+/* ============ INVENTORY ============ */
+.toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:14px}
+.search{position:relative;flex:1;min-width:220px;max-width:360px}
+.search input{width:100%;background:rgba(10,16,38,.7);border:1px solid var(--line);color:var(--ink);
+  font-family:'Noto Sans SC';font-size:13px;padding:10px 14px 10px 38px;outline:none;
+  clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%);transition:.25s}
+.search input:focus{border-color:var(--cyan);box-shadow:0 0 18px rgba(95,247,255,.25)}
+.search input::placeholder{color:var(--ink-faint)}
+.search .ico{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--cyan);font-size:14px}
+.filters{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.fl-label{font-family:'Rajdhani';font-size:11px;letter-spacing:2px;color:var(--ink-faint);margin-right:2px}
+.chip{font-size:12px;font-weight:500;padding:7px 13px;cursor:pointer;color:var(--ink-dim);
+  background:rgba(16,24,52,.6);border:1px solid var(--line);transition:.2s;
+  clip-path:polygon(9px 0,100% 0,calc(100% - 9px) 100%,0 100%);display:flex;gap:6px;align-items:center;white-space:nowrap}
+.chip:hover{color:var(--ink);border-color:var(--line-bright);transform:translateY(-1px)}
+.chip.on{color:#04121b;background:linear-gradient(180deg,var(--cyan),var(--cyan-d));border-color:transparent;
+  box-shadow:0 0 16px rgba(95,247,255,.35)}
+.chip.on.src-self{background:linear-gradient(180deg,var(--gold),var(--gold-d))}
+.chip.on.src-github{background:linear-gradient(180deg,#7fe9ff,#2b9fd6)}
+.chip.on.src-web{background:linear-gradient(180deg,#b9aaff,var(--violet-d));color:#fff}
+.chip .dot{width:8px;height:8px;border-radius:2px;transform:rotate(45deg)}
+.proj-hint{font-size:11.5px;color:var(--ink-faint);display:flex;gap:6px;align-items:center;cursor:pointer;
+  border:1px dashed var(--line);padding:6px 12px}
+.proj-hint b{color:var(--gold);font-weight:700;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.proj-hint:hover{border-color:var(--gold)}
+.legend{display:flex;gap:18px;flex-wrap:wrap;margin:2px 0 16px;font-size:11px;color:var(--ink-faint)}
+.legend span{display:flex;gap:6px;align-items:center}
+.legend .dot{width:9px;height:9px;border-radius:2px;transform:rotate(45deg)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(176px,1fr));gap:14px}
+.card{position:relative;cursor:pointer;padding:15px 14px 13px;min-height:168px;
+  background:linear-gradient(165deg,rgba(20,30,66,.72),rgba(10,15,36,.82));
+  border:1px solid var(--line);
+  clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px));
+  transition:transform .22s cubic-bezier(.2,.9,.2,1),box-shadow .22s,border-color .22s;
+  overflow:hidden;display:flex;flex-direction:column}
+.card::before{content:"";position:absolute;inset:0;opacity:.0;transition:.3s;
+  background:radial-gradient(120% 80% at 50% -10%,var(--acc,rgba(95,247,255,.5)),transparent 60%);mix-blend-mode:screen}
+.card::after{content:"";position:absolute;left:0;top:0;width:3px;height:100%;background:var(--acc,var(--cyan));
+  box-shadow:0 0 14px var(--acc,var(--cyan));opacity:.85}
+.card:hover{transform:translateY(-6px) scale(1.015);border-color:var(--line-bright);
+  box-shadow:0 16px 38px rgba(0,0,0,.55),0 0 26px -4px var(--acc,rgba(95,247,255,.4))}
+.card:hover::before{opacity:.16}
+.card.rare5{border-color:rgba(245,166,35,.4)}
+.card .top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.card .emo{width:42px;height:42px;display:grid;place-items:center;font-size:22px;flex:0 0 auto;
+  background:radial-gradient(circle at 40% 35%,rgba(255,255,255,.1),rgba(0,0,0,.25));
+  border:1px solid var(--line);transform:rotate(45deg);border-radius:11px}
+.card .emo b{transform:rotate(-45deg);font-style:normal}
+.card .src-tag{font-family:'Rajdhani';font-size:9.5px;font-weight:700;letter-spacing:1px;padding:3px 7px;
+  border-radius:3px;white-space:nowrap;border:1px solid currentColor;line-height:1}
+.src-github{color:var(--src-github)}.src-self{color:var(--src-self)}.src-web{color:var(--src-web)}
+.card .nm{font-size:13.5px;font-weight:700;color:var(--ink);margin-top:11px;line-height:1.3;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-all}
+.card .grp{font-size:10.5px;color:var(--ink-faint);margin-top:3px;letter-spacing:.5px}
+.card .stars{font-size:10px;letter-spacing:2px;margin-top:6px}
+.stars.s5{color:var(--gold);text-shadow:0 0 8px rgba(245,166,35,.6)}
+.stars.s4{color:var(--violet)}
+.card .badges{display:flex;gap:5px;margin-top:7px;min-height:16px;flex-wrap:wrap}
+.mini{font-size:9px;font-weight:700;letter-spacing:.5px;padding:2px 6px;border-radius:3px}
+.mini.eq{background:linear-gradient(90deg,var(--ok),#3fd98a);color:#04231a;box-shadow:0 0 12px rgba(124,255,178,.5)}
+.mini.res{background:linear-gradient(90deg,var(--gold),var(--gold-d));color:#241500}
+.mini.lock{background:rgba(139,149,201,.18);color:var(--lock);border:1px solid rgba(139,149,201,.4)}
+.card .foot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:6px;padding-top:9px}
+.lvbar{flex:1;height:5px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;position:relative}
+.lvbar i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--cyan),var(--violet));box-shadow:0 0 8px rgba(95,247,255,.6)}
+.lvtxt{font-family:'Orbitron';font-size:9.5px;color:var(--ink-dim);letter-spacing:.5px;white-space:nowrap}
+.card.external{border-style:dashed;border-color:rgba(139,149,201,.32)}
+.card.external::after{background:var(--lock);box-shadow:0 0 10px var(--lock);opacity:.6}
+.empty{grid-column:1/-1;text-align:center;padding:60px 0;color:var(--ink-faint);font-size:13px}
+/* ============ EQUIP ============ */
+.proj-bar{display:flex;align-items:center;gap:14px;padding:16px 18px;margin-bottom:12px;
+  background:linear-gradient(160deg,rgba(22,32,70,.7),rgba(10,15,36,.8));border:1px solid var(--line);
+  clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px))}
+.proj-bar .pico{font-size:26px}
+.proj-bar .pinfo{flex:1;min-width:0}
+.proj-bar .pinfo b{font-size:14px;color:var(--ink);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.proj-bar .pinfo p{font-size:11.5px;color:var(--ink-faint);margin-top:3px}
+.proj-btn{font-family:'Rajdhani';font-weight:700;letter-spacing:2px;font-size:13px;color:#04121b;
+  background:linear-gradient(180deg,var(--gold),var(--gold-d));border:none;cursor:pointer;
+  padding:9px 20px;clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%);
+  box-shadow:0 0 20px rgba(245,166,35,.4);transition:.2s;display:flex;gap:8px;align-items:center;flex:0 0 auto}
+.proj-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(245,166,35,.6)}
+.recent{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin:0 0 20px}
+.recent .lbl{font-family:'Rajdhani';font-size:11px;letter-spacing:2px;color:var(--ink-faint)}
+.equip-deck{position:relative;padding:26px 22px 30px;
+  background:linear-gradient(180deg,rgba(16,24,54,.5),rgba(8,12,30,.4));
+  border:1px solid var(--line);
+  clip-path:polygon(0 0,calc(100% - 22px) 0,100% 22px,100% 100%,22px 100%,0 calc(100% - 22px))}
+.equip-deck::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(90deg,transparent 0 38px,rgba(95,160,255,.04) 38px 39px)}
+.slots{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;position:relative;z-index:1}
+.slot{position:relative;width:128px;height:148px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;transition:.3s}
+.slot .hex{position:absolute;inset:0;
+  clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);
+  background:linear-gradient(165deg,rgba(24,36,78,.85),rgba(10,16,38,.9));
+  border:1px solid var(--line-bright);transition:.3s}
+.slot::after{content:"";position:absolute;inset:0;
+  clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);
+  box-shadow:inset 0 0 22px rgba(95,247,255,.18);pointer-events:none}
+.slot.filled .hex{border-color:var(--cyan);box-shadow:0 0 26px -2px rgba(95,247,255,.5),inset 0 0 24px rgba(95,247,255,.12);
+  background:linear-gradient(165deg,rgba(30,52,98,.92),rgba(12,22,52,.92))}
+.slot:hover{transform:translateY(-5px)}
+.slot:hover .hex{border-color:var(--cyan);box-shadow:0 0 30px rgba(95,247,255,.6)}
+.slot .s-emo{position:relative;z-index:1;font-size:30px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.6))}
+.slot .s-nm{position:relative;z-index:1;font-size:10.5px;font-weight:700;color:var(--ink);text-align:center;
+  padding:0 8px;line-height:1.2;max-width:108px;word-break:break-all;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.slot .s-idx{position:absolute;top:8px;left:50%;transform:translateX(-50%);font-family:'Orbitron';
+  font-size:9px;color:var(--cyan);z-index:1;letter-spacing:1px}
+.slot.empty-slot .s-emo{opacity:.25}
+.slot.empty-slot .hex{border-style:dashed;animation:emptypulse 2.6s ease-in-out infinite}
+@keyframes emptypulse{0%,100%{border-color:rgba(120,160,255,.25)}50%{border-color:rgba(120,160,255,.55)}}
+.slot.empty-slot .s-nm{color:var(--ink-faint)}
+.slot.pop{animation:equippop .55s cubic-bezier(.2,1.4,.4,1)}
+@keyframes equippop{0%{transform:scale(.6);opacity:0}55%{transform:scale(1.12)}100%{transform:scale(1)}}
+.deck-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px}
+.deck-meta .cap{font-family:'Rajdhani';font-size:12px;color:var(--ink-faint);letter-spacing:2px}
+.deck-meta .cap b{color:var(--cyan);font-family:'Orbitron';font-size:14px}
+/* loadouts */
+.loadouts{display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:14px}
+.lo-card{position:relative;padding:16px 16px 14px;overflow:hidden;
+  background:linear-gradient(160deg,rgba(22,32,70,.7),rgba(10,15,36,.8));border:1px solid var(--line);
+  clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px));transition:.25s}
+.lo-card:hover{transform:translateY(-4px);border-color:var(--line-bright);box-shadow:0 14px 34px rgba(0,0,0,.5),0 0 24px -6px var(--acc)}
+.lo-card::after{content:"";position:absolute;left:0;top:0;width:100%;height:3px;background:var(--acc);box-shadow:0 0 12px var(--acc)}
+.lo-top{display:flex;align-items:center;gap:11px;margin-bottom:12px}
+.lo-emo{width:40px;height:40px;display:grid;place-items:center;font-size:21px;transform:rotate(45deg);
+  border:1px solid var(--line);border-radius:10px;background:rgba(0,0,0,.25)}
+.lo-emo b{transform:rotate(-45deg);font-style:normal}
+.lo-name{font-size:15px;font-weight:700;color:var(--ink)}
+.lo-name .en{font-family:'Rajdhani';font-size:11px;color:var(--ink-faint);letter-spacing:2px;display:block}
+.lo-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px;min-height:46px}
+.lo-chips span{font-size:10px;color:var(--ink-dim);background:rgba(95,160,255,.08);border:1px solid var(--line);
+  padding:3px 7px;border-radius:4px}
+.lo-chips .more{color:var(--cyan)}
+.lo-equip{width:100%;font-family:'Rajdhani';font-weight:700;letter-spacing:2px;font-size:12px;cursor:pointer;
+  color:var(--cyan);background:rgba(95,247,255,.08);border:1px solid var(--cyan);padding:8px;
+  clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);transition:.2s}
+.lo-equip:hover{background:var(--cyan);color:#04121b;box-shadow:0 0 18px rgba(95,247,255,.5)}
+/* global + lark shelves */
+.shelf{position:relative;padding:20px;border:1px solid rgba(139,149,201,.25);
+  background:linear-gradient(160deg,rgba(28,26,58,.5),rgba(12,12,30,.5));
+  clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px))}
+.shelf.goldline{border-color:rgba(245,166,35,.3)}
+.shelf .lk-head{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.shelf .lk-head .em{font-size:26px}
+.shelf .lk-head h3{font-size:16px;font-weight:900;color:var(--ink)}
+.shelf .lk-head h3 .en{font-family:'Rajdhani';font-size:11px;color:var(--lock);letter-spacing:3px;display:block;font-weight:600}
+.shelf .lk-lock{margin-left:auto;font-family:'Rajdhani';font-size:11px;letter-spacing:1px;color:var(--lock);
+  border:1px solid rgba(139,149,201,.4);padding:5px 12px;background:rgba(139,149,201,.08);
+  clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+.shelf .lk-lock.gold{color:var(--gold);border-color:rgba(245,166,35,.4);background:rgba(245,166,35,.08)}
+.lk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:9px}
+.lk-item{position:relative;display:flex;align-items:center;gap:9px;padding:9px 11px;
+  background:rgba(16,18,42,.6);border:1px solid rgba(139,149,201,.18);border-radius:7px;transition:.2s;cursor:pointer}
+.lk-item:hover{border-color:rgba(139,149,201,.5);background:rgba(22,26,56,.7);transform:translateX(2px)}
+.lk-item .d{width:7px;height:7px;border-radius:50%;background:var(--lock);box-shadow:0 0 8px var(--lock);flex:0 0 auto}
+.lk-item.gold .d{background:var(--gold);box-shadow:0 0 8px var(--gold)}
+.lk-item .t{font-size:11.5px;color:var(--ink-dim);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lk-item .auto{margin-left:auto;font-size:8px;color:var(--lock);opacity:.7}
+.shelf p.ft{margin-top:14px;font-size:11px;color:var(--lock);line-height:1.6}
+/* ============ DETAIL MODAL ============ */
+.modal-bg{position:fixed;inset:0;z-index:50;background:rgba(4,6,16,.78);backdrop-filter:blur(7px);
+  display:grid;place-items:center;opacity:0;pointer-events:none;transition:.3s;padding:20px}
+.modal-bg.show{opacity:1;pointer-events:auto}
+.modal{position:relative;width:min(540px,94vw);max-height:90vh;overflow:auto;
+  background:linear-gradient(165deg,rgba(20,30,66,.96),rgba(9,13,32,.98));
+  border:1px solid var(--line-bright);
+  clip-path:polygon(0 0,calc(100% - 26px) 0,100% 26px,100% 100%,26px 100%,0 calc(100% - 26px));
+  transform:scale(.9) translateY(14px);transition:.36s cubic-bezier(.2,1.1,.3,1);box-shadow:0 30px 90px rgba(0,0,0,.7)}
+.modal-bg.show .modal{transform:none}
+.modal .m-top{position:relative;padding:24px 26px 20px;overflow:hidden;
+  background:radial-gradient(120% 120% at 80% -20%,var(--acc,rgba(95,247,255,.35)),transparent 55%)}
+.modal .m-scan{position:absolute;inset:0;pointer-events:none;opacity:.4;
+  background:repeating-linear-gradient(0deg,rgba(120,200,255,.06) 0 2px,transparent 2px 5px)}
+.m-top .row{display:flex;gap:16px;align-items:center;position:relative;z-index:1}
+.m-emo{width:74px;height:74px;flex:0 0 auto;display:grid;place-items:center;font-size:38px;
+  transform:rotate(45deg);border-radius:18px;border:1px solid var(--line-bright);
+  background:radial-gradient(circle at 38% 32%,rgba(255,255,255,.15),rgba(0,0,0,.4));
+  box-shadow:0 0 30px -4px var(--acc,rgba(95,247,255,.5))}
+.m-emo b{transform:rotate(-45deg);font-style:normal}
+.m-id{flex:1;min-width:0}
+.m-id .nm{font-size:20px;font-weight:900;color:#fff;line-height:1.2;word-break:break-all}
+.m-id .meta{display:flex;gap:8px;margin-top:9px;flex-wrap:wrap;align-items:center}
+.m-id .src-tag{font-family:'Rajdhani';font-size:10px;font-weight:700;letter-spacing:1px;padding:3px 9px;border:1px solid currentColor;border-radius:3px}
+.m-id .grp-tag{font-size:11px;color:var(--ink-dim);padding:3px 9px;background:rgba(255,255,255,.06);border-radius:4px}
+.m-body{padding:6px 26px 24px}
+.m-row{display:flex;justify-content:space-between;gap:14px;padding:13px 0;border-bottom:1px solid var(--line)}
+.m-row .k{font-family:'Rajdhani';font-size:11px;letter-spacing:2px;color:var(--ink-faint);text-transform:uppercase;flex:0 0 auto}
+.m-row .v{font-size:12.5px;color:var(--ink);text-align:right;font-weight:500;word-break:break-all;user-select:text}
+.m-desc{font-size:12.5px;line-height:1.7;color:var(--ink-dim);margin:14px 0 4px;padding:13px 15px;user-select:text;
+  background:rgba(95,160,255,.05);border-left:2px solid var(--acc,var(--cyan));border-radius:0 8px 8px 0}
+.m-prof{margin:16px 0}
+.m-prof .lab{display:flex;justify-content:space-between;font-family:'Rajdhani';font-size:11px;letter-spacing:1px;color:var(--ink-faint);margin-bottom:6px}
+.m-prof .lab b{color:var(--gold);font-family:'Orbitron'}
+.m-prof .track{height:9px;background:rgba(255,255,255,.07);border-radius:5px;overflow:hidden;position:relative}
+.m-prof .track i{display:block;height:100%;border-radius:5px;
+  background:linear-gradient(90deg,var(--cyan),var(--violet),var(--magenta));box-shadow:0 0 12px rgba(95,247,255,.6);
+  position:relative;transition:width .8s cubic-bezier(.2,.9,.2,1)}
+.m-prof .track i::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);animation:shine 2.2s linear infinite}
+@keyframes shine{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.m-actions{display:flex;gap:10px;margin-top:20px}
+.act{flex:1;font-family:'Rajdhani';font-weight:700;letter-spacing:1.5px;font-size:13px;cursor:pointer;
+  padding:13px;border:1px solid;transition:.2s;
+  clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%);background:transparent;
+  display:flex;gap:7px;align-items:center;justify-content:center}
+.act.primary{color:#04121b;background:linear-gradient(180deg,var(--cyan),var(--cyan-d));border-color:transparent;
+  box-shadow:0 0 20px rgba(95,247,255,.35)}
+.act.primary:hover{transform:translateY(-2px);box-shadow:0 8px 26px rgba(95,247,255,.5)}
+.act.primary.unequip{background:linear-gradient(180deg,#ff9b8a,#e7654a)}
+.act.disabled{opacity:.4;cursor:not-allowed;pointer-events:none;color:var(--ink-dim);border-color:var(--line-bright);background:transparent;box-shadow:none}
+.m-locknote{margin-top:18px;display:flex;gap:11px;align-items:center;padding:14px 16px;
+  background:rgba(139,149,201,.08);border:1px solid rgba(139,149,201,.3);border-radius:9px}
+.m-locknote.gold{background:rgba(245,166,35,.06);border-color:rgba(245,166,35,.3)}
+.m-locknote .ic{font-size:22px}
+.m-locknote .tx{font-size:11.5px;line-height:1.6;color:var(--lock)}
+.m-locknote.gold .tx{color:var(--gold)}
+.m-locknote .tx b{color:var(--ink-dim)}
+.m-close{position:sticky;top:14px;float:right;margin:14px 18px 0 0;z-index:3;width:30px;height:30px;cursor:pointer;
+  border:1px solid var(--line-bright);background:rgba(0,0,0,.3);color:var(--ink-dim);font-size:16px;
+  display:grid;place-items:center;border-radius:8px;transition:.2s}
+.m-close:hover{color:#ff8f7a;border-color:#ff8f7a;transform:rotate(90deg)}
+.m-md{font-size:11px;line-height:1.65;color:var(--ink-dim);background:rgba(0,0,0,.3);border:1px solid var(--line);
+  border-radius:8px;padding:12px;max-height:180px;overflow:auto;white-space:pre-wrap;user-select:text;margin-top:14px;word-break:break-all}
+/* sparkle / toast */
+.sparkles{position:fixed;inset:0;z-index:60;pointer-events:none}
+.spark{position:absolute;font-size:14px;animation:sparkfly .9s ease-out forwards}
+@keyframes sparkfly{0%{opacity:1;transform:translate(0,0) scale(.4) rotate(0)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.3) rotate(180deg)}}
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(80px);z-index:70;
+  font-family:'Rajdhani';font-weight:700;letter-spacing:1.5px;font-size:13px;color:#04121b;
+  padding:12px 24px;background:linear-gradient(180deg,var(--cyan),var(--cyan-d));
+  clip-path:polygon(14px 0,100% 0,calc(100% - 14px) 100%,0 100%);
+  box-shadow:0 0 30px rgba(95,247,255,.5);opacity:0;transition:.4s cubic-bezier(.2,1.2,.3,1);display:flex;gap:9px;align-items:center}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.toast.gold{background:linear-gradient(180deg,var(--gold),var(--gold-d));color:#241500;box-shadow:0 0 30px rgba(245,166,35,.55)}
+.toast.warn{background:linear-gradient(180deg,#ff9b8a,#e7654a);color:#2a0a04;box-shadow:0 0 30px rgba(231,101,74,.5)}
+/* record */
+.record-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;width:100%;max-width:960px;margin:8px auto 0}
+.rec{position:relative;padding:18px;background:linear-gradient(160deg,rgba(20,30,66,.7),rgba(10,15,36,.8));
+  border:1px solid var(--line);clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px))}
+.rec b{font-family:'Orbitron';font-size:30px;background:linear-gradient(90deg,var(--cyan),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+.rec span{display:block;font-size:11px;color:var(--ink-faint);letter-spacing:2px;margin-top:5px}
+.rec .bar{margin-top:12px;height:6px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden}
+.rec .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--violet));box-shadow:0 0 10px rgba(95,247,255,.5)}
+.stub{display:grid;place-items:center;height:100%;text-align:center}
+.stub .ic{font-size:48px;margin-bottom:18px;filter:drop-shadow(0 0 20px rgba(95,247,255,.5));animation:floaty 4s ease-in-out infinite}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.stub h3{font-family:'Orbitron';font-size:20px;letter-spacing:3px;color:var(--ink);margin-bottom:10px}
+/* settings / onboard */
+.set-wrap{max-width:720px}
+.set-row{display:flex;align-items:center;gap:16px;padding:16px 2px;border-bottom:1px solid var(--line)}
+.set-row .si{flex:1}.set-row .si b{font-size:13.5px;font-weight:700}
+.set-row .si p{font-size:11.5px;color:var(--ink-faint);margin-top:3px;line-height:1.5}
+.set-row .sv{font-size:12px;color:var(--ink-dim);font-family:ui-monospace,monospace;user-select:text}
+.sbtn{font-family:'Rajdhani';font-weight:700;letter-spacing:1px;font-size:12px;cursor:pointer;color:var(--cyan);
+  background:rgba(95,247,255,.08);border:1px solid var(--cyan);padding:7px 16px;flex:0 0 auto;
+  clip-path:polygon(9px 0,100% 0,calc(100% - 9px) 100%,0 100%);transition:.2s}
+.sbtn:hover{background:var(--cyan);color:#04121b}
+.sbtn.gold{color:var(--gold);border-color:var(--gold);background:rgba(245,166,35,.08)}
+.sbtn.gold:hover{background:var(--gold);color:#241500}
+.inrow{display:flex;gap:8px;align-items:center;margin-top:10px}
+.inp{flex:1;background:rgba(10,16,38,.7);border:1px solid var(--line);color:var(--ink);padding:9px 12px;font-size:12.5px;
+  font-family:ui-monospace,monospace;outline:none;user-select:text}
+.inp:focus{border-color:var(--cyan)}
+.msg{font-size:12px;color:var(--ink-faint);margin:8px 0 4px;min-height:16px}
+.onboard{max-width:560px;margin:30px auto;text-align:center}
+.onboard h2{font-family:'Orbitron';font-size:19px;letter-spacing:2px;margin-bottom:10px}
+.onboard>p{font-size:13px;color:var(--ink-faint);margin-bottom:20px;line-height:1.7}
+.ob-card{text-align:left;margin-bottom:14px;padding:18px;border:1px solid var(--line);
+  background:linear-gradient(160deg,rgba(22,32,70,.7),rgba(10,15,36,.8));
+  clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px))}
+.ob-card>b{font-size:14px}.ob-card>p{font-size:12px;color:var(--ink-faint);margin:6px 0 8px;line-height:1.6}
+@media(max-width:760px){.hud-readout,.commander{display:none}.tab .cn{display:none}}
 </style>
 </head>
 <body>
-<div class="win">
-  <div class="titlebar">
-    <span class="tb-title disp">SkillHub</span>
-    <div class="tb-right">
-      <div class="iconbtn" id="themeBtn" title="切换主题"></div>
-    </div>
-  </div>
-  <div class="body">
-    <aside class="side">
-      <div class="brand"><div class="logo"><svg viewBox="0 0 24 24"><path d="M12 2l3 6 6 .8-4.5 4.2 1.2 6L12 16l-5.7 3 1.2-6L3 8.8 9 8z" fill="#fff" opacity=".95"/></svg></div><b class="disp">SkillHub</b></div>
-      <nav class="nav" id="nav"></nav>
-    </aside>
-    <main class="main">
-      <div class="topbar">
-        <div class="h1 disp" id="title"></div>
-        <div class="search" id="searchBox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg><input id="search" placeholder="搜索…"></div>
-      </div>
-      <div class="content" id="content"><div class="empty">加载中…</div></div>
-    </main>
-  </div>
+<div class="stage">
+  <div class="bg-grad"></div><div class="bg-grid"></div><div class="bg-scan"></div>
+  <div class="bg-beam"></div><div class="particles" id="particles"></div><div class="vig"></div>
 </div>
-<div class="scrim" id="scrim"></div>
-<div class="detail" id="detail"></div>
+
+<div class="app">
+  <header>
+    <div class="logo">
+      <div class="mark"><div class="core"></div></div>
+      <div><h1>SKILLHUB</h1><div class="sub">STELLAR · SKILL TERMINAL</div></div>
+    </div>
+    <div class="hdr-spacer"></div>
+    <div class="hud-readout">
+      <div class="stat-chip"><b id="s-total">—</b><span>技能藏品</span></div>
+      <div class="stat-chip v"><b id="s-global">—</b><span>常驻出战</span></div>
+      <div class="stat-chip g"><b id="s-ext">—</b><span>外部托管</span></div>
+    </div>
+    <div class="commander">
+      <div class="av"><i>易</i></div>
+      <div><div class="nm">易虎 · Commander</div><div class="lv">星核终端 · SYNC ONLINE</div></div>
+    </div>
+  </header>
+
+  <nav id="nav">
+    <button class="tab active" data-screen="inventory"><em>🎒</em><span class="cn">背包 · 技能库</span><span class="badge" id="nav-inv">—</span></button>
+    <button class="tab" data-screen="equip"><em>⚔️</em><span class="cn">出战 · 装配</span><span class="badge" id="nav-eq">0</span></button>
+    <button class="tab" data-screen="record"><em>📊</em><span class="cn">战绩 · 数据</span></button>
+    <button class="tab" data-screen="settings"><em>⚙️</em><span class="cn">设置 · 终端</span></button>
+  </nav>
+
+  <main>
+    <section class="screen show" id="screen-inventory">
+      <div class="sec-h"><h2>Inventory</h2><span class="cn">技能仓库</span><div class="ln"></div><div class="tag" id="inv-count">—</div></div>
+      <div class="toolbar">
+        <div class="search"><span class="ico">⌕</span><input id="search" type="text" placeholder="搜索技能名称 / 描述 / 分类…" autocomplete="off"></div>
+        <div class="filters" id="src-filters">
+          <span class="fl-label">来源</span>
+          <button class="chip on" data-src="all">全部</button>
+          <button class="chip src-github" data-src="github"><span class="dot" style="background:var(--src-github)"></span>GitHub</button>
+          <button class="chip src-self" data-src="self"><span class="dot" style="background:var(--src-self)"></span>自制</button>
+          <button class="chip src-web" data-src="web"><span class="dot" style="background:var(--src-web)"></span>网站</button>
+        </div>
+        <div class="proj-hint" id="proj-hint"></div>
+      </div>
+      <div class="filters" id="grp-filters" style="margin-bottom:12px"></div>
+      <div class="legend">
+        <span><i class="dot" style="background:var(--gold)"></i>★★★★★ 常驻 global(全项目自带)</span>
+        <span><i class="dot" style="background:var(--violet)"></i>★★★★ 按需 on-demand(装入项目生效)</span>
+        <span class="note" style="font-style:italic;opacity:.85">来源色只是分类,无高下之分</span>
+      </div>
+      <div class="grid" id="inv-grid"></div>
+    </section>
+
+    <section class="screen" id="screen-equip">
+      <div class="proj-bar">
+        <span class="pico">📁</span>
+        <div class="pinfo" id="proj-info"><b>未选择项目</b><p>选一个项目目录,把 skill 软链进它的 .claude / .codex / .cursor</p></div>
+        <button class="proj-btn" data-act="pick">⌖ 选择项目目录</button>
+      </div>
+      <div class="recent" id="recent"></div>
+
+      <div class="sec-h"><h2>Battle Deck</h2><span class="cn">本项目出战槽</span><div class="ln"></div><div class="tag" id="deck-tag">—</div></div>
+      <div class="equip-deck" style="margin-bottom:26px">
+        <div class="deck-meta"><div class="cap">已装备 <b id="slot-count">0</b> 个按需技能 · 软链实时生效,点击槽位可卸下</div></div>
+        <div class="slots" id="slots"></div>
+      </div>
+
+      <div class="sec-h"><h2>Squad Presets</h2><span class="cn">套装 · 队伍预设</span><div class="ln"></div><div class="tag">一键出战</div></div>
+      <div class="loadouts" id="loadouts" style="margin-bottom:26px"></div>
+
+      <div class="shelf goldline" style="margin-bottom:26px">
+        <div class="lk-head"><span class="em">⚔️</span>
+          <h3>常驻出战 · 五星编队<span class="en">GLOBAL TIER · ALWAYS DEPLOYED</span></h3>
+          <span class="lk-lock gold">★ 全项目自带</span></div>
+        <div class="lk-grid" id="global-grid"></div>
+        <p class="ft">这些五星技能常驻 <b style="color:var(--ink-dim)">~/.claude · ~/.codex · ~/.cursor</b> 全局层,每个项目开箱即用,无需单独装备。</p>
+      </div>
+
+      <div class="shelf" id="lark-shelf" style="display:none">
+        <div class="lk-head"><span class="em">💬</span>
+          <h3>外部托管 · 官方系列<span class="en">EXTERNAL · MANAGED SERIES</span></h3>
+          <span class="lk-lock">🔒 只读</span></div>
+        <div class="lk-grid" id="lark-grid"></div>
+        <p class="ft">由上游(如 <b style="color:var(--ink-dim)">larksuite/cli</b>)托管并自动更新,常驻在线;本终端只读展示,不可装卸。</p>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-record">
+      <div class="stub"><div style="width:100%;display:flex;flex-direction:column;align-items:center">
+        <div class="ic">📊</div><h3 style="margin-bottom:22px">COMBAT LOG · 技能战绩</h3>
+        <div class="record-grid" id="record-grid"></div>
+      </div></div>
+    </section>
+
+    <section class="screen" id="screen-settings">
+      <div class="sec-h"><h2>Terminal Config</h2><span class="cn">终端设置</span><div class="ln"></div></div>
+      <div class="set-wrap" id="settings-body"></div>
+    </section>
+  </main>
+</div>
+
+<div class="modal-bg" id="modal-bg"><div class="modal" id="modal"></div></div>
+<div class="sparkles" id="sparkles"></div>
+<div class="toast" id="toast"></div>
+
 <script>
+'use strict';
 const $=id=>document.getElementById(id);
-const IC={grid:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
-folder:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h6a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
-refresh:'<path d="M21 12a9 9 0 1 1-3-6.7M21 4v5h-5"/>',chart:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
-gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 13a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V19a2 2 0 1 1-4 0a1.6 1.6 0 0 0-2.7-1.1l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 4 13a2 2 0 1 1 0-4a1.6 1.6 0 0 0 1.1-2.7l-.1-.1A2 2 0 1 1 7.7 3.4l.1.1A1.6 1.6 0 0 0 10 4V4a2 2 0 1 1 4 0a1.6 1.6 0 0 0 2.7 1.1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1A1.6 1.6 0 0 0 20 9a2 2 0 1 1 0 4z"/>',
-sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5"/>',
-moon:'<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',plus:'<path d="M12 5v14M5 12h14"/>',check:'<path d="M20 6L9 17l-5-5"/>'};
-const svg=(k,w=2)=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}">${IC[k]}</svg>`;
-const GCOLOR={tools:'#5E6AD2',utils:'#9CA3AF','web-creative':'#f0a868',media:'#e879a6',jarvis:'#4ade80',workbuddy:'#38bdf8',xhs:'#f87171',contracts:'#a78bfa',lark:'#34d399',external:'#8B93E8'};
-const esc=s=>(s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
-const TITLES={catalog:['技能目录','浏览 · 搜索 · 分层'],projects:['项目装配','选项目,逐个装 skill'],updates:['更新管理','开源 skill upstream 跟踪'],stats:['用量统计','久未使用排在最前'],settings:['设置','']};
-let HUB=null;const S={view:'catalog',q:'',tier:'all',group:'all',sel:null,proj:null,projInstalled:[],upd:null};
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const api=window.skapi;
 
-// 主题
-function setTheme(t){document.documentElement.dataset.theme=t;localStorage.setItem('theme',t);
-  $('themeBtn').innerHTML=svg(t==='dark'?'sun':'moon');if(api)api.setTheme(t);}
-$('themeBtn').onclick=()=>setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');
-setTheme(localStorage.getItem('theme')||'dark');
-
-// 导航
-function buildNav(){const items=[['catalog','grid','技能目录',HUB?HUB.skills.length:''],['projects','folder','项目装配',''],['updates','refresh','更新管理',HUB?HUB.skills.filter(s=>s.oss).length:''],['stats','chart','用量统计',''],['settings','gear','设置','']];
-  $('nav').innerHTML=items.map(([v,ic,t,b])=>`<a data-v="${v}" class="${S.view===v?'on':''}">${svg(ic)}<span>${t}</span>${b!==''?`<span class="badge">${b}</span>`:''}</a>`).join('');}
-$('nav').onclick=e=>{const a=e.target.closest('a[data-v]');if(!a)return;S.view=a.dataset.v;S.sel=null;closeDetail();
-  $('searchBox').style.display=(S.view==='catalog'||S.view==='projects')?'block':'none';buildNav();render();};
-$('search').oninput=e=>{S.q=e.target.value.toLowerCase();render();};
-
-let CFG=null;
-async function load(){
-  if(!api){$('content').innerHTML='<div class="empty">请在 SkillHub 应用内运行(需要主进程提供数据)。</div>';return;}
-  CFG=await api.getConfig();
-  if(!CFG.hasRegistry){renderOnboard();return;}
-  try{HUB=await api.getData();HUB._recent=await api.recentProjects();}catch(e){HUB=null;}
-  if(!HUB){$('content').innerHTML='<div class="empty">读取 hub 失败:'+esc(CFG.hubPath)+'</div>';return;}
-  buildNav();render();
-}
-// 首次使用 / 没连 hub:克隆团队 hub 或指向本地已有 hub
-function renderOnboard(){
-  $('title').innerHTML='欢迎使用 SkillHub';$('searchBox').style.display='none';$('nav').innerHTML='';
-  $('content').innerHTML=`<div class="onboard"><h2 class="disp">还没有连接 skill hub</h2>
-   <p>hub 是一个 git 仓库,集中管理你/团队的全部 skill。选一种方式开始:</p>
-   <div class="card2"><b>① 克隆团队 hub</b><p>团队/导师给你一个 git 地址,克隆到本地就能用同一套 skill。</p>
-     <div class="inrow"><input class="inp" id="obUrl" placeholder="git@github.com:org/skill-hub.git"></div>
-     <div class="inrow"><input class="inp" id="obDest" value="~/skills"><button class="btn pri" id="obClone">克隆并连接</button></div>
-     <div id="obMsg" style="font-size:12px;color:var(--txt3);margin-top:8px"></div></div>
-   <div class="card2"><b>② 指向本地已有 hub</b><p>本机已经有一个 skill hub 目录,直接选中它。</p>
-     <button class="btn" id="obPick">${svg('folder')}选择目录…</button></div></div>`;
-  $('obClone').onclick=async()=>{const u=$('obUrl').value.trim(),d=$('obDest').value.trim()||'~/skills';if(!u){$('obMsg').textContent='请填 git 地址';return;}$('obMsg').textContent='克隆中…(取决于仓库大小)';const r=await api.cloneHub(u,d);if(r.ok){HUB=null;load();}else $('obMsg').innerHTML='<span style="color:var(--red)">✗ '+esc(r.err)+'</span>';};
-  $('obPick').onclick=async()=>{const p=await api.pickProject();if(!p)return;try{await api.setHubPath(p);HUB=null;load();}catch(e){$('obMsg')&&($('obMsg').textContent='');alert(String(e.message||e));}};
-}
-function render(){const t=TITLES[S.view];$('title').innerHTML=t[0]+(t[1]?` <small>${t[1]}</small>`:'');
-  $('content').innerHTML=({catalog:catalogView,projects:projectsView,updates:updatesView,stats:statsView,settings:settingsView})[S.view]();
-  if(S.view==='settings')fillSettings();}
-const tierPill=s=>s.tier==='global'?'<span class="pill global">常驻</span>':'<span class="pill demand">按需</span>';
-const UCH={github:['可更新','upd'],'manual-port':['手工译','port'],local:['本地','local'],'lark-cli':['lark-cli','port'],'npx-skills':['npx skills','port'],external:['外部','local']};
-const updPill=s=>{const u=UCH[(s.update||{}).channel];return u?`<span class="pill ${u[1]}">${u[0]}</span>`:'';};
-const extPill=s=>s.external?'<span class="pill ext">外部托管</span>':'';
-const matchQ=s=>!S.q||s.name.toLowerCase().includes(S.q)||(s.desc||'').toLowerCase().includes(S.q);
-
-// 目录
-function catalogView(){
-  const groups=HUB.stats.groups;
-  const gc=groups.map(g=>`<span class="chip ${S.group===g?'on':''}" data-g="${g}"><span class="gdot" style="background:${GCOLOR[g]||'#888'}"></span>${g}<span class="n">${HUB.skills.filter(x=>x.group===g).length}</span></span>`).join('');
-  const list=HUB.skills.filter(s=>(S.tier==='all'||s.tier===S.tier)&&(S.group==='all'||s.group===S.group)&&matchQ(s)).sort((a,b)=>a.name.localeCompare(b.name));
-  const cards=list.map(s=>`<div class="card ${S.sel===s.name?'sel':''}" data-name="${s.name}">
-    <div class="cname"><span class="gdot" style="background:${GCOLOR[s.group]||'#888'}"></span>${s.name}</div>
-    <div class="cdesc">${esc(s.desc)||'—'}</div>
-    <div class="tags">${tierPill(s)}${extPill(s)}${updPill(s)}${cold(s)&&!s.external?`<span class="pill cold">${s.lastUsed===null?'未用过':'冷'+s.lastUsed+'天'}</span>`:''}<span class="gtag">${s.group}</span></div></div>`).join('');
-  return `<div class="filters">
-    <span class="chip ${S.tier==='all'?'on':''}" data-t="all">全部<span class="n">${HUB.skills.length}</span></span>
-    <span class="chip ${S.tier==='global'?'on':''}" data-t="global">常驻<span class="n">${HUB.stats.global}</span></span>
-    <span class="chip ${S.tier==='on-demand'?'on':''}" data-t="on-demand">按需<span class="n">${HUB.skills.length-HUB.stats.global}</span></span>
-    <span class="sep"></span><span class="chip ${S.group==='all'?'on':''}" data-g="all">全部分组</span>${gc}</div>
-    <div class="grid">${cards||'<div class="empty">没有匹配的 skill</div>'}</div>`;
-}
-const cold=s=>s.lastUsed===null||s.lastUsed>=90;
-
-// 详情
-async function openDetail(name){const s=HUB.skills.find(x=>x.name===name);S.sel=name;render();
-  const md=api?esc((await api.readSkillMd(name)).slice(0,1200)):'';
-  $('detail').innerHTML=`<div class="dt-head"><div class="x" onclick="closeDetail()">${svg('plus').replace('M12 5v14M5 12h14','M6 6l12 12M18 6L6 18')}</div>
-    <div class="dt-name disp"><span class="gdot" style="background:${GCOLOR[s.group]};display:inline-block;margin-right:8px"></span>${s.name}</div>
-    <div class="tags" style="margin-top:10px">${tierPill(s)}${extPill(s)}${updPill(s)}<span class="gtag" style="margin-left:0">${s.group}</span></div></div>
-   <div class="dt-body"><h4>描述</h4><div style="font-size:13px;line-height:1.6">${esc(s.desc)}</div>
-    <h4>属性</h4>
-    <div class="kv"><span>分层</span><b>${s.tier==='global'?'常驻 global':'按需 on-demand'}</b></div>
-    <div class="kv"><span>分发 agent</span><b>${(s.agents||[]).join(' · ')}</b></div>
-    ${s.oss?`<div class="kv"><span>upstream</span><b class="mono" style="font-size:11px;cursor:pointer;color:var(--accent2)" onclick="api&&api.openRepo('${s.repo}')">${s.repo.replace('github.com/','')}</b></div>`:''}
-    <div class="kv"><span>最近使用</span><b>${s.lastUsed===null?'未用过':s.lastUsed+' 天前'}</b></div>
-    <h4>更新来源</h4>
-    <div class="kv"><span>渠道</span><b>${({github:'GitHub · 可自动更新',['manual-port']:'手工移植 · 需人工',local:'本地自制'})[(s.update||{}).channel]||'—'}</b></div>
-    ${s.update&&s.update.source&&s.update.source!=='self'?`<div class="kv"><span>来源</span><b class="mono" style="font-size:11px;color:${s.update.channel==='github'?'var(--accent2)':'var(--txt2)'};max-width:230px;text-align:right;word-break:break-all">${esc(s.update.source)}</b></div>`:''}
-    ${s.update?`<div class="kv"><span>如何更新</span><b style="font-size:11px;font-weight:400;text-align:right;max-width:230px;line-height:1.5">${esc(s.update.how)}</b></div>`:''}
-    <h4>SKILL.md</h4><div class="md">${md||'—'}</div></div>
-   <div class="dt-foot">${s.external?`<div style="font-size:11.5px;color:var(--txt3);line-height:1.5;padding:2px">外部托管 · 此处只读。更新/卸载请用 <b class="mono" style="color:var(--txt2)">${esc((s.update||{}).how||'')}</b></div>`:`<button class="btn ${s.tier==='global'?'':'pri'}" onclick="toggleTier('${s.name}')">${s.tier==='global'?'转为按需':'设为常驻'}</button><button class="btn danger" onclick="delSkill('${s.name}')">删除</button>`}</div>`;
-  $('detail').classList.add('open');$('scrim').classList.add('open');}
-function closeDetail(){$('detail').classList.remove('open');$('scrim').classList.remove('open');if(S.sel){S.sel=null;render();}}
-$('scrim').onclick=closeDetail;
-async function toggleTier(name){const s=HUB.skills.find(x=>x.name===name);if(!s||s.external)return;if(api)await api.setTier(name,s.tier==='global'?'on-demand':'global');HUB=await api.getData();closeDetail();buildNav();render();}
-async function delSkill(name){const s=HUB.skills.find(x=>x.name===name);if(!s||s.external)return;if(!confirm('删除 '+name+'?\n会移除该 skill 目录及其在 claude/codex/cursor 的所有软链,不可撤销。\n(改动需到「设置」里 git push 才同步到团队)'))return;if(api)await api.deleteSkill(name);HUB=await api.getData();closeDetail();buildNav();render();}
-
-// 项目:选项目 → 逐个装
-async function pickProject(){if(!api)return;const p=await api.pickProject();if(p)selectProject(p);}
-async function selectProject(p){S.proj=p;S.projInstalled=api?await api.projectInfo(p):[];render();}
-function projectsView(){
-  const recent=(HUB._recent||[]);
-  const recentChips=recent.length?`<div class="recent"><span class="lbl">最近:</span>${recent.map(p=>`<i class="${S.proj===p?'on':''}" data-proj="${esc(p)}">${esc(p.split('/').pop())}</i>`).join('')}</div>`:'';
-  const bar=`<div class="proj-bar"><div class="pp-ic">${svg('folder')}</div>
-    <div style="flex:1">${S.proj?`<b class="mono">${esc(S.proj)}</b><p>已装 ${S.projInstalled.length} 个 · 软链进 .claude / .codex / .cursor</p>`:'<b>未选择项目</b><p>选一个项目目录,然后逐个装 skill</p>'}</div>
-    <button class="btn" id="pickBtn">${svg('folder')}选择目录…</button></div>${recentChips}`;
-  if(!S.proj)return bar+'<div class="empty">先选一个项目 ↑</div>';
-  const inst=new Set(S.projInstalled);
-  const row=(s,on)=>`<div class="addrow"><span class="gdot" style="background:${GCOLOR[s.group]}"></span>
-    <span class="an">${s.name}</span><span class="ad">${esc(s.desc)}</span>
-    <div class="add-tog ${on?'on':''}" data-add="${s.name}">${on?svg('check'):svg('plus')}</div></div>`;
-  const installed=HUB.skills.filter(s=>inst.has(s.name)&&matchQ(s)).sort((a,b)=>a.name.localeCompare(b.name));
-  const avail=HUB.skills.filter(s=>s.tier==='on-demand'&&!inst.has(s.name)&&matchQ(s)).sort((a,b)=>a.name.localeCompare(b.name));
-  const globals=HUB.skills.filter(s=>s.tier==='global').sort((a,b)=>a.name.localeCompare(b.name));
-  const los=Object.entries(HUB.loadouts).map(([n,m])=>`<span class="lochip" data-lo="${n}"><b>${n}</b><span>+${m.length}</span></span>`).join('');
-  const instBlock=installed.length?`<div class="section-title">本项目已装 <span class="c">${installed.length} 个 · 你加的 · 点 ✓ 移除</span></div><div class="addlist">${installed.map(s=>row(s,true)).join('')}</div>`:'';
-  const grows=globals.map(s=>`<div class="addrow inherited"><span class="gdot" style="background:${GCOLOR[s.group]}"></span><span class="an">${s.name}</span><span class="ad">${esc(s.desc)}</span><span class="pill global">自带</span></div>`).join('');
-  return bar+`<div class="section-title">快捷套装 <span class="c">一键装一整组</span></div><div class="lochips">${los}</div>
-    ${instBlock}
-    <div class="section-title">可添加 <span class="c">${avail.length} 个按需 skill</span></div><div class="addlist">${avail.map(s=>row(s,false)).join('')||'<div class="empty">没有更多可加的</div>'}</div>
-    <details class="gsec"><summary>▸ 常驻 · 所有项目自带,无需单独装(${globals.length})</summary><div class="addlist">${grows}</div></details>`;
-}
-async function addSkill(name,on){if(api)await api.useInProject(name,S.proj,on);S.projInstalled=await api.projectInfo(S.proj);render();}
-async function addLoadout(n){const m=HUB.loadouts[n]||[];for(const x of m){if(api)await api.useInProject(x,S.proj,true);}S.projInstalled=await api.projectInfo(S.proj);render();}
-
-// 更新
-async function runCheck(){const b=$('checkBtn');if(b){b.disabled=true;b.textContent='检查中…';}try{S.upd=await api.checkUpdates();}catch(e){S.upd=[];}render();}
-function updatesView(){const oss=HUB.skills.filter(s=>s.oss).sort((a,b)=>a.name.localeCompare(b.name));
-  const upd=S.upd,get=n=>upd&&upd.find(x=>x.name===n);
-  const stat=s=>{const u=get(s.name);if(!upd)return'<span class="ustat us-idle">已登记 · 等每周检查</span>';if(!u)return'<span class="ustat us-idle">—</span>';if(u.error)return'<span class="ustat us-err">检查失败:'+esc(u.error)+'</span>';return u.hasUpdate?`<span class="ustat us-update">有更新 → ${u.latest}</span>`:'<span class="ustat us-ok">已最新</span>';};
-  const rows=oss.map(s=>`<div class="up-row"><span class="st ${(get(s.name)||{}).hasUpdate?'yellow':'idle'}"></span><span class="un">${s.name}</span><span class="urepo mono">${s.repo.replace('github.com/','')}</span>${stat(s)}</div>`).join('');
-  const n=upd?upd.filter(x=>x.hasUpdate).length:null,err=upd?upd.filter(x=>x.error).length:0;
-  return `<div class="note" style="display:flex;align-items:center;gap:12px"><span style="flex:1">每周一 10:00 自动检查 upstream → 按 UPDATE_POLICY 判定 <b style="color:var(--green)">green</b> 自动更 / <b style="color:var(--yellow)">yellow</b> 待定 / <b style="color:var(--red)">red</b> 拒,飞书通知。下面可手动「立即检查」(只比对 sha,不自动改文件)。${n!==null?` <b style="color:var(--yellow)">本次 ${n} 个有更新</b>${err?` · ${err} 个失败(需 gh 登录)`:''}`:''}</span><button class="btn pri sm" id="checkBtn">立即检查</button></div>
-    <div class="section-title">开源 skill <span class="c">${oss.length} 个跟踪中</span></div>${rows}`;}
-
-// 统计:久未使用排最前
-function statsView(){
-  const hub=HUB.skills.filter(s=>!s.external);
-  const sorted=[...hub].sort((a,b)=>{const av=a.lastUsed===null?1e9:a.lastUsed,bv=b.lastUsed===null?1e9:b.lastUsed;return bv-av;});
-  const coldN=hub.filter(cold).length;
-  return `<div class="note">用量从 PostToolUse hook 启用起累计。久未使用 / 未用过排在最前 → 删除候选,可直接在右侧「转按需 / 删除」。删除改动需到设置里 git push 才同步团队。${HUB.stats.external?`<br>另有 <b>${HUB.stats.external}</b> 个外部托管常驻 skill(lark-cli),不计入用量统计、此处不可删。`:''}</div>
-   <div class="stat-cards">
-    <div class="sc"><div class="v">${hub.length}</div><div class="l">本仓库 skill</div></div>
-    <div class="sc"><div class="v">${hub.filter(s=>s.tier==='global').length}</div><div class="l">常驻 global</div></div>
-    <div class="sc"><div class="v cold">${coldN}</div><div class="l">冷门(≥90天/未用)</div></div>
-    <div class="sc"><div class="v">${HUB.stats.oss}</div><div class="l">开源跟踪</div></div></div>
-   <table class="tbl"><thead><tr><th>Skill</th><th>分组</th><th>最近使用</th><th>分层</th><th style="text-align:right">操作</th></tr></thead><tbody>
-   ${sorted.slice(0,30).map(s=>`<tr><td><span class="gdot" style="background:${GCOLOR[s.group]};display:inline-block;margin-right:8px"></span>${s.name}</td><td style="color:var(--txt3)">${s.group}</td><td style="color:${cold(s)?'var(--cold)':'var(--txt2)'}">${s.lastUsed===null?'未用过':s.lastUsed+' 天前'}</td><td>${s.tier==='global'?'常驻':'按需'}</td><td style="text-align:right;white-space:nowrap"><button class="actbtn" onclick="quickTier('${s.name}')">${s.tier==='global'?'转按需':'设常驻'}</button><button class="actbtn danger" onclick="delSkill('${s.name}')">删除</button></td></tr>`).join('')}
-   </tbody></table>`;}
-async function quickTier(name){const s=HUB.skills.find(x=>x.name===name);if(!s||s.external)return;if(api)await api.setTier(name,s.tier==='global'?'on-demand':'global');HUB=await api.getData();buildNav();render();}
-
-// 设置
-function settingsView(){
-  return `<div style="max-width:680px">
-   <div class="set-row"><div class="si"><b>Hub 路径</b><p>集中管理 skill 的本地 git 仓库;换机/团队成员各自指向自己的克隆</p></div><span class="sv">${esc(CFG?CFG.hubPath:'~/skills')}</span><button class="btn sm" id="changeHub">更换…</button></div>
-   <div class="set-row" style="border:0;padding-bottom:4px"><div class="si"><b>GitHub 远端 origin</b><p>跨设备 / 团队同步的 git 地址。「验证」会用 git ls-remote 确认你有访问权限</p></div></div>
-   <div class="inrow"><input class="inp" id="remoteInp" placeholder="加载中…"><button class="btn sm" id="saveRemote">保存</button><button class="btn sm" id="valRemote">验证</button></div>
-   <div id="remoteMsg" style="font-size:12px;color:var(--txt3);margin:8px 0 4px"></div>
-   <div class="set-row"><div class="si"><b>同步</b><p>拉取团队最新(git pull --ff-only)并重新分发常驻 skill · 或推送我的改动</p></div><button class="btn sm" id="pullBtn">⤓ 拉取</button><button class="btn sm pri" id="pushBtn">↥ 推送</button></div>
-   <div id="syncMsg" style="font-size:12px;color:var(--txt3);margin:8px 0 4px"></div><div id="pushMsg" style="font-size:12px;color:var(--txt3)"></div>
-   <div class="set-row"><div class="si"><b>每周自动更新</b><p>周一 10:00 headless 判定 OSS upstream(launchd + skill-update-bot)</p></div><span class="sv">launchd</span></div>
-   <div class="set-row"><div class="si"><b>飞书通知</b><p>更新周报推送</p></div><span class="sv">lark-cli</span></div>
-   </div>`;}
-async function fillSettings(){const i=$('remoteInp');if(!i||!api)return;const r=await api.getRemote();i.value=r||'';i.placeholder='git@github.com:org/skill-hub.git';}
-
-// 事件委托
-$('content').onclick=async e=>{
-  const t=e.target;
-  const card=t.closest('.card[data-name]');if(card)return openDetail(card.dataset.name);
-  const c=t.closest('.chip[data-t]');if(c){S.tier=c.dataset.t;return render();}
-  const g=t.closest('.chip[data-g]');if(g){S.group=g.dataset.g;return render();}
-  if(t.closest('#pickBtn'))return pickProject();
-  const rp=t.closest('i[data-proj]');if(rp)return selectProject(rp.dataset.proj);
-  const ad=t.closest('.add-tog[data-add]');if(ad)return addSkill(ad.dataset.add,!ad.classList.contains('on'));
-  const lo=t.closest('.lochip[data-lo]');if(lo)return addLoadout(lo.dataset.lo);
-  if(t.closest('#checkBtn'))return runCheck();
-  if(t.closest('#changeHub')){const p=await api.pickProject();if(!p)return;try{await api.setHubPath(p);HUB=null;S.upd=null;load();}catch(e){alert(String(e.message||e));}return;}
-  if(t.closest('#saveRemote')){const u=$('remoteInp').value.trim();if(!u)return;$('remoteMsg').textContent='保存中…';const r=await api.setRemote(u);$('remoteMsg').innerHTML=r.ok?'✓ 已保存':'<span style="color:var(--red)">✗ '+esc(r.err)+'</span>';return;}
-  if(t.closest('#valRemote')){$('remoteMsg').textContent='验证中…';const r=await api.validateRemote();$('remoteMsg').innerHTML=r.ok?'<span style="color:var(--green)">✓ 可访问,有权限</span>':'<span style="color:var(--red)">✗ 无法访问:'+esc(r.err)+'</span>';return;}
-  if(t.closest('#pullBtn')){$('syncMsg').textContent='拉取中…';const r=await api.gitPull();$('syncMsg').innerHTML=r.ok?'✓ 已同步:'+esc(r.msg):'<span style="color:var(--red)">✗ '+esc(r.msg)+'</span>';if(r.ok){HUB=await api.getData();buildNav();}return;}
-  if(t.closest('#pushBtn')){$('pushMsg').textContent='推送中…';const r=await api.gitPush();$('pushMsg').innerHTML=r.ok?'✓ 已推送':'<span style="color:var(--red)">✗ '+esc(r.msg)+'</span>';}
+/* ---- group meta(阵营):未知分组必走 fallback,不假设分组全集 ---- */
+const GROUPS={
+  tools:{e:"🛠",cn:"工具",acc:"#6fe3ff"},
+  utils:{e:"🧰",cn:"实用",acc:"#7cffb2"},
+  "web-creative":{e:"🎨",cn:"网页创作",acc:"#ff6fd8"},
+  media:{e:"🎬",cn:"媒体",acc:"#ffa94d"},
+  jarvis:{e:"🤖",cn:"贾维斯",acc:"#a88bff"},
+  xhs:{e:"📕",cn:"小红书",acc:"#ff7a8a"},
+  contracts:{e:"📜",cn:"合同",acc:"#ffd27a"},
+  yiqiai:{e:"✨",cn:"一起AI",acc:"#ffd27a"},
+  workbuddy:{e:"💼",cn:"协作",acc:"#5fc9ff"},
+  lark:{e:"💬",cn:"飞书",acc:"#8b95c9"},
+  external:{e:"🛰",cn:"外部",acc:"#8b95c9"}
 };
+const GM=g=>GROUPS[g]||{e:"📦",cn:g,acc:"#6fe3ff"};
+const LO_META={
+  web:{e:"🎨",cn:"网页创作队",en:"WEB CREATIVE",acc:"#ff6fd8"},
+  media:{e:"🎬",cn:"媒体生产队",en:"MEDIA STUDIO",acc:"#ffa94d"},
+  jarvis:{e:"🤖",cn:"贾维斯全军",en:"JARVIS LEGION",acc:"#a88bff"},
+  xhs:{e:"📕",cn:"小红书突击队",en:"XHS STRIKE",acc:"#ff7a8a"},
+  contracts:{e:"📜",cn:"合同审查组",en:"CONTRACTS",acc:"#ffd27a"}
+};
+const LM=k=>LO_META[k]||{e:"📦",cn:k+" 小队",en:k.toUpperCase(),acc:"#6fe3ff"};
+
+/* 来源分类(平级,非优劣):update.channel → github / self / web */
+function source(s){const ch=(s.update||{}).channel;
+  if(ch==='github'||ch==='manual-port')return'github';
+  if(ch==='local'||!ch)return'self';return'web';}
+const SRC_META={github:{cn:"GitHub 开源",tag:"GITHUB",col:"var(--src-github)"},
+  self:{cn:"自制本地",tag:"SELF-MADE",col:"var(--src-self)"},
+  web:{cn:"网站/外部获取",tag:"WEB",col:"var(--src-web)"}};
+
+/* 熟练度:唯一诚实的强度轴 = 真实使用日志(lastUsed 距今天数) */
+function prof(s){
+  if(s.external)return{txt:'外部托管',pct:100};
+  if(s.lastUsed===null)return{txt:'Lv.0 未用',pct:8};
+  if(s.lastUsed<=3)return{txt:'Lv.3 活跃',pct:62};
+  if(s.lastUsed<=30)return{txt:'Lv.2',pct:42};
+  return{txt:'Lv.1',pct:25};
+}
+
+/* ---- state ---- */
+let HUB=null,CFG=null;
+const S={q:'',src:'all',grp:'all',proj:null,installed:[],recent:[],screen:'inventory'};
+const inHub=()=>HUB.skills.filter(s=>!s.external);
+const byName=n=>HUB.skills.find(s=>s.name===n);
+const isInstalled=n=>S.installed.includes(n);
+
+/* ---- particles ---- */
+(function(){let h='';for(let i=0;i<26;i++){const l=Math.random()*100,d=8+Math.random()*14,dl=-Math.random()*14,
+  sz=1+Math.random()*2.5,hue=Math.random()>.5?'var(--cyan)':'var(--violet)';
+  h+=`<i style="left:${l}%;bottom:-10px;width:${sz}px;height:${sz}px;background:${hue};animation-duration:${d}s;animation-delay:${dl}s"></i>`;}
+  $('particles').innerHTML=h;})();
+
+/* ---- boot ---- */
+async function load(){
+  if(!api){$('inv-grid').innerHTML='<div class="empty">请在 SkillHub 应用内运行(需要主进程提供数据)。</div>';return;}
+  CFG=await api.getConfig();
+  if(!CFG.hasRegistry)return renderOnboard();
+  try{HUB=await api.getData();}catch(e){$('inv-grid').innerHTML='<div class="empty">读取 hub 失败:'+esc(CFG.hubPath)+'</div>';return;}
+  S.recent=await api.recentProjects();
+  if(!S.proj&&S.recent[0])await selectProject(S.recent[0],true);
+  refreshAll();
+}
+function renderOnboard(){
+  $('inv-grid').innerHTML=`<div class="onboard" style="grid-column:1/-1"><h2>还没有连接 SKILL HUB</h2>
+   <p>hub 是一个 git 仓库,集中管理你的全部 skill。选一种方式接入星核:</p>
+   <div class="ob-card"><b>① 克隆团队 hub</b><p>拿到 git 地址,克隆到本地即可使用同一套 skill。</p>
+     <div class="inrow"><input class="inp" id="obUrl" placeholder="git@github.com:org/skill-hub.git"></div>
+     <div class="inrow"><input class="inp" id="obDest" value="~/skills"><button class="sbtn gold" data-act="ob-clone">克隆并连接</button></div>
+     <div class="msg" id="obMsg"></div></div>
+   <div class="ob-card"><b>② 指向本地已有 hub</b><p>本机已有 skill hub 目录,直接选中它。</p>
+     <button class="sbtn" data-act="ob-pick">📁 选择目录…</button></div></div>`;
+}
+
+/* ---- header / nav counters ---- */
+function refreshAll(){
+  const hub=inHub(),g=hub.filter(s=>s.tier==='global');
+  $('s-total').textContent=hub.length;$('s-global').textContent=g.length;$('s-ext').textContent=HUB.stats.external;
+  $('nav-inv').textContent=hub.length;$('nav-eq').textContent=S.installed.length;
+  renderInv();renderEquip();renderRecord();renderSettings();
+}
+
+/* ---- inventory ---- */
+function buildGrpFilters(){
+  const hub=inHub(),groups=[...new Set(hub.map(s=>s.group))].sort();
+  let h='<span class="fl-label">阵营</span><button class="chip'+(S.grp==='all'?' on':'')+'" data-grp="all">全部</button>';
+  for(const g of groups){const m=GM(g),cnt=hub.filter(s=>s.group===g).length;
+    h+=`<button class="chip${S.grp===g?' on':''}" data-grp="${esc(g)}"><span>${m.e}</span>${esc(m.cn)}<span style="opacity:.5;font-size:10px">${cnt}</span></button>`;}
+  $('grp-filters').innerHTML=h;
+}
+function starRow(s){return s.tier==='global'
+  ?'<div class="stars s5">★★★★★</div>':'<div class="stars s4">★★★★</div>';}
+function card(s){
+  const m=GM(s.group),src=source(s),sm=SRC_META[src],pf=prof(s);
+  const inst=isInstalled(s.name);
+  return `<div class="card${s.tier==='global'?' rare5':''}" style="--acc:${m.acc}" data-open="${esc(s.name)}">
+    <div class="top"><div class="emo"><b>${m.e}</b></div><div class="src-tag src-${src}">${sm.tag}</div></div>
+    <div class="nm">${esc(s.name)}</div>
+    <div class="grp">${m.e} ${esc(m.cn)} · ${esc(s.group)}</div>
+    ${starRow(s)}
+    <div class="badges">
+      ${s.tier==='global'?'<span class="mini res">⚔ 常驻</span>':''}
+      ${inst?'<span class="mini eq">✓ 已装入项目</span>':''}
+    </div>
+    <div class="foot"><div class="lvbar"><i style="width:${pf.pct}%"></i></div><div class="lvtxt">${pf.txt.split(' ')[0]}</div></div>
+  </div>`;
+}
+function matchQ(s){if(!S.q)return true;const q=S.q;
+  return s.name.toLowerCase().includes(q)||(s.desc||'').toLowerCase().includes(q)
+    ||s.group.toLowerCase().includes(q)||GM(s.group).cn.includes(q);}
+function renderInv(){
+  buildGrpFilters();
+  let list=inHub();
+  if(S.src!=='all')list=list.filter(s=>source(s)===S.src);
+  if(S.grp!=='all')list=list.filter(s=>s.group===S.grp);
+  list=list.filter(matchQ).sort((a,b)=>(a.tier===b.tier?0:a.tier==='global'?-1:1)||a.name.localeCompare(b.name));
+  $('inv-count').textContent=list.length+' 件藏品';
+  $('inv-grid').innerHTML=list.map(card).join('')||'<div class="empty">⌀ 没有匹配的技能 — 调整筛选条件试试</div>';
+  $('proj-hint').innerHTML=S.proj
+    ?`🎯 装入目标 <b>${esc(S.proj.split('/').pop())}</b>`
+    :'⌖ 未选项目 — 点此去「出战」选择';
+  $('proj-hint').dataset.act='goto-equip';
+}
+
+/* ---- equip screen ---- */
+async function selectProject(p,silent){
+  S.proj=p;S.installed=await api.projectInfo(p);
+  if(!silent)toast('⌖ 已锁定项目 '+p.split('/').pop(),'gold');
+}
+function renderEquip(){
+  $('proj-info').innerHTML=S.proj
+    ?`<b class="mono">${esc(S.proj)}</b><p>已装 ${S.installed.length} 个按需技能 · 软链进 .claude / .codex / .cursor</p>`
+    :'<b>未选择项目</b><p>选一个项目目录,把 skill 软链进它的 .claude / .codex / .cursor</p>';
+  $('deck-tag').textContent=S.proj?S.proj.split('/').pop():'未选项目';
+  $('recent').innerHTML=S.recent.length
+    ?'<span class="lbl">RECENT ▸</span>'+S.recent.map(p=>`<button class="chip${S.proj===p?' on':''}" data-proj="${esc(p)}">${esc(p.split('/').pop())}</button>`).join('')
+    :'';
+  /* slots = 本项目已装(真软链) */
+  const eq=S.installed.map(byName).filter(Boolean);
+  let h='';
+  eq.forEach((s,i)=>{const m=GM(s.group);
+    h+=`<div class="slot filled${s.name===animName?' pop':''}" data-open="${esc(s.name)}">
+      <span class="s-idx">${String(i+1).padStart(2,'0')}</span>
+      <span class="s-emo">${m.e}</span><span class="s-nm">${esc(s.name)}</span></div>`;});
+  h+=`<div class="slot empty-slot" data-act="goto-inv"><span class="s-idx">＋</span><span class="s-emo">＋</span><span class="s-nm">${S.proj?'去背包装备':'先选项目'}</span></div>`;
+  $('slots').innerHTML=h;$('slot-count').textContent=eq.length;animName=null;
+  /* loadouts */
+  $('loadouts').innerHTML=Object.entries(HUB.loadouts||{}).map(([k,arr])=>{
+    const m=LM(k),shown=arr.slice(0,4),extra=arr.length-shown.length;
+    return `<div class="lo-card" style="--acc:${m.acc}">
+      <div class="lo-top"><div class="lo-emo"><b>${m.e}</b></div>
+        <div class="lo-name">${esc(m.cn)}<span class="en">${esc(m.en)} · ${arr.length} 件</span></div></div>
+      <div class="lo-chips">${shown.map(x=>`<span>${esc(x)}</span>`).join('')}${extra>0?`<span class="more">+${extra} 更多</span>`:''}</div>
+      <button class="lo-equip" data-lo="${esc(k)}">⚔ 一键出战</button></div>`;}).join('');
+  /* global 常驻 */
+  const g=inHub().filter(s=>s.tier==='global').sort((a,b)=>a.name.localeCompare(b.name));
+  $('global-grid').innerHTML=g.map(s=>`<div class="lk-item gold" data-open="${esc(s.name)}"><span class="d"></span><span class="t">${esc(s.name)}</span><span class="auto">★5</span></div>`).join('');
+  /* external */
+  const ext=HUB.skills.filter(s=>s.external);
+  $('lark-shelf').style.display=ext.length?'':'none';
+  $('lark-grid').innerHTML=ext.map(s=>`<div class="lk-item" data-open="${esc(s.name)}"><span class="d"></span><span class="t">${esc(s.name)}</span><span class="auto">AUTO</span></div>`).join('');
+}
+let animName=null;
+
+/* ---- record ---- */
+function renderRecord(){
+  const hub=inHub(),g=hub.filter(s=>s.tier==='global').length,total=HUB.skills.length;
+  const groups=[...new Set(hub.map(s=>s.group))].length;
+  const rows=[[total,'技能总持有',100],[hub.length,'本地可控(hub)',hub.length/total*100],
+    [HUB.stats.external,'外部托管',HUB.stats.external/total*100],[HUB.stats.oss,'开源同步',HUB.stats.oss/total*100],
+    [groups,'技能阵营',groups/total*100],[g,'常驻出战',g/total*100]];
+  $('record-grid').innerHTML=rows.map(([v,l,w])=>`<div class="rec"><b>${v}</b><span>${l}</span><div class="bar"><i style="width:${Math.max(6,w)}%"></i></div></div>`).join('');
+}
+
+/* ---- settings ---- */
+function renderSettings(){
+  $('settings-body').innerHTML=`
+   <div class="set-row"><div class="si"><b>Hub 路径</b><p>集中管理 skill 的本地 git 仓库(唯一数据源)</p></div>
+     <span class="sv">${esc(CFG?CFG.hubPath:'~/skills')}</span><button class="sbtn" data-act="change-hub">更换…</button></div>
+   <div class="set-row" style="border:0;padding-bottom:2px"><div class="si"><b>Git 远端 origin</b><p>跨设备同步地址;「验证」用 git ls-remote 确认访问权限</p></div></div>
+   <div class="inrow"><input class="inp" id="remoteInp" placeholder="git@github.com:org/skill-hub.git"><button class="sbtn" data-act="save-remote">保存</button><button class="sbtn" data-act="val-remote">验证</button></div>
+   <div class="msg" id="remoteMsg"></div>
+   <div class="set-row"><div class="si"><b>同步</b><p>拉取最新并重新分发常驻 skill · 或推送本机改动</p></div>
+     <button class="sbtn" data-act="pull">⤓ 拉取</button><button class="sbtn gold" data-act="push">↥ 推送</button></div>
+   <div class="msg" id="syncMsg"></div>
+   <div class="set-row"><div class="si"><b>每周自动更新</b><p>周一 10:00 headless 判定 OSS upstream(launchd + skill-update-bot)</p></div><span class="sv">launchd</span></div>
+   <div class="set-row"><div class="si"><b>装卸引擎</b><p>与 skillctl 同源:单一源 + 软链分发,registry 写入带文件锁</p></div><span class="sv">proper-lockfile</span></div>`;
+  if(api)api.getRemote().then(r=>{const i=$('remoteInp');if(i&&r)i.value=r;});
+}
+
+/* ---- detail modal ---- */
+async function openCard(n){
+  const s=byName(n);if(!s)return;
+  const m=GM(s.group),src=source(s),sm=SRC_META[src],pf=prof(s);
+  const inst=isInstalled(n),isG=s.tier==='global';
+  let actions;
+  if(s.external){
+    actions=`<div class="m-locknote"><div class="ic">🔒</div><div class="tx"><b>外部托管 · 只读</b><br>由上游托管并自动更新(${esc((s.update||{}).how||'见来源目录')}),本终端不可装备 / 卸载。</div></div>`;
+  }else if(isG){
+    actions=`<div class="m-locknote gold"><div class="ic">⚔</div><div class="tx"><b>五星常驻 · 全项目自带</b><br>已软链进 ~/.claude · ~/.codex · ~/.cursor 全局层,每个项目开箱即用,无需装入。</div></div>`;
+  }else if(S.proj){
+    actions=`<div class="m-actions"><button class="act primary${inst?' unequip':''}" data-use="${esc(n)}" data-on="${inst?0:1}">${inst?'⊘ 从项目卸下':'⚔ 装入当前项目'}</button></div>
+      <div class="msg" style="text-align:center">目标项目:${esc(S.proj)}</div>`;
+  }else{
+    actions=`<div class="m-actions"><button class="act disabled">⚔ 装入项目</button></div>
+      <div class="msg" style="text-align:center">先到「出战 · 装配」选择一个项目目录</div>`;
+  }
+  $('modal').innerHTML=`
+    <div class="m-close" data-act="close-modal">✕</div>
+    <div class="m-top" style="--acc:${m.acc}"><div class="m-scan"></div>
+      <div class="row"><div class="m-emo" style="--acc:${m.acc}"><b>${m.e}</b></div>
+        <div class="m-id"><div class="nm">${esc(n)}</div>
+          <div class="meta"><span class="src-tag src-${src}">${sm.tag}</span>
+            <span class="grp-tag">${m.e} ${esc(m.cn)} · ${esc(s.group)}</span>
+            ${isG&&!s.external?'<span class="grp-tag" style="color:var(--gold)">★★★★★ 常驻</span>':''}
+            ${!isG&&!s.external?'<span class="grp-tag" style="color:var(--violet)">★★★★ 按需</span>':''}
+            ${inst?'<span class="grp-tag" style="color:var(--ok)">✓ 已装入项目</span>':''}
+            ${s.external?'<span class="grp-tag" style="color:var(--lock)">🔒 只读</span>':''}</div></div></div></div>
+    <div class="m-body">
+      <div class="m-desc" style="--acc:${m.acc}">${esc(s.desc)||'(registry 未填描述)'}</div>
+      <div class="m-prof"><div class="lab"><span>熟练度 · PROFICIENCY(来自真实调用日志)</span><b>${pf.txt}</b></div>
+        <div class="track"><i style="width:0%" data-w="${pf.pct}"></i></div></div>
+      <div class="m-row"><span class="k">来源 Source</span><span class="v" style="color:${sm.col}">${sm.cn}</span></div>
+      <div class="m-row"><span class="k">挂载 Tier</span><span class="v">${s.external?'外部常驻':isG?'常驻 Global':'按需 On-Demand'}</span></div>
+      <div class="m-row"><span class="k">分发 Agents</span><span class="v">${esc((s.agents||[]).join(' · '))||'—'}</span></div>
+      ${s.oss&&s.repo?`<div class="m-row"><span class="k">Upstream</span><span class="v" style="color:var(--src-github);cursor:pointer" data-repo="${esc(s.repo)}">${esc(s.repo.replace('github.com/',''))}</span></div>`:''}
+      ${s.update?`<div class="m-row"><span class="k">更新 Update</span><span class="v" style="max-width:320px;font-size:11px">${esc(s.update.how||s.update.channel)}</span></div>`:''}
+      <div class="m-row"><span class="k">最近使用</span><span class="v">${s.lastUsed===null?'未用过':s.lastUsed+' 天前'}</span></div>
+      <div class="m-md" id="m-md">SKILL.md 加载中…</div>
+      ${actions}
+    </div>`;
+  $('modal-bg').classList.add('show');
+  setTimeout(()=>{const t=document.querySelector('#modal .track i');if(t)t.style.width=t.dataset.w+'%';},80);
+  if(!s.external){const md=await api.readSkillMd(n);const el=$('m-md');if(el)el.textContent=(md||'—').slice(0,1500);}
+  else{const el=$('m-md');if(el)el.remove();}
+}
+function closeModal(){$('modal-bg').classList.remove('show');}
+
+/* ---- actions(真软链) ---- */
+async function useSkill(n,on){
+  if(!S.proj)return toast('先选择项目目录','warn');
+  try{await api.useInProject(n,S.proj,on);}catch(e){return toast('✗ '+(e.message||e),'warn');}
+  S.installed=await api.projectInfo(S.proj);S.recent=await api.recentProjects();
+  if(on){animName=n;toast('⚔ '+n+' 已装入 '+S.proj.split('/').pop(),'');burst();}
+  else toast('⊘ 已从项目卸下 '+n,'warn');
+  closeModal();refreshAll();
+}
+async function equipLoadout(k){
+  if(!S.proj)return toast('先选择项目目录,再一键出战','warn');
+  let done;try{done=await api.applyLoadout(k,S.proj);}catch(e){return toast('✗ '+(e.message||e),'warn');}
+  S.installed=await api.projectInfo(S.proj);S.recent=await api.recentProjects();
+  toast('⚔ 队伍「'+LM(k).cn+'」已出战 · '+done.length+' 个技能入槽','gold');burst();
+  refreshAll();
+}
+
+/* ---- fx ---- */
+let toastT;
+function toast(msg,kind){const t=$('toast');t.className='toast '+(kind||'');t.innerHTML='<span>◈</span>'+esc(msg);
+  void t.offsetWidth;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2200);}
+function burst(){const layer=$('sparkles'),cx=innerWidth/2,cy=innerHeight*0.4;
+  for(let i=0;i<14;i++){const e=document.createElement('div');e.className='spark';
+    e.textContent=['◈','✦','⚡'][i%3];const ang=Math.random()*6.28,dist=60+Math.random()*120;
+    e.style.left=cx+'px';e.style.top=cy+'px';
+    e.style.setProperty('--dx',Math.cos(ang)*dist+'px');e.style.setProperty('--dy',Math.sin(ang)*dist+'px');
+    e.style.color='#5ff7ff';layer.appendChild(e);setTimeout(()=>e.remove(),900);}}
+
+/* ---- tabs ---- */
+function switchTo(name){S.screen=name;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.screen===name));
+  document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('show',s.id==='screen-'+name));}
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>switchTo(t.dataset.screen));
+
+/* ---- 全局事件委托 ---- */
+document.addEventListener('click',async e=>{
+  const t=e.target;
+  const open=t.closest('[data-open]');if(open)return openCard(open.dataset.open);
+  const use=t.closest('[data-use]');if(use)return useSkill(use.dataset.use,use.dataset.on==='1');
+  const lo=t.closest('[data-lo]');if(lo)return equipLoadout(lo.dataset.lo);
+  const rp=t.closest('[data-proj]');if(rp){await selectProject(rp.dataset.proj);return refreshAll();}
+  const src=t.closest('#src-filters .chip');if(src){document.querySelectorAll('#src-filters .chip').forEach(x=>x.classList.remove('on'));
+    src.classList.add('on');S.src=src.dataset.src;return renderInv();}
+  const grp=t.closest('#grp-filters .chip');if(grp){S.grp=grp.dataset.grp;return renderInv();}
+  const repo=t.closest('[data-repo]');if(repo)return api.openRepo(repo.dataset.repo);
+  const act=t.closest('[data-act]');if(!act)return;
+  switch(act.dataset.act){
+    case 'close-modal':return closeModal();
+    case 'goto-inv':return S.proj?switchTo('inventory'):switchTo('equip');
+    case 'goto-equip':return switchTo('equip');
+    case 'pick':{const p=await api.pickProject();if(p){await selectProject(p);refreshAll();switchTo('equip');}return;}
+    case 'change-hub':{const p=await api.pickProject();if(!p)return;
+      try{await api.setHubPath(p);S.proj=null;S.installed=[];await load();toast('已切换 hub','gold');}catch(err){toast('✗ '+(err.message||err),'warn');}return;}
+    case 'save-remote':{const u=$('remoteInp').value.trim();if(!u)return;$('remoteMsg').textContent='保存中…';
+      const r=await api.setRemote(u);$('remoteMsg').textContent=r.ok?'✓ 已保存':'✗ '+r.err;return;}
+    case 'val-remote':{$('remoteMsg').textContent='验证中…';const r=await api.validateRemote();
+      $('remoteMsg').textContent=r.ok?'✓ 可访问,有权限':'✗ '+r.err;return;}
+    case 'pull':{$('syncMsg').textContent='拉取中…';const r=await api.gitPull();
+      $('syncMsg').textContent=(r.ok?'✓ ':'✗ ')+r.msg;if(r.ok){HUB=await api.getData();refreshAll();}return;}
+    case 'push':{$('syncMsg').textContent='推送中…';const r=await api.gitPush();
+      $('syncMsg').textContent=r.ok?'✓ 已推送':'✗ '+r.msg;return;}
+    case 'ob-clone':{const u=$('obUrl').value.trim(),d=$('obDest').value.trim()||'~/skills';
+      if(!u){$('obMsg').textContent='请填 git 地址';return;}
+      $('obMsg').textContent='克隆中…';const r=await api.cloneHub(u,d);
+      if(r.ok)load();else $('obMsg').textContent='✗ '+r.err;return;}
+    case 'ob-pick':{const p=await api.pickProject();if(!p)return;
+      try{await api.setHubPath(p);load();}catch(err){toast('✗ '+(err.message||err),'warn');}return;}
+  }
+});
+$('modal-bg').addEventListener('click',e=>{if(e.target.id==='modal-bg')closeModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+$('search').oninput=e=>{S.q=e.target.value.trim().toLowerCase();renderInv();};
+
 load();
 </script>
 </body>
