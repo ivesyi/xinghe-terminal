@@ -8,7 +8,7 @@
 | registry 真数据 | 游戏概念 | 视觉表达 |
 |---|---|---|
 | skill(hub 内) | 藏品/技能卡 | 卡墙(切角卡片,左侧 3px 光条=分组色) |
-| `group` | 阵营 | 分组色 accent + 单字单色徽记(通用分组单个汉字:tools→工、media→媒、utils→杂、contracts→契、web-creative→网、xhs→红、lark/external→外;专名分组单个大写首字母:jarvis→J、workbuddy→W、yiqiai→Y;菱形盒内,颜色=分组色)+ 筛选 chip 带分组色小色块 |
+| `group` | 阵营 | 无徽记:卡片左侧 3px 分组色光条 + 筛选 chip(分组色小色块+中文名)即分组的全部视觉表达;弹窗内用「分组:媒体 · media」文字行 |
 | `tier: global`(6 个) | 常驻出战·高稀有度 | ★★★★★ 金 + 「常驻」徽章,全项目自带 |
 | `tier: on-demand`(46 个) | 背包待命·普通稀有度 | ★★★★ 紫,可装入项目 |
 | 项目装配(软链) | 出战槽位 | 六边形 hex 槽,装/卸 = 入槽/出槽动画 |
@@ -23,6 +23,9 @@
 
 **设计红线 · 界面文案全中文:不做中英双语装饰(「背包 BACKPACK」这类对照一律禁止);
 英文只出现在数据本身(skill 名、命令、路径、tier 值如 `global`/`on-demand`、平台名如 GitHub)。**
+
+**设计红线 · 同一信息不做第二遍视觉编码:已有颜色表达的,不再加图标/徽章——重复编码即噪音。**
+(2026-07-02 实例:分组已由分组色光条表达,单字徽记属重复编码,整体撤掉,卡片重心让给 skill 名。)
 
 ## Token 表
 
@@ -49,7 +52,7 @@ lark/external `#8b95c9`。未知分组 fallback `#6fe3ff`(代码里必须留 fal
 - 正文中文:`Noto Sans SC`,回退 system-ui(**演示现场可能断网,必须能无 webfont 正常显示**)
 
 ### 卡片规格
-- 卡墙:`grid minmax(176px,1fr)`,gap 14px;卡 min-height 158px,padding 15/14/13
+- 卡墙:`grid minmax(176px,1fr)`,gap 14px;卡 min-height 144px,padding 15/14/13;首行 = skill 名(15px 白)+ 来源 tag,无图标位
 - 切角:`clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px))`
 - 左光条 3px = 分组色;hover:`translateY(-6px) scale(1.015)` + 分组色泛光
 - hex 槽:128×148,`polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)`;装上时 `equippop` 弹入 + ring 扩散

@@ -145,7 +145,7 @@ main{flex:1;overflow:hidden;position:relative}
 .legend span{display:flex;gap:6px;align-items:center}
 .legend .dot{width:9px;height:9px;border-radius:2px;transform:rotate(45deg)}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(176px,1fr));gap:14px}
-.card{position:relative;cursor:pointer;padding:15px 14px 13px;min-height:168px;
+.card{position:relative;cursor:pointer;padding:15px 14px 13px;min-height:144px;
   background:linear-gradient(165deg,rgba(20,30,66,.72),rgba(10,15,36,.82));
   border:1px solid var(--line);
   clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px));
@@ -160,15 +160,10 @@ main{flex:1;overflow:hidden;position:relative}
 .card:hover::before{opacity:.16}
 .card.rare5{border-color:rgba(245,166,35,.4)}
 .card .top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
-.card .emo{width:42px;height:42px;display:grid;place-items:center;flex:0 0 auto;
-  background:radial-gradient(circle at 40% 35%,rgba(255,255,255,.1),rgba(0,0,0,.25));
-  border:1px solid var(--line);transform:rotate(45deg);border-radius:11px}
-.card .emo b{transform:rotate(-45deg);font-style:normal;font-family:'Rajdhani','Noto Sans SC',sans-serif;
-  font-weight:700;font-size:15px;color:var(--acc,var(--cyan))}
 .card .src-tag{font-family:'Rajdhani';font-size:9.5px;font-weight:700;letter-spacing:1px;padding:3px 7px;
-  border-radius:3px;white-space:nowrap;border:1px solid currentColor;line-height:1}
+  border-radius:3px;white-space:nowrap;border:1px solid currentColor;line-height:1;flex:0 0 auto;margin-top:2px}
 .src-github{color:var(--src-github)}.src-self{color:var(--src-self)}.src-web{color:var(--src-web)}
-.card .nm{font-size:13.5px;font-weight:700;color:var(--ink);margin-top:11px;line-height:1.3;
+.card .nm{flex:1;min-width:0;font-size:15px;font-weight:700;color:#fff;line-height:1.35;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-all}
 .card .grp{font-size:10.5px;color:var(--ink-faint);margin-top:3px;letter-spacing:.5px}
 .card .stars{font-size:10px;letter-spacing:2px;margin-top:6px}
@@ -220,14 +215,11 @@ main{flex:1;overflow:hidden;position:relative}
   background:linear-gradient(165deg,rgba(30,52,98,.92),rgba(12,22,52,.92))}
 .slot:hover{transform:translateY(-5px)}
 .slot:hover .hex{border-color:var(--cyan);box-shadow:0 0 30px rgba(95,247,255,.6)}
-.slot .s-emo{position:relative;z-index:1;font-family:'Rajdhani','Noto Sans SC',sans-serif;font-weight:700;
-  font-size:18px;color:var(--cyan);filter:drop-shadow(0 4px 8px rgba(0,0,0,.6))}
-.slot .s-nm{position:relative;z-index:1;font-size:10.5px;font-weight:700;color:var(--ink);text-align:center;
-  padding:0 8px;line-height:1.2;max-width:108px;word-break:break-all;
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.slot .s-nm{position:relative;z-index:1;font-size:11px;font-weight:700;color:var(--ink);text-align:center;
+  padding:0 8px;line-height:1.3;max-width:108px;word-break:break-all;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .slot .s-idx{position:absolute;top:8px;left:50%;transform:translateX(-50%);font-family:'Orbitron';
   font-size:9px;color:var(--cyan);z-index:1;letter-spacing:1px}
-.slot.empty-slot .s-emo{opacity:.25}
 .slot.empty-slot .hex{border-style:dashed;animation:emptypulse 2.6s ease-in-out infinite}
 @keyframes emptypulse{0%,100%{border-color:rgba(120,160,255,.25)}50%{border-color:rgba(120,160,255,.55)}}
 .slot.empty-slot .s-nm{color:var(--ink-faint)}
@@ -244,10 +236,6 @@ main{flex:1;overflow:hidden;position:relative}
 .lo-card:hover{transform:translateY(-4px);border-color:var(--line-bright);box-shadow:0 14px 34px rgba(0,0,0,.5),0 0 24px -6px var(--acc)}
 .lo-card::after{content:"";position:absolute;left:0;top:0;width:100%;height:3px;background:var(--acc);box-shadow:0 0 12px var(--acc)}
 .lo-top{display:flex;align-items:center;gap:11px;margin-bottom:12px}
-.lo-emo{width:40px;height:40px;display:grid;place-items:center;transform:rotate(45deg);
-  border:1px solid var(--line);border-radius:10px;background:rgba(0,0,0,.25)}
-.lo-emo b{transform:rotate(-45deg);font-style:normal;font-family:'Rajdhani','Noto Sans SC',sans-serif;
-  font-weight:700;font-size:15px;color:var(--acc,var(--cyan))}
 .lo-name{font-size:15px;font-weight:700;color:var(--ink)}
 .lo-name .en{font-family:'Rajdhani';font-size:11px;color:var(--ink-faint);letter-spacing:2px;display:block}
 .lo-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px;min-height:46px}
@@ -293,12 +281,6 @@ main{flex:1;overflow:hidden;position:relative}
 .modal .m-scan{position:absolute;inset:0;pointer-events:none;opacity:.4;
   background:repeating-linear-gradient(0deg,rgba(120,200,255,.06) 0 2px,transparent 2px 5px)}
 .m-top .row{display:flex;gap:16px;align-items:center;position:relative;z-index:1}
-.m-emo{width:74px;height:74px;flex:0 0 auto;display:grid;place-items:center;
-  transform:rotate(45deg);border-radius:18px;border:1px solid var(--line-bright);
-  background:radial-gradient(circle at 38% 32%,rgba(255,255,255,.15),rgba(0,0,0,.4));
-  box-shadow:0 0 30px -4px var(--acc,rgba(95,247,255,.5))}
-.m-emo b{transform:rotate(-45deg);font-style:normal;font-family:'Rajdhani','Noto Sans SC',sans-serif;
-  font-weight:700;font-size:24px;color:var(--acc,var(--cyan))}
 .m-id{flex:1;min-width:0}
 .m-id .nm{font-size:20px;font-weight:900;color:#fff;line-height:1.2;word-break:break-all}
 .m-id .meta{display:flex;gap:8px;margin-top:9px;flex-wrap:wrap;align-items:center}
@@ -505,31 +487,30 @@ const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;'
 const api=window.skapi;
 
 /* ---- group meta(阵营):未知分组必走 fallback,不假设分组全集 ----
-   徽记 = 单字单色徽记:通用分组用单个汉字,专名分组(jarvis/workbuddy/yiqiai)
-   用单个大写首字母(低噪禁 emoji,分组识别主要靠分组色光条) */
+   无徽记:分组只由卡片左侧分组色光条 + 筛选 chip(色点+中文名)表达,
+   同一信息不做第二遍视觉编码 */
 const GROUPS={
-  tools:{m:"工",cn:"工具",acc:"#6fe3ff"},
-  utils:{m:"杂",cn:"实用",acc:"#7cffb2"},
-  "web-creative":{m:"网",cn:"网页创作",acc:"#ff6fd8"},
-  media:{m:"媒",cn:"媒体",acc:"#ffa94d"},
-  jarvis:{m:"J",cn:"贾维斯",acc:"#a88bff"},
-  xhs:{m:"红",cn:"小红书",acc:"#ff7a8a"},
-  contracts:{m:"契",cn:"合同",acc:"#ffd27a"},
-  yiqiai:{m:"Y",cn:"一起AI",acc:"#ffd27a"},
-  workbuddy:{m:"W",cn:"协作",acc:"#5fc9ff"},
-  lark:{m:"外",cn:"飞书",acc:"#8b95c9"},
-  external:{m:"外",cn:"外部",acc:"#8b95c9"}
+  tools:{cn:"工具",acc:"#6fe3ff"},
+  utils:{cn:"实用",acc:"#7cffb2"},
+  "web-creative":{cn:"网页创作",acc:"#ff6fd8"},
+  media:{cn:"媒体",acc:"#ffa94d"},
+  jarvis:{cn:"贾维斯",acc:"#a88bff"},
+  xhs:{cn:"小红书",acc:"#ff7a8a"},
+  contracts:{cn:"合同",acc:"#ffd27a"},
+  yiqiai:{cn:"一起AI",acc:"#ffd27a"},
+  workbuddy:{cn:"协作",acc:"#5fc9ff"},
+  lark:{cn:"飞书",acc:"#8b95c9"},
+  external:{cn:"外部",acc:"#8b95c9"}
 };
-const mono=s=>(String(s||'?').trim()[0]||'?').toUpperCase();
-const GM=g=>GROUPS[g]||{m:mono(g),cn:g,acc:"#6fe3ff"};
+const GM=g=>GROUPS[g]||{cn:g,acc:"#6fe3ff"};
 const LO_META={
-  web:{m:"网",cn:"网页创作队",acc:"#ff6fd8"},
-  media:{m:"媒",cn:"媒体生产队",acc:"#ffa94d"},
-  jarvis:{m:"J",cn:"贾维斯全军",acc:"#a88bff"},
-  xhs:{m:"红",cn:"小红书突击队",acc:"#ff7a8a"},
-  contracts:{m:"契",cn:"合同审查组",acc:"#ffd27a"}
+  web:{cn:"网页创作队",acc:"#ff6fd8"},
+  media:{cn:"媒体生产队",acc:"#ffa94d"},
+  jarvis:{cn:"贾维斯全军",acc:"#a88bff"},
+  xhs:{cn:"小红书突击队",acc:"#ff7a8a"},
+  contracts:{cn:"合同审查组",acc:"#ffd27a"}
 };
-const LM=k=>LO_META[k]||{m:mono(k),cn:k+" 小队",acc:"#6fe3ff"};
+const LM=k=>LO_META[k]||{cn:k+" 小队",acc:"#6fe3ff"};
 
 /* 来源分类(平级,非优劣):update.channel → github / self / web */
 function source(s){const ch=(s.update||{}).channel;
@@ -604,8 +585,7 @@ function card(s){
   const m=GM(s.group),src=source(s),sm=SRC_META[src],pf=prof(s);
   const inst=isInstalled(s.name);
   return `<div class="card${s.tier==='global'?' rare5':''}" style="--acc:${m.acc}" data-open="${esc(s.name)}">
-    <div class="top"><div class="emo"><b>${m.m}</b></div><div class="src-tag src-${src}">${sm.tag}</div></div>
-    <div class="nm">${esc(s.name)}</div>
+    <div class="top"><div class="nm">${esc(s.name)}</div><div class="src-tag src-${src}">${sm.tag}</div></div>
     <div class="grp">${esc(m.cn)} · ${esc(s.group)}</div>
     ${starRow(s)}
     <div class="badges">
@@ -648,17 +628,17 @@ function renderEquip(){
   /* slots = 本项目已装(真软链) */
   const eq=S.installed.map(byName).filter(Boolean);
   let h='';
-  eq.forEach((s,i)=>{const m=GM(s.group);
+  eq.forEach((s,i)=>{
     h+=`<div class="slot filled${s.name===animName?' pop':''}" data-open="${esc(s.name)}">
       <span class="s-idx">${String(i+1).padStart(2,'0')}</span>
-      <span class="s-emo" style="color:${m.acc}">${m.m}</span><span class="s-nm">${esc(s.name)}</span></div>`;});
-  h+=`<div class="slot empty-slot" data-act="goto-inv"><span class="s-idx">＋</span><span class="s-emo">＋</span><span class="s-nm">${S.proj?'去背包装备':'先选项目'}</span></div>`;
+      <span class="s-nm">${esc(s.name)}</span></div>`;});
+  h+=`<div class="slot empty-slot" data-act="goto-inv"><span class="s-idx">＋</span><span class="s-nm">${S.proj?'去背包装备':'先选项目'}</span></div>`;
   $('slots').innerHTML=h;$('slot-count').textContent=eq.length;animName=null;
   /* loadouts */
   $('loadouts').innerHTML=Object.entries(HUB.loadouts||{}).map(([k,arr])=>{
     const m=LM(k),shown=arr.slice(0,4),extra=arr.length-shown.length;
     return `<div class="lo-card" style="--acc:${m.acc}">
-      <div class="lo-top"><div class="lo-emo"><b>${m.m}</b></div>
+      <div class="lo-top">
         <div class="lo-name">${esc(m.cn)}<span class="en">${arr.length} 件</span></div></div>
       <div class="lo-chips">${shown.map(x=>`<span>${esc(x)}</span>`).join('')}${extra>0?`<span class="more">+${extra} 更多</span>`:''}</div>
       <button class="lo-equip" data-lo="${esc(k)}">一键出战</button></div>`;}).join('');
@@ -718,10 +698,9 @@ async function openCard(n){
   $('modal').innerHTML=`
     <div class="m-close" data-act="close-modal">✕</div>
     <div class="m-top" style="--acc:${m.acc}"><div class="m-scan"></div>
-      <div class="row"><div class="m-emo" style="--acc:${m.acc}"><b>${m.m}</b></div>
+      <div class="row">
         <div class="m-id"><div class="nm">${esc(n)}</div>
           <div class="meta"><span class="src-tag src-${src}">${sm.tag}</span>
-            <span class="grp-tag">${esc(m.cn)} · ${esc(s.group)}</span>
             ${isG&&!s.external?'<span class="grp-tag" style="color:var(--gold)">★★★★★ 常驻</span>':''}
             ${!isG&&!s.external?'<span class="grp-tag" style="color:var(--violet)">★★★★ 按需</span>':''}
             ${inst?'<span class="grp-tag" style="color:var(--ok)">✓ 已装入项目</span>':''}
@@ -730,6 +709,7 @@ async function openCard(n){
       <div class="m-desc" style="--acc:${m.acc}">${esc(s.desc)||'(registry 未填描述)'}</div>
       <div class="m-prof"><div class="lab"><span>熟练度(来自真实调用日志)</span><b>${pf.txt}</b></div>
         <div class="track"><i style="width:0%" data-w="${pf.pct}"></i></div></div>
+      <div class="m-row"><span class="k">分组</span><span class="v">${esc(m.cn)} · ${esc(s.group)}</span></div>
       <div class="m-row"><span class="k">来源</span><span class="v" style="color:${sm.col}">${sm.cn}</span></div>
       <div class="m-row"><span class="k">挂载层</span><span class="v">${s.external?'外部常驻':isG?'常驻 global':'按需 on-demand'}</span></div>
       <div class="m-row"><span class="k">分发对象</span><span class="v">${esc((s.agents||[]).join(' · '))||'—'}</span></div>
