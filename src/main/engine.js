@@ -133,7 +133,7 @@ function projectInfo(proj) {
   return [...installed];
 }
 
-const recentProjects = () => readState().recent || [];
+const recentProjects = () => (readState().recent || []).filter(p => fs.existsSync(p)); // 已删目录不再展示
 const readSkillMd = name => { try { return fs.readFileSync(path.join(SK, name, 'SKILL.md'), 'utf8'); } catch { return '(无 SKILL.md)'; } };
 
 // 删除 skill:撤掉全局+近期项目的软链,删 skill 目录,移出 registry/loadouts。不可撤销。
