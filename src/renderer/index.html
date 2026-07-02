@@ -112,8 +112,7 @@ main{flex:1;overflow:hidden;position:relative}
 .screen::-webkit-scrollbar-track{background:rgba(255,255,255,.03)}
 /* section title */
 .sec-h{display:flex;align-items:center;gap:12px;margin:6px 0 16px}
-.sec-h h2{font-family:'Orbitron';font-size:16px;letter-spacing:3px;color:var(--ink);text-transform:uppercase}
-.sec-h .cn{font-size:13px;color:var(--ink-faint);letter-spacing:3px;font-weight:500}
+.sec-h h2{font-family:'Orbitron','Noto Sans SC',sans-serif;font-size:16px;letter-spacing:3px;color:var(--ink)}
 .sec-h .ln{flex:1;height:1px;background:linear-gradient(90deg,var(--line-bright),transparent)}
 .sec-h .tag{font-family:'Rajdhani';font-size:12px;color:var(--cyan);border:1px solid var(--line);padding:3px 10px;
   letter-spacing:1px;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
@@ -164,8 +163,8 @@ main{flex:1;overflow:hidden;position:relative}
 .card .emo{width:42px;height:42px;display:grid;place-items:center;flex:0 0 auto;
   background:radial-gradient(circle at 40% 35%,rgba(255,255,255,.1),rgba(0,0,0,.25));
   border:1px solid var(--line);transform:rotate(45deg);border-radius:11px}
-.card .emo b{transform:rotate(-45deg);font-style:normal;font-family:'Rajdhani',sans-serif;
-  font-weight:700;font-size:13px;letter-spacing:1.5px;color:var(--acc,var(--cyan))}
+.card .emo b{transform:rotate(-45deg);font-style:normal;font-family:'Rajdhani','Noto Sans SC',sans-serif;
+  font-weight:700;font-size:15px;color:var(--acc,var(--cyan))}
 .card .src-tag{font-family:'Rajdhani';font-size:9.5px;font-weight:700;letter-spacing:1px;padding:3px 7px;
   border-radius:3px;white-space:nowrap;border:1px solid currentColor;line-height:1}
 .src-github{color:var(--src-github)}.src-self{color:var(--src-self)}.src-web{color:var(--src-web)}
@@ -221,8 +220,8 @@ main{flex:1;overflow:hidden;position:relative}
   background:linear-gradient(165deg,rgba(30,52,98,.92),rgba(12,22,52,.92))}
 .slot:hover{transform:translateY(-5px)}
 .slot:hover .hex{border-color:var(--cyan);box-shadow:0 0 30px rgba(95,247,255,.6)}
-.slot .s-emo{position:relative;z-index:1;font-family:'Rajdhani',sans-serif;font-weight:700;
-  font-size:17px;letter-spacing:2px;color:var(--cyan);filter:drop-shadow(0 4px 8px rgba(0,0,0,.6))}
+.slot .s-emo{position:relative;z-index:1;font-family:'Rajdhani','Noto Sans SC',sans-serif;font-weight:700;
+  font-size:18px;color:var(--cyan);filter:drop-shadow(0 4px 8px rgba(0,0,0,.6))}
 .slot .s-nm{position:relative;z-index:1;font-size:10.5px;font-weight:700;color:var(--ink);text-align:center;
   padding:0 8px;line-height:1.2;max-width:108px;word-break:break-all;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -247,8 +246,8 @@ main{flex:1;overflow:hidden;position:relative}
 .lo-top{display:flex;align-items:center;gap:11px;margin-bottom:12px}
 .lo-emo{width:40px;height:40px;display:grid;place-items:center;transform:rotate(45deg);
   border:1px solid var(--line);border-radius:10px;background:rgba(0,0,0,.25)}
-.lo-emo b{transform:rotate(-45deg);font-style:normal;font-family:'Rajdhani',sans-serif;
-  font-weight:700;font-size:13px;letter-spacing:1.5px;color:var(--acc,var(--cyan))}
+.lo-emo b{transform:rotate(-45deg);font-style:normal;font-family:'Rajdhani','Noto Sans SC',sans-serif;
+  font-weight:700;font-size:15px;color:var(--acc,var(--cyan))}
 .lo-name{font-size:15px;font-weight:700;color:var(--ink)}
 .lo-name .en{font-family:'Rajdhani';font-size:11px;color:var(--ink-faint);letter-spacing:2px;display:block}
 .lo-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px;min-height:46px}
@@ -266,7 +265,6 @@ main{flex:1;overflow:hidden;position:relative}
 .shelf.goldline{border-color:rgba(245,166,35,.3)}
 .shelf .lk-head{display:flex;align-items:center;gap:12px;margin-bottom:16px}
 .shelf .lk-head h3{font-size:16px;font-weight:900;color:var(--ink)}
-.shelf .lk-head h3 .en{font-family:'Rajdhani';font-size:11px;color:var(--lock);letter-spacing:3px;display:block;font-weight:600}
 .shelf .lk-lock{margin-left:auto;font-family:'Rajdhani';font-size:11px;letter-spacing:1px;color:var(--lock);
   border:1px solid rgba(139,149,201,.4);padding:5px 12px;background:rgba(139,149,201,.08);
   clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
@@ -299,8 +297,8 @@ main{flex:1;overflow:hidden;position:relative}
   transform:rotate(45deg);border-radius:18px;border:1px solid var(--line-bright);
   background:radial-gradient(circle at 38% 32%,rgba(255,255,255,.15),rgba(0,0,0,.4));
   box-shadow:0 0 30px -4px var(--acc,rgba(95,247,255,.5))}
-.m-emo b{transform:rotate(-45deg);font-style:normal;font-family:'Rajdhani',sans-serif;
-  font-weight:700;font-size:20px;letter-spacing:2px;color:var(--acc,var(--cyan))}
+.m-emo b{transform:rotate(-45deg);font-style:normal;font-family:'Rajdhani','Noto Sans SC',sans-serif;
+  font-weight:700;font-size:24px;color:var(--acc,var(--cyan))}
 .m-id{flex:1;min-width:0}
 .m-id .nm{font-size:20px;font-weight:900;color:#fff;line-height:1.2;word-break:break-all}
 .m-id .meta{display:flex;gap:8px;margin-top:9px;flex-wrap:wrap;align-items:center}
@@ -405,7 +403,7 @@ main{flex:1;overflow:hidden;position:relative}
   <header>
     <div class="logo">
       <div class="mark"><div class="core"></div></div>
-      <div><h1>SKILLHUB</h1><div class="sub">STELLAR · SKILL TERMINAL</div></div>
+      <div><h1>SKILLHUB</h1><div class="sub">星核 · 技能终端</div></div>
     </div>
     <div class="hdr-spacer"></div>
     <div class="hud-readout">
@@ -415,7 +413,7 @@ main{flex:1;overflow:hidden;position:relative}
     </div>
     <div class="commander">
       <div class="av"><i>易</i></div>
-      <div><div class="nm">易虎 · Commander</div><div class="lv">星核终端 · SYNC ONLINE</div></div>
+      <div><div class="nm">易虎 · 指挥官</div><div class="lv">星核终端 · 同步在线</div></div>
     </div>
   </header>
 
@@ -428,7 +426,7 @@ main{flex:1;overflow:hidden;position:relative}
 
   <main>
     <section class="screen show" id="screen-inventory">
-      <div class="sec-h"><h2>Inventory</h2><span class="cn">技能仓库</span><div class="ln"></div><div class="tag" id="inv-count">—</div></div>
+      <div class="sec-h"><h2>技能仓库</h2><div class="ln"></div><div class="tag" id="inv-count">—</div></div>
       <div class="toolbar">
         <div class="search"><span class="ico">⌕</span><input id="search" type="text" placeholder="搜索技能名称 / 描述 / 分类…" autocomplete="off"></div>
         <div class="filters" id="src-filters">
@@ -456,18 +454,18 @@ main{flex:1;overflow:hidden;position:relative}
       </div>
       <div class="recent" id="recent"></div>
 
-      <div class="sec-h"><h2>Battle Deck</h2><span class="cn">本项目出战槽</span><div class="ln"></div><div class="tag" id="deck-tag">—</div></div>
+      <div class="sec-h"><h2>本项目出战槽</h2><div class="ln"></div><div class="tag" id="deck-tag">—</div></div>
       <div class="equip-deck" style="margin-bottom:26px">
         <div class="deck-meta"><div class="cap">已装备 <b id="slot-count">0</b> 个按需技能 · 软链实时生效,点击槽位可卸下</div></div>
         <div class="slots" id="slots"></div>
       </div>
 
-      <div class="sec-h"><h2>Squad Presets</h2><span class="cn">套装 · 队伍预设</span><div class="ln"></div><div class="tag">一键出战</div></div>
+      <div class="sec-h"><h2>套装 · 队伍预设</h2><div class="ln"></div><div class="tag">一键出战</div></div>
       <div class="loadouts" id="loadouts" style="margin-bottom:26px"></div>
 
       <div class="shelf goldline" style="margin-bottom:26px">
         <div class="lk-head">
-          <h3>常驻出战 · 五星编队<span class="en">GLOBAL TIER · ALWAYS DEPLOYED</span></h3>
+          <h3>常驻出战 · 五星编队</h3>
           <span class="lk-lock gold">★ 全项目自带</span></div>
         <div class="lk-grid" id="global-grid"></div>
         <p class="ft">这些五星技能常驻 <b style="color:var(--ink-dim)">~/.claude · ~/.codex · ~/.cursor</b> 全局层,每个项目开箱即用,无需单独装备。</p>
@@ -475,7 +473,7 @@ main{flex:1;overflow:hidden;position:relative}
 
       <div class="shelf" id="lark-shelf" style="display:none">
         <div class="lk-head">
-          <h3>外部托管 · 官方系列<span class="en">EXTERNAL · MANAGED SERIES</span></h3>
+          <h3>外部托管 · 官方系列</h3>
           <span class="lk-lock">只读</span></div>
         <div class="lk-grid" id="lark-grid"></div>
         <p class="ft">由上游(如 <b style="color:var(--ink-dim)">larksuite/cli</b>)托管并自动更新,常驻在线;本终端只读展示,不可装卸。</p>
@@ -484,13 +482,13 @@ main{flex:1;overflow:hidden;position:relative}
 
     <section class="screen" id="screen-record">
       <div class="stub"><div style="width:100%;display:flex;flex-direction:column;align-items:center">
-        <div class="ic">◈</div><h3 style="margin-bottom:22px">COMBAT LOG · 技能战绩</h3>
+        <div class="ic">◈</div><h3 style="margin-bottom:22px">技能战绩</h3>
         <div class="record-grid" id="record-grid"></div>
       </div></div>
     </section>
 
     <section class="screen" id="screen-settings">
-      <div class="sec-h"><h2>Terminal Config</h2><span class="cn">终端设置</span><div class="ln"></div></div>
+      <div class="sec-h"><h2>终端设置</h2><div class="ln"></div></div>
       <div class="set-wrap" id="settings-body"></div>
     </section>
   </main>
@@ -507,38 +505,39 @@ const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;'
 const api=window.skapi;
 
 /* ---- group meta(阵营):未知分组必走 fallback,不假设分组全集 ----
-   徽记 = 两字母单色 monogram(低噪禁 emoji,分组识别主要靠分组色光条) */
+   徽记 = 单字单色徽记:通用分组用单个汉字,专名分组(jarvis/workbuddy/yiqiai)
+   用单个大写首字母(低噪禁 emoji,分组识别主要靠分组色光条) */
 const GROUPS={
-  tools:{m:"TL",cn:"工具",acc:"#6fe3ff"},
-  utils:{m:"UT",cn:"实用",acc:"#7cffb2"},
-  "web-creative":{m:"WC",cn:"网页创作",acc:"#ff6fd8"},
-  media:{m:"ME",cn:"媒体",acc:"#ffa94d"},
-  jarvis:{m:"JA",cn:"贾维斯",acc:"#a88bff"},
-  xhs:{m:"XH",cn:"小红书",acc:"#ff7a8a"},
-  contracts:{m:"CT",cn:"合同",acc:"#ffd27a"},
-  yiqiai:{m:"YQ",cn:"一起AI",acc:"#ffd27a"},
-  workbuddy:{m:"WB",cn:"协作",acc:"#5fc9ff"},
-  lark:{m:"LK",cn:"飞书",acc:"#8b95c9"},
-  external:{m:"EX",cn:"外部",acc:"#8b95c9"}
+  tools:{m:"工",cn:"工具",acc:"#6fe3ff"},
+  utils:{m:"杂",cn:"实用",acc:"#7cffb2"},
+  "web-creative":{m:"网",cn:"网页创作",acc:"#ff6fd8"},
+  media:{m:"媒",cn:"媒体",acc:"#ffa94d"},
+  jarvis:{m:"J",cn:"贾维斯",acc:"#a88bff"},
+  xhs:{m:"红",cn:"小红书",acc:"#ff7a8a"},
+  contracts:{m:"契",cn:"合同",acc:"#ffd27a"},
+  yiqiai:{m:"Y",cn:"一起AI",acc:"#ffd27a"},
+  workbuddy:{m:"W",cn:"协作",acc:"#5fc9ff"},
+  lark:{m:"外",cn:"飞书",acc:"#8b95c9"},
+  external:{m:"外",cn:"外部",acc:"#8b95c9"}
 };
-const mono=s=>String(s||'??').replace(/[^a-zA-Z0-9]/g,'').slice(0,2).toUpperCase()||'??';
+const mono=s=>(String(s||'?').trim()[0]||'?').toUpperCase();
 const GM=g=>GROUPS[g]||{m:mono(g),cn:g,acc:"#6fe3ff"};
 const LO_META={
-  web:{m:"WC",cn:"网页创作队",en:"WEB CREATIVE",acc:"#ff6fd8"},
-  media:{m:"ME",cn:"媒体生产队",en:"MEDIA STUDIO",acc:"#ffa94d"},
-  jarvis:{m:"JA",cn:"贾维斯全军",en:"JARVIS LEGION",acc:"#a88bff"},
-  xhs:{m:"XH",cn:"小红书突击队",en:"XHS STRIKE",acc:"#ff7a8a"},
-  contracts:{m:"CT",cn:"合同审查组",en:"CONTRACTS",acc:"#ffd27a"}
+  web:{m:"网",cn:"网页创作队",acc:"#ff6fd8"},
+  media:{m:"媒",cn:"媒体生产队",acc:"#ffa94d"},
+  jarvis:{m:"J",cn:"贾维斯全军",acc:"#a88bff"},
+  xhs:{m:"红",cn:"小红书突击队",acc:"#ff7a8a"},
+  contracts:{m:"契",cn:"合同审查组",acc:"#ffd27a"}
 };
-const LM=k=>LO_META[k]||{m:mono(k),cn:k+" 小队",en:k.toUpperCase(),acc:"#6fe3ff"};
+const LM=k=>LO_META[k]||{m:mono(k),cn:k+" 小队",acc:"#6fe3ff"};
 
 /* 来源分类(平级,非优劣):update.channel → github / self / web */
 function source(s){const ch=(s.update||{}).channel;
   if(ch==='github'||ch==='manual-port')return'github';
   if(ch==='local'||!ch)return'self';return'web';}
-const SRC_META={github:{cn:"GitHub 开源",tag:"GITHUB",col:"var(--src-github)"},
-  self:{cn:"自制本地",tag:"SELF-MADE",col:"var(--src-self)"},
-  web:{cn:"网站/外部获取",tag:"WEB",col:"var(--src-web)"}};
+const SRC_META={github:{cn:"GitHub 开源",tag:"GitHub",col:"var(--src-github)"},
+  self:{cn:"自制本地",tag:"自制",col:"var(--src-self)"},
+  web:{cn:"网站/外部获取",tag:"网站",col:"var(--src-web)"}};
 
 /* 熟练度:唯一诚实的强度轴 = 真实使用日志(lastUsed 距今天数) */
 function prof(s){
@@ -573,7 +572,7 @@ async function load(){
   refreshAll();
 }
 function renderOnboard(){
-  $('inv-grid').innerHTML=`<div class="onboard" style="grid-column:1/-1"><h2>还没有连接 SKILL HUB</h2>
+  $('inv-grid').innerHTML=`<div class="onboard" style="grid-column:1/-1"><h2>还没有连接 Skill Hub</h2>
    <p>hub 是一个 git 仓库,集中管理你的全部 skill。选一种方式接入星核:</p>
    <div class="ob-card"><b>① 克隆团队 hub</b><p>拿到 git 地址,克隆到本地即可使用同一套 skill。</p>
      <div class="inrow"><input class="inp" id="obUrl" placeholder="git@github.com:org/skill-hub.git"></div>
@@ -644,7 +643,7 @@ function renderEquip(){
     :'<b>未选择项目</b><p>选一个项目目录,把 skill 软链进它的 .claude / .codex / .cursor</p>';
   $('deck-tag').textContent=S.proj?S.proj.split('/').pop():'未选项目';
   $('recent').innerHTML=S.recent.length
-    ?'<span class="lbl">RECENT ▸</span>'+S.recent.map(p=>`<button class="chip${S.proj===p?' on':''}" data-proj="${esc(p)}">${esc(p.split('/').pop())}</button>`).join('')
+    ?'<span class="lbl">最近 ▸</span>'+S.recent.map(p=>`<button class="chip${S.proj===p?' on':''}" data-proj="${esc(p)}">${esc(p.split('/').pop())}</button>`).join('')
     :'';
   /* slots = 本项目已装(真软链) */
   const eq=S.installed.map(byName).filter(Boolean);
@@ -660,7 +659,7 @@ function renderEquip(){
     const m=LM(k),shown=arr.slice(0,4),extra=arr.length-shown.length;
     return `<div class="lo-card" style="--acc:${m.acc}">
       <div class="lo-top"><div class="lo-emo"><b>${m.m}</b></div>
-        <div class="lo-name">${esc(m.cn)}<span class="en">${esc(m.en)} · ${arr.length} 件</span></div></div>
+        <div class="lo-name">${esc(m.cn)}<span class="en">${arr.length} 件</span></div></div>
       <div class="lo-chips">${shown.map(x=>`<span>${esc(x)}</span>`).join('')}${extra>0?`<span class="more">+${extra} 更多</span>`:''}</div>
       <button class="lo-equip" data-lo="${esc(k)}">一键出战</button></div>`;}).join('');
   /* global 常驻 */
@@ -669,7 +668,7 @@ function renderEquip(){
   /* external */
   const ext=HUB.skills.filter(s=>s.external);
   $('lark-shelf').style.display=ext.length?'':'none';
-  $('lark-grid').innerHTML=ext.map(s=>`<div class="lk-item" data-open="${esc(s.name)}"><span class="d"></span><span class="t">${esc(s.name)}</span><span class="auto">AUTO</span></div>`).join('');
+  $('lark-grid').innerHTML=ext.map(s=>`<div class="lk-item" data-open="${esc(s.name)}"><span class="d"></span><span class="t">${esc(s.name)}</span><span class="auto">自动</span></div>`).join('');
 }
 let animName=null;
 
@@ -729,13 +728,13 @@ async function openCard(n){
             ${s.external?'<span class="grp-tag" style="color:var(--lock)">只读</span>':''}</div></div></div></div>
     <div class="m-body">
       <div class="m-desc" style="--acc:${m.acc}">${esc(s.desc)||'(registry 未填描述)'}</div>
-      <div class="m-prof"><div class="lab"><span>熟练度 · PROFICIENCY(来自真实调用日志)</span><b>${pf.txt}</b></div>
+      <div class="m-prof"><div class="lab"><span>熟练度(来自真实调用日志)</span><b>${pf.txt}</b></div>
         <div class="track"><i style="width:0%" data-w="${pf.pct}"></i></div></div>
-      <div class="m-row"><span class="k">来源 Source</span><span class="v" style="color:${sm.col}">${sm.cn}</span></div>
-      <div class="m-row"><span class="k">挂载 Tier</span><span class="v">${s.external?'外部常驻':isG?'常驻 Global':'按需 On-Demand'}</span></div>
-      <div class="m-row"><span class="k">分发 Agents</span><span class="v">${esc((s.agents||[]).join(' · '))||'—'}</span></div>
-      ${s.oss&&s.repo?`<div class="m-row"><span class="k">Upstream</span><span class="v" style="color:var(--src-github);cursor:pointer" data-repo="${esc(s.repo)}">${esc(s.repo.replace('github.com/',''))}</span></div>`:''}
-      ${s.update?`<div class="m-row"><span class="k">更新 Update</span><span class="v" style="max-width:320px;font-size:11px">${esc(s.update.how||s.update.channel)}</span></div>`:''}
+      <div class="m-row"><span class="k">来源</span><span class="v" style="color:${sm.col}">${sm.cn}</span></div>
+      <div class="m-row"><span class="k">挂载层</span><span class="v">${s.external?'外部常驻':isG?'常驻 global':'按需 on-demand'}</span></div>
+      <div class="m-row"><span class="k">分发对象</span><span class="v">${esc((s.agents||[]).join(' · '))||'—'}</span></div>
+      ${s.oss&&s.repo?`<div class="m-row"><span class="k">上游仓库</span><span class="v" style="color:var(--src-github);cursor:pointer" data-repo="${esc(s.repo)}">${esc(s.repo.replace('github.com/',''))}</span></div>`:''}
+      ${s.update?`<div class="m-row"><span class="k">更新方式</span><span class="v" style="max-width:320px;font-size:11px">${esc(s.update.how||s.update.channel)}</span></div>`:''}
       <div class="m-row"><span class="k">最近使用</span><span class="v">${s.lastUsed===null?'未用过':s.lastUsed+' 天前'}</span></div>
       <div class="m-md" id="m-md">SKILL.md 加载中…</div>
       ${actions}

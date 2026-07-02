@@ -8,7 +8,7 @@
 | registry 真数据 | 游戏概念 | 视觉表达 |
 |---|---|---|
 | skill(hub 内) | 藏品/技能卡 | 卡墙(切角卡片,左侧 3px 光条=分组色) |
-| `group` | 阵营 | 分组色 accent + 两字母单色 monogram 徽记(如 media→ME、jarvis→JA,菱形盒内 Rajdhani 字,颜色=分组色)+ 筛选 chip 带分组色小色块 |
+| `group` | 阵营 | 分组色 accent + 单字单色徽记(通用分组单个汉字:tools→工、media→媒、utils→杂、contracts→契、web-creative→网、xhs→红、lark/external→外;专名分组单个大写首字母:jarvis→J、workbuddy→W、yiqiai→Y;菱形盒内,颜色=分组色)+ 筛选 chip 带分组色小色块 |
 | `tier: global`(6 个) | 常驻出战·高稀有度 | ★★★★★ 金 + 「常驻」徽章,全项目自带 |
 | `tier: on-demand`(46 个) | 背包待命·普通稀有度 | ★★★★ 紫,可装入项目 |
 | 项目装配(软链) | 出战槽位 | 六边形 hex 槽,装/卸 = 入槽/出槽动画 |
@@ -20,6 +20,9 @@
 
 **设计红线 · 低噪禁 emoji:界面图标用单色 monogram/极简 SVG,不用 emoji——emoji 堆砌是 AI 生成感的标志。**
 星级 ★ 与 ◈ ✦ ⌖ ✓ ✗ 一类单色文本符号不在此列;分组识别主要靠分组色光条,不靠图标。
+
+**设计红线 · 界面文案全中文:不做中英双语装饰(「背包 BACKPACK」这类对照一律禁止);
+英文只出现在数据本身(skill 名、命令、路径、tier 值如 `global`/`on-demand`、平台名如 GitHub)。**
 
 ## Token 表
 
