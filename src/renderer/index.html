@@ -422,8 +422,8 @@ main{flex:1;overflow:hidden;position:relative}
       </div>
       <div class="filters" id="grp-filters" style="margin-bottom:12px"></div>
       <div class="legend">
-        <span><i class="dot" style="background:var(--gold)"></i>★★★★★ 常驻 global(全项目自带)</span>
-        <span><i class="dot" style="background:var(--violet)"></i>★★★★ 按需 on-demand(装入项目生效)</span>
+        <span><i class="dot" style="background:var(--gold)"></i>★★★★★ 常驻(全项目自带)</span>
+        <span><i class="dot" style="background:var(--violet)"></i>★★★★ 按需(装入项目生效)</span>
         <span class="note" style="font-style:italic;opacity:.85">来源色只是分类,无高下之分</span>
       </div>
       <div class="grid" id="inv-grid"></div>
@@ -586,7 +586,7 @@ function card(s){
   const inst=isInstalled(s.name);
   return `<div class="card${s.tier==='global'?' rare5':''}" style="--acc:${m.acc}" data-open="${esc(s.name)}">
     <div class="top"><div class="nm">${esc(s.name)}</div><div class="src-tag src-${src}">${sm.tag}</div></div>
-    <div class="grp">${esc(m.cn)} · ${esc(s.group)}</div>
+    <div class="grp">${esc(m.cn)}</div>
     ${starRow(s)}
     <div class="badges">
       ${s.tier==='global'?'<span class="mini res">常驻</span>':''}
@@ -709,9 +709,9 @@ async function openCard(n){
       <div class="m-desc" style="--acc:${m.acc}">${esc(s.desc)||'(registry 未填描述)'}</div>
       <div class="m-prof"><div class="lab"><span>熟练度(来自真实调用日志)</span><b>${pf.txt}</b></div>
         <div class="track"><i style="width:0%" data-w="${pf.pct}"></i></div></div>
-      <div class="m-row"><span class="k">分组</span><span class="v">${esc(m.cn)} · ${esc(s.group)}</span></div>
+      <div class="m-row"><span class="k">分组</span><span class="v">${esc(m.cn)}</span></div>
       <div class="m-row"><span class="k">来源</span><span class="v" style="color:${sm.col}">${sm.cn}</span></div>
-      <div class="m-row"><span class="k">挂载层</span><span class="v">${s.external?'外部常驻':isG?'常驻 global':'按需 on-demand'}</span></div>
+      <div class="m-row"><span class="k">挂载层</span><span class="v">${s.external?'外部常驻':isG?'常驻':'按需'}</span></div>
       <div class="m-row"><span class="k">分发对象</span><span class="v">${esc((s.agents||[]).join(' · '))||'—'}</span></div>
       ${s.oss&&s.repo?`<div class="m-row"><span class="k">上游仓库</span><span class="v" style="color:var(--src-github);cursor:pointer" data-repo="${esc(s.repo)}">${esc(s.repo.replace('github.com/',''))}</span></div>`:''}
       ${s.update?`<div class="m-row"><span class="k">更新方式</span><span class="v" style="max-width:320px;font-size:11px">${esc(s.update.how||s.update.channel)}</span></div>`:''}
