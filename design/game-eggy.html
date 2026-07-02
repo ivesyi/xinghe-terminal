@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>技能岛 · SkillHub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=ZCOOL+KuaiLe&family=Noto+Sans+SC:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* macaron candy palette */
+  --sky:#5ec9f0; --sky2:#9be0fb;
+  --pink:#ff9ecb; --pink2:#ffc6e3;
+  --lav:#c0a9ff; --lav2:#ddccff;
+  --mint:#7ee6c2; --mint2:#bcf3e0;
+  --butter:#ffd86b; --butter2:#ffe9a8;
+  --peach:#ffb38a; --peach2:#ffd2b5;
+  --coral:#ff8d8d; --coral2:#ffb9b9;
+  --period:#9fb6ff; --period2:#c9d6ff;
+  --sage:#a8d98f; --sage2:#cdedbb;
+  --ink:#5a4a6a;        /* soft purple-brown text */
+  --ink-soft:#9a8caf;
+  --card:#fffdfb;
+  --shadow:#e7b9d8;
+  --r:30px;
+  font-synthesis:none;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:"Noto Sans SC","Baloo 2",sans-serif;
+  color:var(--ink);
+  background:linear-gradient(160deg,#ffe3f3 0%,#e3f3ff 38%,#e8fff4 70%,#fff5e0 100%);
+  background-attachment:fixed;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+/* ===== ambient floating jelly blobs ===== */
+.sky{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.blob{position:absolute;border-radius:50%;filter:blur(6px);opacity:.55;mix-blend-mode:multiply;animation:drift linear infinite}
+.blob::after{content:"";position:absolute;top:14%;left:18%;width:34%;height:28%;border-radius:50%;background:rgba(255,255,255,.7);filter:blur(2px)}
+@keyframes drift{0%{transform:translateY(0) translateX(0) rotate(0)}50%{transform:translateY(-40px) translateX(24px) rotate(8deg)}100%{transform:translateY(0) translateX(0) rotate(0)}}
+.dots{position:fixed;inset:0;z-index:0;background-image:radial-gradient(rgba(255,255,255,.55) 2px,transparent 2px);background-size:46px 46px;opacity:.5;pointer-events:none}
+
+/* ===== shell ===== */
+.app{position:relative;z-index:2;max-width:1240px;margin:0 auto;padding:26px 26px 120px}
+
+/* header */
+.top{display:flex;align-items:center;gap:18px;margin-bottom:22px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:14px}
+.logo .egg{
+  width:66px;height:72px;border-radius:50% 50% 48% 48%/58% 58% 42% 42%;
+  background:radial-gradient(circle at 34% 30%,#fff 0 14%,#ffd6ec 38%,#ff9ecb 70%,#ff7bb8 100%);
+  box-shadow:0 12px 0 -2px var(--shadow),0 18px 30px rgba(255,124,184,.45),inset 0 -8px 14px rgba(255,255,255,.6);
+  position:relative;animation:bob 3.4s ease-in-out infinite;flex:none;
+}
+.logo .egg::before{content:"🪄";position:absolute;inset:0;display:grid;place-items:center;font-size:30px;transform:translateY(2px);filter:drop-shadow(0 2px 0 rgba(255,255,255,.6))}
+@keyframes bob{50%{transform:translateY(-7px) rotate(-3deg)}}
+.logo h1{font-family:"ZCOOL KuaiLe",cursive;font-size:34px;line-height:1;letter-spacing:1px;
+  background:linear-gradient(95deg,#ff6fb1,#9a6bff 55%,#48b6ef);-webkit-background-clip:text;background-clip:text;color:transparent;
+  text-shadow:0 3px 0 rgba(255,255,255,.5)}
+.logo .sub{font-size:12.5px;color:var(--ink-soft);font-weight:700;margin-top:3px;letter-spacing:.5px}
+
+.stats{margin-left:auto;display:flex;gap:12px;flex-wrap:wrap}
+.stat{background:var(--card);border-radius:22px;padding:10px 18px;display:flex;align-items:center;gap:10px;
+  box-shadow:0 8px 0 -2px var(--shadow),0 14px 22px rgba(180,140,200,.22);border:3px solid #fff}
+.stat .v{font-family:"Baloo 2";font-weight:800;font-size:22px;line-height:1;color:var(--ink)}
+.stat .l{font-size:11px;font-weight:700;color:var(--ink-soft)}
+.stat .ico{font-size:20px}
+
+/* nav tabs */
+.nav{display:flex;gap:10px;background:rgba(255,255,255,.6);backdrop-filter:blur(10px);
+  border-radius:26px;padding:8px;margin-bottom:24px;width:fit-content;
+  box-shadow:0 10px 0 -3px var(--shadow),0 16px 28px rgba(180,140,200,.2);border:3px solid #fff}
+.tab{font-family:"ZCOOL KuaiLe",cursive;font-size:17px;border:none;cursor:pointer;color:var(--ink-soft);
+  background:transparent;padding:11px 22px;border-radius:20px;display:flex;align-items:center;gap:8px;
+  transition:transform .25s cubic-bezier(.34,1.7,.5,1),color .2s,background .2s}
+.tab .e{font-size:19px}
+.tab:hover{transform:translateY(-3px) scale(1.04);color:var(--ink)}
+.tab.on{color:#fff;background:linear-gradient(150deg,#ff8ec5,#b07bff);box-shadow:0 7px 0 -1px #c98ad6,0 12px 18px rgba(176,123,255,.45);transform:translateY(-2px)}
+.tab.on:hover{transform:translateY(-4px) scale(1.05)}
+
+/* view switching */
+.view{display:none;animation:pop-in .5s cubic-bezier(.2,1.4,.4,1) both}
+.view.on{display:block}
+@keyframes pop-in{0%{opacity:0;transform:translateY(18px) scale(.97)}100%{opacity:1;transform:none}}
+
+.sec-title{font-family:"ZCOOL KuaiLe",cursive;font-size:23px;display:flex;align-items:center;gap:11px;margin:6px 2px 16px}
+.sec-title .pip{font-size:13px;font-weight:700;font-family:"Baloo 2";background:#fff;padding:4px 13px;border-radius:14px;color:var(--ink-soft);box-shadow:0 4px 0 -1px var(--shadow)}
+.sec-title small{font-size:13px;font-weight:600;color:var(--ink-soft);font-family:"Noto Sans SC"}
+
+/* ===== filter bar ===== */
+.filters{display:flex;flex-direction:column;gap:13px;margin-bottom:22px}
+.searchwrap{position:relative;max-width:380px}
+.searchwrap .mag{position:absolute;left:18px;top:50%;transform:translateY(-50%);font-size:18px}
+.search{width:100%;font-family:"Noto Sans SC";font-weight:600;font-size:15px;color:var(--ink);
+  border:3px solid #fff;background:var(--card);border-radius:24px;padding:14px 18px 14px 48px;outline:none;
+  box-shadow:0 7px 0 -2px var(--shadow),0 12px 20px rgba(180,140,200,.18);transition:transform .2s,box-shadow .2s}
+.search:focus{transform:translateY(-2px);box-shadow:0 9px 0 -2px #f0a8d8,0 16px 24px rgba(180,140,200,.3)}
+.search::placeholder{color:#c9bbd6}
+.chips{display:flex;gap:9px;flex-wrap:wrap}
+.chip{font-family:"Noto Sans SC";font-weight:700;font-size:13px;cursor:pointer;border:3px solid #fff;
+  background:var(--card);color:var(--ink-soft);padding:8px 15px;border-radius:18px;display:flex;align-items:center;gap:6px;
+  box-shadow:0 5px 0 -1px var(--shadow);transition:transform .22s cubic-bezier(.34,1.7,.5,1),color .2s,background .2s,box-shadow .2s}
+.chip .e{font-size:15px}
+.chip:hover{transform:translateY(-3px)}
+.chip.on{color:#fff;background:linear-gradient(150deg,#74d3f4,#9a6bff);box-shadow:0 5px 0 -1px #8db8e6;transform:translateY(-1px)}
+.chip.src.on{background:linear-gradient(150deg,var(--c1,#74d3f4),var(--c2,#9a6bff))}
+.filt-row{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+.filt-lbl{font-size:12px;font-weight:700;color:var(--ink-soft);font-family:"ZCOOL KuaiLe";align-self:center}
+
+/* ===== tile grid ===== */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:18px}
+.tile{position:relative;cursor:pointer;border-radius:var(--r);padding:18px 15px 16px;border:4px solid #fff;
+  background:var(--tint,#fff);overflow:hidden;
+  box-shadow:0 12px 0 -3px var(--tsh,#e7b9d8),0 18px 26px rgba(150,120,180,.22);
+  transition:transform .3s cubic-bezier(.34,1.65,.4,1),box-shadow .3s;animation:rise .5s cubic-bezier(.2,1.3,.4,1) both}
+@keyframes rise{0%{opacity:0;transform:translateY(20px) scale(.9)}100%{opacity:1;transform:none}}
+.tile::before{content:"";position:absolute;top:0;left:0;right:0;height:46%;background:linear-gradient(180deg,rgba(255,255,255,.65),rgba(255,255,255,0));pointer-events:none}
+.tile:hover{transform:translateY(-8px) scale(1.035) rotate(-.6deg);box-shadow:0 18px 0 -3px var(--tsh,#e7b9d8),0 26px 34px rgba(150,120,180,.3)}
+.tile:active{transform:translateY(-3px) scale(.99)}
+.tile .icon{width:64px;height:64px;border-radius:22px;display:grid;place-items:center;font-size:33px;margin:0 auto 12px;
+  background:#fff;border:3px solid var(--ring,#fff);position:relative;
+  box-shadow:0 6px 0 -1px var(--tsh,#e7b9d8),inset 0 3px 6px rgba(255,255,255,.8);animation:none}
+.tile:hover .icon{animation:wiggle .6s ease}
+@keyframes wiggle{25%{transform:rotate(-9deg)}55%{transform:rotate(7deg)}80%{transform:rotate(-3deg)}}
+.tile .nm{font-weight:700;font-size:13.5px;text-align:center;line-height:1.3;color:var(--ink);
+  min-height:34px;display:flex;align-items:center;justify-content:center;word-break:break-word}
+.tile .meta{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:9px;flex-wrap:wrap}
+.srcdot{font-size:10px;font-weight:800;font-family:"Baloo 2";color:#fff;padding:3px 9px;border-radius:11px;letter-spacing:.3px;
+  background:var(--sc,#74d3f4);box-shadow:0 3px 0 -1px rgba(0,0,0,.08)}
+.gtag{font-size:10px;font-weight:700;color:var(--ink-soft);background:rgba(255,255,255,.8);padding:3px 8px;border-radius:11px}
+/* level pips */
+.pips{display:flex;gap:3px;justify-content:center;margin-top:9px}
+.pip-l{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.85);box-shadow:inset 0 0 0 2px rgba(120,90,150,.12)}
+.pip-l.f{background:linear-gradient(150deg,#ffd86b,#ff9a3d);box-shadow:0 2px 4px rgba(255,150,40,.5)}
+/* badges */
+.badge{position:absolute;top:10px;font-size:11px;font-weight:800;font-family:"Baloo 2";padding:4px 9px;border-radius:12px;z-index:3}
+.badge.eq{right:10px;background:linear-gradient(150deg,#7ee6a8,#3dcf7a);color:#fff;box-shadow:0 4px 8px rgba(60,200,120,.5)}
+.badge.up{left:10px;background:linear-gradient(150deg,#ffe06b,#ffab3d);color:#7a4b00;box-shadow:0 4px 8px rgba(255,170,60,.55);animation:sparkpulse 1.6s ease-in-out infinite}
+.badge.lk{right:10px;background:linear-gradient(150deg,#cfc2e6,#a892d6);color:#fff;box-shadow:0 4px 8px rgba(150,120,200,.45)}
+@keyframes sparkpulse{50%{transform:scale(1.1) rotate(-4deg);filter:brightness(1.12)}}
+.tile.locked{cursor:default;filter:saturate(.92)}
+.tile.locked:hover{transform:translateY(-4px) scale(1.01)}
+
+/* ===== EQUIP screen ===== */
+.equip-board{background:rgba(255,255,255,.55);backdrop-filter:blur(8px);border:4px solid #fff;border-radius:34px;
+  padding:24px;margin-bottom:26px;box-shadow:0 14px 0 -4px var(--shadow),0 22px 36px rgba(160,130,190,.22)}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px;margin-top:4px}
+.slot{position:relative;border-radius:26px;padding:16px 12px;text-align:center;min-height:150px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  background:var(--tint,#fff);border:4px solid #fff;
+  box-shadow:0 9px 0 -3px var(--tsh,#e7b9d8),0 14px 22px rgba(150,120,180,.2);
+  transition:transform .3s cubic-bezier(.34,1.65,.4,1)}
+.slot:hover{transform:translateY(-5px) rotate(-.8deg)}
+.slot .icon{width:56px;height:56px;border-radius:20px;display:grid;place-items:center;font-size:28px;background:#fff;
+  border:3px solid var(--ring,#fff);box-shadow:0 5px 0 -1px var(--tsh,#e7b9d8)}
+.slot .nm{font-weight:700;font-size:12.5px;line-height:1.25;color:var(--ink)}
+.slot .srcdot{margin-top:2px}
+.slot .pop-x{position:absolute;top:8px;right:8px;width:24px;height:24px;border-radius:50%;border:none;cursor:pointer;
+  background:#fff;color:#ff7ba6;font-weight:800;font-size:15px;line-height:1;box-shadow:0 3px 6px rgba(0,0,0,.15);opacity:0;transition:opacity .2s,transform .2s}
+.slot:hover .pop-x{opacity:1}
+.slot .pop-x:hover{transform:scale(1.15) rotate(90deg)}
+.slot.empty{background:repeating-linear-gradient(135deg,rgba(255,255,255,.5),rgba(255,255,255,.5) 12px,rgba(255,235,250,.5) 12px,rgba(255,235,250,.5) 24px);
+  border:4px dashed #f3c4e0;color:#cab6da;box-shadow:none}
+.slot.empty .plus{font-size:34px;font-weight:800;color:#e3aed0;font-family:"Baloo 2"}
+.slot.empty .nm{color:#c3aed6}
+.slot.justpop{animation:equippop .6s cubic-bezier(.2,1.7,.4,1)}
+@keyframes equippop{0%{transform:scale(.4) rotate(-12deg);opacity:0}55%{transform:scale(1.12) rotate(4deg)}100%{transform:none;opacity:1}}
+
+/* loadout cards */
+.loadouts{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:18px}
+.lo-card{background:var(--tint,#fff);border:4px solid #fff;border-radius:30px;padding:20px;position:relative;overflow:hidden;
+  box-shadow:0 12px 0 -3px var(--tsh,#e7b9d8),0 18px 28px rgba(150,120,180,.22);
+  transition:transform .3s cubic-bezier(.34,1.6,.4,1)}
+.lo-card::before{content:"";position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,.55),transparent);pointer-events:none}
+.lo-card:hover{transform:translateY(-6px) rotate(-.5deg)}
+.lo-head{display:flex;align-items:center;gap:12px;margin-bottom:14px;position:relative}
+.lo-head .e{width:50px;height:50px;border-radius:18px;display:grid;place-items:center;font-size:26px;background:#fff;
+  border:3px solid var(--ring,#fff);box-shadow:0 5px 0 -1px var(--tsh)}
+.lo-head .t{font-family:"ZCOOL KuaiLe";font-size:19px;color:var(--ink)}
+.lo-head .c{font-size:11.5px;color:var(--ink-soft);font-weight:700}
+.lo-mem{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;position:relative}
+.lo-mem span{font-size:11px;font-weight:700;background:rgba(255,255,255,.85);color:var(--ink);padding:4px 10px;border-radius:12px;box-shadow:0 2px 4px rgba(0,0,0,.05)}
+.btn{font-family:"ZCOOL KuaiLe";cursor:pointer;border:none;border-radius:18px;font-size:15px;padding:11px 18px;color:#fff;
+  background:linear-gradient(150deg,#ff8ec5,#b07bff);box-shadow:0 6px 0 -1px #c98ad6,0 10px 16px rgba(176,123,255,.4);
+  transition:transform .22s cubic-bezier(.34,1.7,.5,1),box-shadow .2s;width:100%;position:relative}
+.btn:hover{transform:translateY(-3px)}
+.btn:active{transform:translateY(2px);box-shadow:0 2px 0 -1px #c98ad6}
+.btn.alt{background:linear-gradient(150deg,#74d3f4,#5ab8ed);box-shadow:0 6px 0 -1px #7fb6da}
+.btn.warn{background:linear-gradient(150deg,#ffb38a,#ff8d8d);box-shadow:0 6px 0 -1px #e6a08a}
+.btn.ghost{background:#fff;color:var(--ink-soft);box-shadow:0 6px 0 -1px var(--shadow)}
+
+/* lark shelf */
+.shelf{background:linear-gradient(150deg,rgba(159,182,255,.32),rgba(192,169,255,.28));border:4px solid #fff;border-radius:34px;
+  padding:22px 22px 24px;margin-bottom:26px;position:relative;overflow:hidden;
+  box-shadow:0 14px 0 -4px #c3c9f0,0 22px 36px rgba(140,140,210,.25)}
+.shelf .ribbon{position:absolute;top:18px;right:-44px;transform:rotate(38deg);background:linear-gradient(150deg,#a892d6,#8a6fd0);color:#fff;
+  font-family:"Baloo 2";font-weight:800;font-size:12px;padding:6px 56px;box-shadow:0 4px 10px rgba(120,90,180,.4);letter-spacing:1px}
+.shelf-head{display:flex;align-items:center;gap:13px;margin-bottom:6px}
+.shelf-head .e{width:54px;height:54px;border-radius:20px;display:grid;place-items:center;font-size:28px;background:#fff;border:3px solid #d7cdfb;box-shadow:0 6px 0 -1px #bfb4ee}
+.shelf-head h3{font-family:"ZCOOL KuaiLe";font-size:22px;color:#5b4f86}
+.shelf-head p{font-size:12.5px;font-weight:600;color:#7d72ab;margin-top:3px}
+.shelf-mini{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:11px;margin-top:18px}
+.mini{background:#fff;border:3px solid #ece6ff;border-radius:18px;padding:11px 8px;text-align:center;position:relative;
+  box-shadow:0 6px 0 -2px #d8cffb;transition:transform .25s cubic-bezier(.34,1.6,.4,1)}
+.mini:hover{transform:translateY(-4px) rotate(-1deg)}
+.mini .me{font-size:24px;display:block;margin-bottom:5px}
+.mini .mn{font-size:11px;font-weight:700;color:#5b4f86;line-height:1.2;word-break:break-word}
+.mini .lock{position:absolute;top:-7px;right:-7px;font-size:14px;background:#fff;border-radius:50%;width:24px;height:24px;display:grid;place-items:center;box-shadow:0 3px 6px rgba(120,90,180,.3)}
+
+/* ===== detail modal ===== */
+.scrim{position:fixed;inset:0;z-index:50;background:rgba(120,90,150,.4);backdrop-filter:blur(6px);
+  display:none;align-items:center;justify-content:center;padding:24px;animation:fade .3s both}
+.scrim.on{display:flex}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.card-detail{width:min(440px,94vw);background:var(--card);border:5px solid #fff;border-radius:38px;padding:30px 28px 26px;position:relative;
+  box-shadow:0 22px 0 -6px var(--tsh,#e7b9d8),0 30px 60px rgba(120,90,150,.4);
+  animation:cardpop .5s cubic-bezier(.2,1.6,.35,1) both;overflow:hidden}
+.card-detail::before{content:"";position:absolute;top:0;left:0;right:0;height:160px;background:var(--tint,#ffe);opacity:.8;z-index:0}
+.card-detail::after{content:"";position:absolute;top:0;left:0;right:0;height:80px;background:linear-gradient(180deg,rgba(255,255,255,.6),transparent);z-index:0}
+@keyframes cardpop{0%{transform:scale(.7) translateY(30px);opacity:0}100%{transform:none;opacity:1}}
+.card-detail>*{position:relative;z-index:1}
+.cd-close{position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;border:none;cursor:pointer;z-index:5;
+  background:#fff;color:var(--ink-soft);font-size:20px;font-weight:800;box-shadow:0 5px 10px rgba(0,0,0,.12);transition:transform .2s}
+.cd-close:hover{transform:rotate(90deg) scale(1.1)}
+.cd-icon{width:96px;height:96px;border-radius:30px;display:grid;place-items:center;font-size:50px;margin:6px auto 14px;
+  background:#fff;border:4px solid var(--ring,#fff);box-shadow:0 9px 0 -2px var(--tsh),inset 0 4px 8px rgba(255,255,255,.8);animation:bob 3s ease-in-out infinite}
+.cd-name{font-family:"ZCOOL KuaiLe";font-size:25px;text-align:center;color:var(--ink);line-height:1.25}
+.cd-tags{display:flex;justify-content:center;gap:8px;margin:12px 0 4px;flex-wrap:wrap}
+.cd-desc{background:rgba(255,255,255,.7);border-radius:20px;padding:14px 16px;font-size:13.5px;line-height:1.7;color:#7a6a8c;
+  margin:16px 0;border:2px solid #fff}
+.cd-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;color:var(--ink-soft);padding:8px 4px}
+.cd-row .pips{margin:0}
+.cd-actions{display:flex;gap:11px;margin-top:18px}
+.cd-actions .btn{font-size:15px;padding:13px 10px}
+.readonly-note{text-align:center;font-size:13px;font-weight:700;color:#8a6fd0;background:rgba(192,169,255,.2);
+  border-radius:18px;padding:14px;margin-top:16px;border:2px dashed #c9bbf0}
+
+/* toast */
+.toast-wrap{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);z-index:80;display:flex;flex-direction:column;gap:10px;align-items:center}
+.toast{font-family:"ZCOOL KuaiLe";font-size:16px;color:#fff;padding:13px 26px;border-radius:22px;
+  background:linear-gradient(150deg,#ff8ec5,#b07bff);box-shadow:0 10px 24px rgba(176,123,255,.5);
+  animation:toastpop .4s cubic-bezier(.2,1.7,.4,1) both,toastout .4s ease 2.2s forwards;display:flex;align-items:center;gap:9px}
+@keyframes toastpop{0%{transform:translateY(30px) scale(.8);opacity:0}100%{transform:none;opacity:1}}
+@keyframes toastout{to{transform:translateY(20px) scale(.9);opacity:0}}
+
+/* sparkle burst */
+.spark{position:fixed;pointer-events:none;z-index:90;font-size:22px;animation:sparkfly .9s ease-out forwards}
+@keyframes sparkfly{0%{opacity:1;transform:translate(0,0) scale(.4)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.3)}}
+
+/* stub screens */
+.stub{text-align:center;padding:60px 20px}
+.stub .big{font-size:78px;animation:bob 3s ease-in-out infinite;display:inline-block}
+.stub h2{font-family:"ZCOOL KuaiLe";font-size:30px;margin:14px 0 8px;color:var(--ink)}
+.stub p{color:var(--ink-soft);font-weight:600;max-width:420px;margin:0 auto 22px}
+.stub-bars{max-width:460px;margin:0 auto;display:flex;flex-direction:column;gap:13px}
+.sbar{background:var(--card);border:3px solid #fff;border-radius:22px;padding:14px 18px;display:flex;align-items:center;gap:14px;
+  box-shadow:0 8px 0 -2px var(--shadow)}
+.sbar .se{font-size:24px}
+.sbar .st{flex:1;text-align:left}
+.sbar .sn{font-weight:700;font-size:14px;color:var(--ink)}
+.sbar .track{height:11px;border-radius:8px;background:#f0e6f4;margin-top:7px;overflow:hidden}
+.sbar .fill{height:100%;border-radius:8px;background:linear-gradient(90deg,#ffd86b,#ff9a3d)}
+.sbar .pct{font-family:"Baloo 2";font-weight:800;color:var(--ink-soft);font-size:14px}
+
+.footer-note{text-align:center;font-size:11.5px;color:#b7a8c6;font-weight:600;margin-top:34px}
+::-webkit-scrollbar{width:12px;height:12px}
+::-webkit-scrollbar-thumb{background:#f0c4e0;border-radius:10px;border:3px solid transparent;background-clip:content-box}
+</style>
+</head>
+<body>
+<div class="sky" id="sky"></div>
+<div class="dots"></div>
+
+<div class="app">
+  <!-- HEADER -->
+  <div class="top">
+    <div class="logo">
+      <div class="egg"></div>
+      <div>
+        <h1>技能岛 SkillHub</h1>
+        <div class="sub">把你的 AI 技能，当成游戏装备来玩 ✨</div>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><span class="ico">🎒</span><div><div class="v" id="s-total">86</div><div class="l">技能总数</div></div></div>
+      <div class="stat"><span class="ico">⚡</span><div><div class="v" id="s-eq">6</div><div class="l">携带出战</div></div></div>
+      <div class="stat"><span class="ico">🔒</span><div><div class="v">28</div><div class="l">飞书外部</div></div></div>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <div class="nav">
+    <button class="tab on" data-v="bag"><span class="e">🎒</span>背包</button>
+    <button class="tab" data-v="equip"><span class="e">⚔️</span>出战</button>
+    <button class="tab" data-v="upgrade"><span class="e">⭐</span>升级</button>
+    <button class="tab" data-v="stats"><span class="e">🏆</span>战绩</button>
+    <button class="tab" data-v="settings"><span class="e">⚙️</span>设置</button>
+  </div>
+
+  <!-- ===== BAG / INVENTORY ===== -->
+  <section class="view on" id="view-bag">
+    <div class="filters">
+      <div class="searchwrap">
+        <span class="mag">🔍</span>
+        <input class="search" id="search" placeholder="搜索技能名字…">
+      </div>
+      <div class="filt-row">
+        <span class="filt-lbl">来源</span>
+        <div class="chips" id="src-chips"></div>
+      </div>
+      <div class="filt-row">
+        <span class="filt-lbl">分类</span>
+        <div class="chips" id="cat-chips"></div>
+      </div>
+    </div>
+    <div class="sec-title">🧁 我的技能库 <span class="pip" id="bag-count"></span> <small>点一下卡片看详情 · 来源只是颜色分类，没有高低之分</small></div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <!-- ===== EQUIP ===== -->
+  <section class="view" id="view-equip">
+    <div class="equip-board">
+      <div class="sec-title">⚡ 出战槽位 <span class="pip"><span id="slot-used">6</span>/8 已携带</span> <small>常驻技能 · 每次对话自动随身</small></div>
+      <div class="slots" id="slots"></div>
+    </div>
+
+    <div class="shelf">
+      <div class="ribbon">官方套装</div>
+      <div class="shelf-head">
+        <div class="e">💬</div>
+        <div>
+          <h3>飞书全家桶 · 28 件套</h3>
+          <p>来源 GitHub（larksuite/cli）· 由 <code>npx skills</code> 自托管 · 自动更新 · 🔒 外部只读，无需在此装备</p>
+        </div>
+      </div>
+      <div class="shelf-mini" id="lark-shelf"></div>
+    </div>
+
+    <div class="sec-title">🎽 队伍预设 · 一键出战 <small>把一整套技能一次穿上身</small></div>
+    <div class="loadouts" id="loadouts"></div>
+  </section>
+
+  <!-- ===== UPGRADE stub ===== -->
+  <section class="view" id="view-upgrade">
+    <div class="sec-title">⭐ 熟练度 · 升级 <small>熟练度只看「真实使用次数」，和来源无关</small></div>
+    <div class="stub-bars" id="up-bars"></div>
+    <p class="footer-note" style="margin-top:24px">★ 当前数据仅 3 个技能有使用记录，其余为 Lv.0 未试用；升级动效为演示用途。</p>
+  </section>
+
+  <!-- ===== STATS stub ===== -->
+  <section class="view" id="view-stats">
+    <div class="stub">
+      <span class="big">🏆</span>
+      <h2>战绩馆</h2>
+      <p>这里将记录每个技能被召唤的次数、最近一次出场、连胜纪录。等你多用几次就热闹起来啦～</p>
+      <div class="stub-bars">
+        <div class="sbar"><span class="se">🥇</span><div class="st"><div class="sn">本周最常召唤</div><div class="track"><div class="fill" style="width:78%"></div></div></div><span class="pct">web-design</span></div>
+        <div class="sbar"><span class="se">🆕</span><div class="st"><div class="sn">新学会的技能</div><div class="track"><div class="fill" style="width:40%"></div></div></div><span class="pct">+12</span></div>
+        <div class="sbar"><span class="se">😴</span><div class="st"><div class="sn">很久没出场</div><div class="track"><div class="fill" style="width:90%"></div></div></div><span class="pct">53</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SETTINGS stub ===== -->
+  <section class="view" id="view-settings">
+    <div class="stub">
+      <span class="big">⚙️</span>
+      <h2>设置间</h2>
+      <p>技能仓库源、自动更新频率、飞书账号切换、外观主题…都会搬到这里。</p>
+      <div class="stub-bars">
+        <div class="sbar"><span class="se">🔄</span><div class="st"><div class="sn">飞书套装自动更新</div></div><span class="pct">每周</span></div>
+        <div class="sbar"><span class="se">🐙</span><div class="st"><div class="sn">GitHub 技能源</div></div><span class="pct">已连接</span></div>
+        <div class="sbar"><span class="se">🍬</span><div class="st"><div class="sn">外观主题</div></div><span class="pct">蛋仔糖果</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer-note">技能岛 SkillHub · 蛋仔糖果主题 · 数据快照 86 技能（59 在库 + 27 飞书外部）</div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="scrim" id="scrim"><div id="detail-host"></div></div>
+<div class="toast-wrap" id="toasts"></div>
+
+<script>
+/* ============ REAL DATA (inlined) ============ */
+const DATA = {"skills":[{"n":"agent-cli-creator","g":"tools","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"chatprd","g":"tools","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"chronicle","g":"utils","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"contract-review","g":"contracts","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"contract-review-v3","g":"contracts","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"dashboard","g":"web-creative","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"find-docs","g":"tools","t":"global","ch":"github","x":false,"oss":true,"lu":null},{"n":"frontend-design","g":"web-creative","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"guizang-ppt-skill","g":"web-creative","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"humanizer","g":"utils","t":"global","ch":"github","x":false,"oss":true,"lu":null},{"n":"ian-xiaohei-illustrations","g":"web-creative","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"image-asset-pipeline","g":"media","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"jarvis-class-presentation","g":"jarvis","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"jarvis-daguan-closing-package","g":"jarvis","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"jarvis-daguan-miniapp-smoke","g":"jarvis","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"jarvis-kb-retriever","g":"jarvis","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"jarvis-provenance-check","g":"jarvis","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"jarvis-safe-ingest-guard","g":"jarvis","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"jarvis-source-ingest","g":"jarvis","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"jarvis-wiki-lint","g":"jarvis","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"jarvis-wiki-merge","g":"jarvis","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"jarvis-workbuddy-law-workshop-webpage","g":"jarvis","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"jarvis-workbuddy-legal-ai-workshop-webpage","g":"jarvis","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"keep-codex-fast","g":"utils","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"kimi-webbridge","g":"tools","t":"global","ch":"github","x":false,"oss":true,"lu":0},{"n":"live-dashboard","g":"web-creative","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"mac-network-tuneup","g":"utils","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"md2wechat-local","g":"web-creative","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"minimax-tts","g":"media","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"newapi-imagegen","g":"media","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"pdf","g":"utils","t":"global","ch":"local","x":false,"oss":false,"lu":null},{"n":"pm-spec","g":"web-creative","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"qr-poster-compositor","g":"web-creative","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"skill-distributor","g":"utils","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"social-media-dashboard","g":"web-creative","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"tailscale-direct-connect","g":"utils","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"taobao-baiyi-jianlou","g":"utils","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"teaching-goal-contract-harness","g":"utils","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"video-dissection-local","g":"media","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"web-design-engineer","g":"web-creative","t":"global","ch":"github","x":false,"oss":true,"lu":0},{"n":"web-video-presentation","g":"web-creative","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"wechat-finder","g":"tools","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"workbuddy-tencent-esign","g":"workbuddy","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"workbuddy-tencent-inventory","g":"workbuddy","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"workbuddy-tmeet","g":"workbuddy","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"xhs-bounty-image-generator","g":"xhs","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"xhs-manual-bounty-run","g":"xhs","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"xiaozhi-activation-code","g":"tools","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"humanizer-zh","g":"tools","t":"on-demand","ch":"manual-port","x":false,"oss":false,"lu":null},{"n":"vercel-react-best-practices","g":"web-creative","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"web-design-guidelines","g":"web-creative","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"lark-accounts","g":"lark","t":"global","ch":"local","x":false,"oss":false,"lu":0},{"n":"stop-slop","g":"tools","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"guizang-social-card-skill","g":"web-creative","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"content-research-writer","g":"tools","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"notebooklm","g":"tools","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"punk-cover","g":"web-creative","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"punk-avatar","g":"web-creative","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"yao-meta-skill","g":"tools","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"lark-approval","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-apps","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-attendance","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-base","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-calendar","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-contact","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-doc","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-drive","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-event","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-im","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-mail","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-markdown","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-minutes","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-note","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-okr","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-openapi-explorer","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-shared","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-sheets","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-skill-maker","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-slides","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-task","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-vc","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-vc-agent","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-whiteboard","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-wiki","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-workflow-meeting-summary","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-workflow-standup-report","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null}],"loadouts":{"web":["web-design-engineer","frontend-design","qr-poster-compositor","guizang-ppt-skill"],"media":["image-asset-pipeline","minimax-tts","newapi-imagegen","video-dissection-local"],"jarvis":["jarvis-class-presentation","jarvis-daguan-closing-package","jarvis-daguan-miniapp-smoke","jarvis-kb-retriever","jarvis-provenance-check","jarvis-safe-ingest-guard","jarvis-source-ingest","jarvis-wiki-lint","jarvis-wiki-merge","jarvis-workbuddy-law-workshop-webpage","jarvis-workbuddy-legal-ai-workshop-webpage"],"xhs":["xhs-bounty-image-generator","xhs-manual-bounty-run"],"workbuddy":["workbuddy-tencent-esign","workbuddy-tencent-inventory","workbuddy-tmeet"],"contracts":["contract-review","contract-review-v3"]},"stats":{"total":86,"global":33,"oss":18,"external":27,"groups":["contracts","jarvis","lark","media","tools","utils","web-creative","workbuddy","xhs"]}};
+
+/* ============ meta ============ */
+const GROUPS = {
+  tools:        {e:"🛠",  label:"工具",   tint:"#dff3ff", tsh:"#a9d8ef", ring:"#bfe6fb"},
+  utils:        {e:"🧰",  label:"实用",   tint:"#dffaf0", tsh:"#a4e6cd", ring:"#bff3e0"},
+  "web-creative":{e:"🎨", label:"网页创意",tint:"#ffe6f3", tsh:"#f3b6d8", ring:"#ffc9e5"},
+  media:        {e:"🎬",  label:"多媒体", tint:"#efe6ff", tsh:"#c8b2f0", ring:"#dccdff"},
+  jarvis:       {e:"🤖",  label:"贾维斯", tint:"#fff5d6", tsh:"#f0d68a", ring:"#ffe9a8"},
+  workbuddy:    {e:"💼",  label:"工作搭子",tint:"#ffe9d6", tsh:"#f0c39a", ring:"#ffd2b5"},
+  xhs:          {e:"📕",  label:"小红书", tint:"#ffe1e1", tsh:"#f2adad", ring:"#ffbdbd"},
+  contracts:    {e:"📜",  label:"合同",   tint:"#e8f6dd", tsh:"#bbdfa0", ring:"#cdedbb"},
+  lark:         {e:"💬",  label:"飞书",   tint:"#e6eaff", tsh:"#b2bdf0", ring:"#ccd6ff"},
+};
+// SOURCE = neutral color category (NOT a power rank)
+const SOURCES = {
+  github: {label:"GitHub", color:"#3bbdee", e:"🐙", desc:"来自开源社区（含 GitHub 衍生 / 飞书 larksuite-cli）"},
+  self:   {label:"自制",    color:"#ff7eb6", e:"🧁", desc:"本机自己捏出来的技能"},
+  web:    {label:"网站",    color:"#b08bff", e:"🌐", desc:"从某个网站搬来的（目前还没有）"},
+};
+function sourceOf(s){ if(s.ch==="github"||s.ch==="manual-port"||s.ch==="lark-cli") return "github"; if(s.ch==="local") return "self"; return "web"; }
+// per-skill cute icon — vary within a group by hashing name
+const ICON_POOL = {
+  tools:["🛠","🔧","🪛","⚙️","🧲","🔩"], utils:["🧰","🧪","🩹","🔌","🧹","🪄"],
+  "web-creative":["🎨","🖌","🌈","✨","🖼","🎀"], media:["🎬","🎞","🎤","🎧","📸","🎵"],
+  jarvis:["🤖","🦾","🧠","📡","🛰","🔭"], workbuddy:["💼","📊","✍️","🗂","📎","🏷"],
+  xhs:["📕","💄","🌸","📷","🛍","💟"], contracts:["📜","⚖️","🖊","📋","🔏","🤝"],
+  lark:["💬","📨","📅","📊","📁","🗒"],
+};
+function iconOf(s){ const p=ICON_POOL[s.g]||["✨"]; let h=0; for(const c of s.n) h=(h*31+c.charCodeAt(0))>>>0; return p[h%p.length]; }
+// illustrative upgradeable demo set (github skills only, labeled as demo)
+const UPGRADEABLE = new Set(["find-docs","web-design-engineer","humanizer","guizang-ppt-skill","notebooklm"]);
+function levelOf(s){ if(s.lu===null) return 0; if(s.lu===0) return 4; return Math.max(1,5-Math.floor(s.lu/14)); }
+function descOf(s){
+  const g=GROUPS[s.g], src=SOURCES[sourceOf(s)];
+  return `「${GROUPS[s.g].label}」分类的技能。来源：${src.label} · ${src.desc}。${s.x?"由飞书官方 lark-cli 套装统一托管，自动保持最新。":(s.t==="global"?"已设为常驻，每次对话自动随身携带。":"收纳在背包里，需要时再装备出战。")}`;
+}
+
+/* ============ state ============ */
+let equipped = new Set(DATA.skills.filter(s=>s.t==="global"&&!s.x).map(s=>s.n));
+let deleted = new Set();
+let filterSrc="all", filterCat="all", q="";
+const inHub = ()=>DATA.skills.filter(s=>!s.x && !deleted.has(s.n));
+const byName = n=>DATA.skills.find(s=>s.n===n);
+
+/* ============ ambient blobs ============ */
+(function(){
+  const sky=document.getElementById('sky');
+  const cols=["#ffd0ec","#cfeeff","#d6ffe9","#fff0c2","#e6d9ff"];
+  for(let i=0;i<11;i++){
+    const b=document.createElement('div');b.className='blob';
+    const sz=70+Math.random()*150;
+    b.style.width=b.style.height=sz+'px';
+    b.style.left=Math.random()*100+'%';b.style.top=Math.random()*100+'%';
+    b.style.background=cols[i%cols.length];
+    b.style.animationDuration=(11+Math.random()*12)+'s';
+    b.style.animationDelay=(-Math.random()*10)+'s';
+    sky.appendChild(b);
+  }
+})();
+
+/* ============ helpers ============ */
+function pips(lvl){ let h='<div class="pips">'; for(let i=0;i<5;i++) h+=`<span class="pip-l ${i<lvl?'f':''}"></span>`; return h+'</div>'; }
+function srcDot(s){ const src=SOURCES[sourceOf(s)]; return `<span class="srcdot" style="--sc:${src.color}">${src.e} ${src.label}</span>`; }
+function tileStyle(s){ const g=GROUPS[s.g]; return `--tint:${g.tint};--tsh:${g.tsh};--ring:${g.ring}`; }
+
+/* ============ render filters ============ */
+function renderChips(){
+  const sc=document.getElementById('src-chips');
+  sc.innerHTML = `<button class="chip src ${filterSrc==='all'?'on':''}" data-s="all">全部</button>`+
+    Object.entries(SOURCES).map(([k,v])=>`<button class="chip src ${filterSrc===k?'on':''}" data-s="${k}" style="--c1:${v.color};--c2:${v.color}"><span class="e">${v.e}</span>${v.label}</button>`).join('');
+  const cc=document.getElementById('cat-chips');
+  const cats=[...new Set(inHub().map(s=>s.g))];
+  cc.innerHTML = `<button class="chip ${filterCat==='all'?'on':''}" data-c="all">全部</button>`+
+    cats.map(c=>`<button class="chip ${filterCat===c?'on':''}" data-c="${c}"><span class="e">${GROUPS[c].e}</span>${GROUPS[c].label}</button>`).join('');
+  sc.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{filterSrc=b.dataset.s;renderChips();renderGrid();});
+  cc.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{filterCat=b.dataset.c;renderChips();renderGrid();});
+}
+
+/* ============ render grid ============ */
+function renderGrid(){
+  const grid=document.getElementById('grid');
+  let list=inHub();
+  if(filterSrc!=='all') list=list.filter(s=>sourceOf(s)===filterSrc);
+  if(filterCat!=='all') list=list.filter(s=>s.g===filterCat);
+  if(q) list=list.filter(s=>s.n.toLowerCase().includes(q));
+  document.getElementById('bag-count').textContent=list.length+' 个';
+  if(!list.length){ grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:50px;color:#b7a8c6;font-weight:700">🫧 这里空空的～换个筛选试试</div>`; return; }
+  grid.innerHTML=list.map((s,i)=>{
+    const eq=equipped.has(s.n), up=UPGRADEABLE.has(s.n)&&!eq;
+    return `<div class="tile" style="${tileStyle(s)};animation-delay:${Math.min(i*30,400)}ms" data-n="${s.n}">
+      ${eq?'<span class="badge eq">⚡携带中</span>':''}
+      ${up?'<span class="badge up">⭐可升级</span>':''}
+      <div class="icon">${iconOf(s)}</div>
+      <div class="nm">${s.n}</div>
+      <div class="meta">${srcDot(s)}<span class="gtag">${GROUPS[s.g].e}</span></div>
+      ${pips(levelOf(s))}
+    </div>`;
+  }).join('');
+  grid.querySelectorAll('.tile').forEach(t=>t.onclick=()=>openDetail(t.dataset.n));
+}
+
+/* ============ detail modal ============ */
+function openDetail(n){
+  const s=byName(n); const host=document.getElementById('detail-host');
+  const eq=equipped.has(n), lvl=levelOf(s), src=SOURCES[sourceOf(s)];
+  let actions;
+  if(s.x){
+    actions=`<div class="readonly-note">🔒 外部托管 · 只读<br>飞书全家桶由 <b>npx skills / lark-cli</b> 自动维护，会自行更新，无需（也无法）在技能岛里装备或丢弃。</div>`;
+  }else{
+    actions=`<div class="cd-actions">
+      <button class="btn alt" data-act="equip">${eq?'✓ 已携带':'⚡ 携带'}</button>
+      <button class="btn" data-act="up">⭐ 升级</button>
+      <button class="btn warn" data-act="del">🗑 丢弃</button>
+    </div>`;
+  }
+  host.innerHTML=`<div class="card-detail" style="${tileStyle(s)}">
+    <button class="cd-close" data-act="close">✕</button>
+    <div class="cd-icon">${iconOf(s)}</div>
+    <div class="cd-name">${s.n}</div>
+    <div class="cd-tags">${srcDot(s)}<span class="gtag" style="font-size:11px">${GROUPS[s.g].e} ${GROUPS[s.g].label}</span>${s.x?'<span class="srcdot" style="--sc:#a892d6">🔒 外部·只读</span>':''}${s.oss?'<span class="srcdot" style="--sc:#7ee6a8">开源</span>':''}</div>
+    <div class="cd-desc">${descOf(s)}</div>
+    <div class="cd-row"><span>🎯 熟练度 ${lvl===0?'· 未试用 Lv.0':'· Lv.'+lvl}</span>${pips(lvl)}</div>
+    <div class="cd-row"><span>📦 状态</span><span style="color:var(--ink)">${s.x?'飞书外部套装':(eq?'⚡ 出战携带中':'背包收纳')}</span></div>
+    ${actions}
+  </div>`;
+  document.getElementById('scrim').classList.add('on');
+  host.querySelectorAll('[data-act]').forEach(b=>b.onclick=(e)=>{
+    const a=b.dataset.act;
+    if(a==='close'){closeDetail();return;}
+    if(a==='equip'){ if(equipped.has(n)){toast('已经携带啦～','✓');} else if(equipped.size>=8){toast('出战槽位满了！先卸一个','😣');} else {equipped.add(n);toast(`已携带 ${n}`,'⚡');burst(e.clientX,e.clientY);} closeDetail();refresh(); }
+    if(a==='up'){ burst(e.clientX,e.clientY,true); toast(`${n} 熟练度 +1（演示）`,'⭐'); }
+    if(a==='del'){ deleted.add(n); equipped.delete(n); toast(`已丢弃 ${n}`,'🗑'); closeDetail(); refresh(); }
+  });
+}
+function closeDetail(){ document.getElementById('scrim').classList.remove('on'); }
+document.getElementById('scrim').onclick=e=>{ if(e.target.id==='scrim') closeDetail(); };
+
+/* ============ EQUIP screen ============ */
+function renderSlots(){
+  const wrap=document.getElementById('slots');
+  const eqList=[...equipped].map(byName).filter(Boolean);
+  document.getElementById('slot-used').textContent=eqList.length;
+  document.getElementById('s-eq').textContent=eqList.length;
+  let html=eqList.map(s=>`<div class="slot justpop" style="${tileStyle(s)}">
+      <button class="pop-x" data-n="${s.n}">✕</button>
+      <div class="icon">${iconOf(s)}</div>
+      <div class="nm">${s.n}</div>${srcDot(s)}
+    </div>`).join('');
+  for(let i=eqList.length;i<8;i++) html+=`<div class="slot empty"><div class="plus">+</div><div class="nm">空槽位</div></div>`;
+  wrap.innerHTML=html;
+  wrap.querySelectorAll('.pop-x').forEach(b=>b.onclick=()=>{ equipped.delete(b.dataset.n); toast(`卸下 ${b.dataset.n}`,'👋'); refresh(); });
+  // clear justpop after anim so it doesn't replay weirdly
+  setTimeout(()=>wrap.querySelectorAll('.justpop').forEach(e=>e.classList.remove('justpop')),700);
+}
+function renderLarkShelf(){
+  const wrap=document.getElementById('lark-shelf');
+  const larks=DATA.skills.filter(s=>s.x);
+  wrap.innerHTML=larks.map(s=>`<div class="mini"><span class="lock">🔒</span><span class="me">${iconOf(s)}</span><div class="mn">${s.n.replace('lark-','')}</div></div>`).join('');
+}
+function renderLoadouts(){
+  const wrap=document.getElementById('loadouts');
+  wrap.innerHTML=Object.entries(DATA.loadouts).map(([k,arr])=>{
+    const g=GROUPS[k]||GROUPS.tools;
+    const members=arr.filter(n=>!deleted.has(n));
+    return `<div class="lo-card" style="${tileStyle({g:k})}">
+      <div class="lo-head"><div class="e">${g.e}</div><div><div class="t">${g.label}队</div><div class="c">${members.length} 件技能 · 一键全部出战</div></div></div>
+      <div class="lo-mem">${members.slice(0,6).map(n=>`<span>${n}</span>`).join('')}${members.length>6?`<span>+${members.length-6}</span>`:''}</div>
+      <button class="btn" data-lo="${k}">🎽 一键出战</button>
+    </div>`;
+  }).join('');
+  wrap.querySelectorAll('[data-lo]').forEach(b=>b.onclick=(e)=>{
+    const arr=DATA.loadouts[b.dataset.lo].filter(n=>!deleted.has(n));
+    let added=0;
+    for(const n of arr){ if(equipped.size>=8) break; if(!equipped.has(n)){equipped.add(n);added++;} }
+    burst(e.clientX,e.clientY,true);
+    toast(added?`${GROUPS[b.dataset.lo].label}队 已上场 (+${added})`:'这队都在场上啦～','🎽');
+    refresh();
+  });
+}
+
+/* ============ upgrade stub ============ */
+function renderUpgrade(){
+  const wrap=document.getElementById('up-bars');
+  const used=DATA.skills.filter(s=>s.lu!==null);
+  const demo=[...UPGRADEABLE].map(byName).filter(Boolean);
+  const show=[...new Set([...used,...demo])];
+  wrap.innerHTML=show.map(s=>{
+    const lvl=levelOf(s), pct=(lvl/5)*100;
+    return `<div class="sbar"><span class="se">${iconOf(s)}</span>
+      <div class="st"><div class="sn">${s.n} ${UPGRADEABLE.has(s.n)?'⭐':''}</div>
+      <div class="track"><div class="fill" style="width:${Math.max(pct,8)}%"></div></div></div>
+      <span class="pct">Lv.${lvl}</span></div>`;
+  }).join('');
+}
+
+/* ============ feedback fx ============ */
+function toast(msg,emo){
+  const w=document.getElementById('toasts');
+  const t=document.createElement('div');t.className='toast';t.innerHTML=`<span>${emo||'✨'}</span>${msg}`;
+  w.appendChild(t); setTimeout(()=>t.remove(),2600);
+}
+function burst(x,y,gold){
+  const chars=gold?['⭐','✨','🌟','💫','🎉']:['🫧','💖','✨','🎈','🍬'];
+  for(let i=0;i<10;i++){
+    const s=document.createElement('div');s.className='spark';s.textContent=chars[i%chars.length];
+    s.style.left=x+'px';s.style.top=y+'px';
+    const a=Math.random()*Math.PI*2,d=50+Math.random()*90;
+    s.style.setProperty('--dx',Math.cos(a)*d+'px');s.style.setProperty('--dy',Math.sin(a)*d+'px');
+    document.body.appendChild(s);setTimeout(()=>s.remove(),900);
+  }
+}
+
+/* ============ orchestrate ============ */
+function refresh(){ renderChips(); renderGrid(); renderSlots(); renderLoadouts(); renderUpgrade(); }
+function renderAll(){ refresh(); renderLarkShelf(); }
+
+document.getElementById('search').oninput=e=>{ q=e.target.value.toLowerCase().trim(); renderGrid(); };
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+  t.classList.add('on');
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+  document.getElementById('view-'+t.dataset.v).classList.add('on');
+  if(t.dataset.v==='equip') renderSlots();
+});
+
+renderAll();
+</script>
+</body>
+</html>

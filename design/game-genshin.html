@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkillHub · 技能养成</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Noto+Serif+SC:wght@500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg0:#070a14;
+  --bg1:#0c1122;
+  --bg2:#121a33;
+  --panel:rgba(20,28,52,0.72);
+  --panel-solid:#141c34;
+  --line:rgba(214,182,110,0.22);
+  --line-strong:rgba(214,182,110,0.5);
+  --gold:#d8b86a;
+  --gold-b:#f4e2ad;
+  --gold-deep:#a07d36;
+  --ink:#e8eaf2;
+  --ink-dim:#9aa3c0;
+  --ink-faint:#646d8c;
+  /* source elemental glows (neutral categories, not power) */
+  --src-github:#5fc9e6;
+  --src-github-d:#1f6f88;
+  --src-self:#e8a85c;
+  --src-self-d:#9a5e22;
+  --src-web:#7fd6a0;
+  --src-web-d:#2f7a52;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:'Noto Sans SC',system-ui,sans-serif;
+  color:var(--ink);
+  background:var(--bg0);
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+/* ===== AMBIENT BACKGROUND ===== */
+.bg{position:fixed;inset:0;z-index:0;overflow:hidden;background:
+  radial-gradient(120% 90% at 50% -10%, #16213f,transparent),
+  linear-gradient(180deg,#0a0f1f 0%,#070a14 60%,#05070f 100%);}
+.bg::before{content:"";position:absolute;inset:-20%;background:
+  radial-gradient(40% 35% at 20% 25%, rgba(95,201,230,0.13),transparent 70%),
+  radial-gradient(45% 40% at 82% 30%, rgba(216,184,106,0.12),transparent 70%),
+  radial-gradient(50% 45% at 60% 95%, rgba(120,90,200,0.14),transparent 70%);
+  animation:drift 26s ease-in-out infinite alternate;}
+@keyframes drift{0%{transform:translate(-2%, -1%) scale(1.02)}50%{transform:translate(2%,1.5%) scale(1.06)}100%{transform:translate(-1%,2%) scale(1.03)}}
+.grid{position:absolute;inset:0;opacity:.35;
+  background-image:linear-gradient(rgba(214,182,110,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(214,182,110,0.05) 1px,transparent 1px);
+  background-size:64px 64px;mask-image:radial-gradient(circle at 50% 40%,#000 30%,transparent 78%);}
+.stars{position:absolute;inset:0}
+.star{position:absolute;border-radius:50%;background:var(--gold-b);box-shadow:0 0 6px rgba(244,226,173,.8);animation:tw 4s ease-in-out infinite}
+@keyframes tw{0%,100%{opacity:.15;transform:scale(.7)}50%{opacity:.9;transform:scale(1.15)}}
+.vig{position:absolute;inset:0;box-shadow:inset 0 0 240px 60px rgba(0,0,0,.7);pointer-events:none}
+
+/* ===== SHELL ===== */
+.app{position:relative;z-index:2;height:100vh;display:flex;flex-direction:column;padding:18px 26px 22px;}
+.topbar{display:flex;align-items:center;gap:26px;padding-bottom:16px;}
+.brand{display:flex;align-items:center;gap:14px}
+.sigil{width:46px;height:46px;position:relative;flex:none}
+.sigil svg{width:100%;height:100%;filter:drop-shadow(0 0 10px rgba(216,184,106,.6))}
+.sigil::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:1px solid var(--line);animation:spin 22s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.brand h1{font-family:'Cinzel',serif;font-weight:700;font-size:23px;letter-spacing:3px;line-height:1;
+  background:linear-gradient(180deg,#f9eec4,#d8b86a 55%,#a07d36);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand .sub{font-family:'Noto Serif SC';font-size:11px;letter-spacing:6px;color:var(--gold);opacity:.7;margin-top:3px}
+
+/* nav tabs */
+.nav{display:flex;gap:4px;margin-left:8px}
+.tab{position:relative;font-family:'Noto Serif SC';font-weight:600;font-size:14px;letter-spacing:2px;color:var(--ink-dim);
+  padding:10px 20px;cursor:pointer;border:none;background:none;transition:.3s;clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
+.tab .en{display:block;font-family:'Cinzel';font-size:9px;letter-spacing:2px;opacity:.5;margin-top:2px}
+.tab:hover{color:var(--gold-b)}
+.tab.active{color:#1a1505;background:linear-gradient(180deg,#f4e2ad,#d8b86a);box-shadow:0 4px 18px rgba(216,184,106,.35)}
+.tab.active .en{opacity:.7}
+
+.spacer{flex:1}
+.hud{display:flex;gap:10px;align-items:center}
+.pill{display:flex;flex-direction:column;align-items:center;padding:7px 16px;border:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(216,184,106,.07),rgba(20,28,52,.5));border-radius:3px;position:relative;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
+.pill .v{font-family:'Cinzel';font-weight:700;font-size:18px;color:var(--gold-b);line-height:1}
+.pill .k{font-size:10px;letter-spacing:1px;color:var(--ink-faint);margin-top:3px}
+.pill.glow .v{text-shadow:0 0 12px rgba(95,201,230,.7);color:#bfeaf6}
+
+/* ===== MAIN AREA ===== */
+.stage{flex:1;min-height:0;position:relative}
+.screen{position:absolute;inset:0;opacity:0;visibility:hidden;transform:translateY(14px);transition:.45s cubic-bezier(.2,.8,.2,1);display:flex;gap:18px}
+.screen.show{opacity:1;visibility:visible;transform:none}
+
+/* ornate panel */
+.panel{background:var(--panel);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:6px;position:relative}
+.panel::before,.panel::after{content:"";position:absolute;width:16px;height:16px;border:2px solid var(--gold);opacity:.55}
+.panel::before{top:6px;left:6px;border-right:0;border-bottom:0}
+.panel::after{bottom:6px;right:6px;border-left:0;border-top:0}
+
+/* ---- INVENTORY ---- */
+.filters{width:236px;flex:none;padding:20px 16px;display:flex;flex-direction:column;gap:18px;overflow-y:auto}
+.f-title{font-family:'Noto Serif SC';font-size:12px;letter-spacing:3px;color:var(--gold);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.f-title::before{content:"";width:5px;height:5px;background:var(--gold);transform:rotate(45deg);box-shadow:0 0 8px var(--gold)}
+.search{width:100%;background:rgba(7,10,20,.6);border:1px solid var(--line);color:var(--ink);padding:11px 12px;border-radius:4px;font-family:inherit;font-size:13px;outline:none;transition:.3s}
+.search::placeholder{color:var(--ink-faint)}
+.search:focus{border-color:var(--line-strong);box-shadow:0 0 0 3px rgba(216,184,106,.12)}
+.cat{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:4px;cursor:pointer;transition:.22s;border:1px solid transparent;font-size:13px;color:var(--ink-dim)}
+.cat .ce{font-size:16px;width:20px;text-align:center;filter:saturate(1.2)}
+.cat .cn{flex:1;letter-spacing:1px}
+.cat .cc{font-family:'Cinzel';font-size:12px;color:var(--ink-faint)}
+.cat:hover{background:rgba(216,184,106,.06);color:var(--ink)}
+.cat.active{background:linear-gradient(90deg,rgba(216,184,106,.16),transparent);border-color:var(--line);color:var(--gold-b)}
+.cat.active .cc{color:var(--gold)}
+.srcrow{display:flex;gap:7px;flex-wrap:wrap}
+.schip{font-size:11px;padding:6px 11px;border-radius:20px;cursor:pointer;border:1px solid var(--line);color:var(--ink-dim);transition:.22s;display:flex;align-items:center;gap:6px;letter-spacing:.5px}
+.schip .dot{width:7px;height:7px;border-radius:50%}
+.schip:hover{color:var(--ink)}
+.schip.active{border-color:currentColor}
+.schip.s-all.active{color:var(--gold-b);background:rgba(216,184,106,.12)}
+.schip.s-github.active{color:var(--src-github);background:rgba(95,201,230,.12)}
+.schip.s-self.active{color:var(--src-self);background:rgba(232,168,92,.12)}
+.schip.s-web.active{color:var(--src-web);background:rgba(127,214,160,.12)}
+.note{font-size:10.5px;line-height:1.6;color:var(--ink-faint);border-left:2px solid var(--line);padding-left:9px;margin-top:auto}
+.note b{color:var(--gold);font-weight:500}
+
+.invmain{flex:1;display:flex;flex-direction:column;min-width:0}
+.invhead{display:flex;align-items:baseline;gap:14px;padding:16px 22px 12px}
+.invhead h2{font-family:'Noto Serif SC';font-weight:700;font-size:20px;letter-spacing:2px}
+.invhead .cnt{font-family:'Cinzel';font-size:13px;color:var(--gold);letter-spacing:1px}
+.invhead .hint{margin-left:auto;font-size:11px;color:var(--ink-faint)}
+.gridwrap{flex:1;overflow-y:auto;padding:6px 22px 22px}
+.tilegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:16px}
+
+.tile{position:relative;border-radius:7px;padding:16px 14px 14px;cursor:pointer;overflow:hidden;
+  background:linear-gradient(165deg,rgba(28,38,68,.9),rgba(14,20,38,.92));
+  border:1px solid var(--tc-d,var(--line));transition:transform .28s cubic-bezier(.2,.9,.2,1),box-shadow .28s,border-color .28s;
+  animation:tileIn .5s both}
+@keyframes tileIn{from{opacity:0;transform:translateY(16px) scale(.96)}to{opacity:1;transform:none}}
+.tile::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 80% at 50% -10%,var(--tc-glow,transparent),transparent 60%);opacity:.5;transition:.3s}
+.tile::after{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--tc,var(--gold)),transparent);opacity:.8}
+.tile:hover{transform:translateY(-8px) scale(1.025);box-shadow:0 18px 40px -12px rgba(0,0,0,.7),0 0 26px -4px var(--tc-glow,rgba(216,184,106,.4));border-color:var(--tc,var(--gold))}
+.tile:hover::before{opacity:.95}
+.tile .ic{font-size:34px;line-height:1;filter:drop-shadow(0 3px 8px rgba(0,0,0,.6));margin-bottom:14px;display:block;transition:.3s}
+.tile:hover .ic{transform:scale(1.12) translateY(-2px)}
+.tile .nm{font-weight:500;font-size:13.5px;letter-spacing:.3px;line-height:1.35;margin-bottom:10px;min-height:36px;display:flex;align-items:flex-start}
+.tile .meta{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.srctag{font-size:9.5px;letter-spacing:.5px;padding:3px 8px;border-radius:20px;font-family:'Cinzel';font-weight:600;display:inline-flex;align-items:center;gap:4px;
+  border:1px solid var(--tc-d);color:var(--tc);background:rgba(0,0,0,.25)}
+.srctag .d{width:5px;height:5px;border-radius:50%;background:var(--tc);box-shadow:0 0 6px var(--tc)}
+.stars{display:flex;gap:2px}
+.lvl{font-family:'Cinzel';font-size:10px;color:var(--ink-faint);letter-spacing:.5px}
+.tile .corner{position:absolute;top:10px;right:10px;display:flex;flex-direction:column;gap:5px;align-items:flex-end}
+.badge{font-size:9px;padding:2px 7px;border-radius:3px;letter-spacing:.5px;font-weight:500}
+.b-eq{background:linear-gradient(90deg,#d8b86a,#f4e2ad);color:#1a1505;box-shadow:0 0 10px rgba(216,184,106,.5)}
+.b-ext{background:rgba(7,10,20,.7);color:var(--src-github);border:1px solid var(--src-github-d)}
+.b-up{background:linear-gradient(90deg,#7a5cff,#b08cff);color:#fff;box-shadow:0 0 12px rgba(160,120,255,.6);animation:upPulse 1.6s ease-in-out infinite}
+@keyframes upPulse{0%,100%{box-shadow:0 0 8px rgba(160,120,255,.5)}50%{box-shadow:0 0 18px rgba(160,120,255,.9)}}
+.tile.ext{opacity:.97}
+.tile.ext::after{background:linear-gradient(90deg,transparent,var(--src-github),transparent)}
+.spark{position:absolute;width:4px;height:4px;background:#fff;border-radius:50%;pointer-events:none;opacity:0}
+.tile.up:hover .spark{animation:sparkle 1s ease-out}
+@keyframes sparkle{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(0)}}
+
+/* ---- ITEM MODAL ---- */
+.modal{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:.35s}
+.modal.show{opacity:1;visibility:visible}
+.modal .scrim{position:absolute;inset:0;background:rgba(3,5,12,.78);backdrop-filter:blur(6px)}
+.card{position:relative;width:780px;max-width:94vw;height:430px;display:flex;border-radius:10px;overflow:hidden;transform:scale(.92) translateY(10px);transition:.4s cubic-bezier(.2,.9,.2,1);
+  background:linear-gradient(160deg,#161f3a,#0c1124);border:1px solid var(--line-strong);box-shadow:0 40px 90px -20px #000,0 0 60px -10px var(--tc-glow,rgba(216,184,106,.3))}
+.modal.show .card{transform:none}
+.card .left{width:300px;flex:none;position:relative;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 40%,var(--tc-glow,rgba(216,184,106,.2)),transparent 65%);border-right:1px solid var(--line)}
+.card .left::before{content:"";position:absolute;width:230px;height:230px;border-radius:50%;border:1px solid var(--tc,var(--gold));opacity:.35;animation:spin 18s linear infinite}
+.card .left::after{content:"";position:absolute;width:280px;height:280px;border-radius:50%;border:1px dashed var(--line);animation:spin 30s linear infinite reverse}
+.bigicon{font-size:120px;filter:drop-shadow(0 8px 30px var(--tc-glow,rgba(0,0,0,.6)));animation:float 5s ease-in-out infinite;z-index:2}
+@keyframes float{0%,100%{transform:translateY(-6px)}50%{transform:translateY(8px)}}
+.card .right{flex:1;padding:28px 30px;display:flex;flex-direction:column;min-width:0}
+.card .cat-line{font-size:11px;letter-spacing:2px;color:var(--ink-dim);margin-bottom:6px;font-family:'Noto Serif SC'}
+.card h3{font-family:'Noto Serif SC';font-weight:700;font-size:26px;letter-spacing:1px;line-height:1.2;margin-bottom:12px;word-break:break-all}
+.tagrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.tg{font-size:11px;padding:5px 11px;border-radius:4px;border:1px solid var(--line);color:var(--ink-dim);display:flex;align-items:center;gap:6px}
+.tg.src{color:var(--tc);border-color:var(--tc-d)}
+.tg.src .d{width:6px;height:6px;border-radius:50%;background:var(--tc);box-shadow:0 0 7px var(--tc)}
+.tg.lock{color:var(--src-github);border-color:var(--src-github-d);background:rgba(95,201,230,.08)}
+.desc{font-size:13px;line-height:1.8;color:var(--ink-dim);margin-bottom:18px}
+.profbar{margin-bottom:auto}
+.profbar .lab{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-faint);margin-bottom:7px;letter-spacing:1px}
+.profbar .lab .lv{font-family:'Cinzel';color:var(--gold);font-size:13px}
+.track{height:8px;border-radius:6px;background:rgba(7,10,20,.7);overflow:hidden;border:1px solid var(--line)}
+.fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--gold-deep),var(--gold-b));box-shadow:0 0 14px rgba(216,184,106,.6);transition:width .8s cubic-bezier(.2,.9,.2,1);position:relative}
+.fill::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);animation:shine 2.4s linear infinite}
+@keyframes shine{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
+.actions{display:flex;gap:10px;margin-top:22px}
+.btn{flex:1;padding:13px;border-radius:5px;font-family:'Noto Serif SC';font-weight:600;font-size:14px;letter-spacing:2px;cursor:pointer;border:1px solid var(--line);background:rgba(216,184,106,.06);color:var(--ink);transition:.25s;position:relative;overflow:hidden}
+.btn:hover{border-color:var(--line-strong);background:rgba(216,184,106,.14);transform:translateY(-2px)}
+.btn.prime{background:linear-gradient(180deg,#f4e2ad,#d8b86a);color:#1a1505;border-color:var(--gold-b);box-shadow:0 6px 20px -4px rgba(216,184,106,.5)}
+.btn.prime:hover{box-shadow:0 10px 28px -4px rgba(216,184,106,.7)}
+.btn.danger:hover{color:#ff9a9a;border-color:rgba(255,120,120,.5);background:rgba(255,80,80,.08)}
+.btn.up{background:linear-gradient(180deg,#b08cff,#7a5cff);color:#fff;border-color:#b08cff;box-shadow:0 6px 20px -4px rgba(122,92,255,.5)}
+.btn.locked{flex:1;text-align:center;color:var(--src-github);border-color:var(--src-github-d);background:rgba(95,201,230,.08);cursor:default;letter-spacing:2px}
+.btn.locked:hover{transform:none}
+.xclose{position:absolute;top:14px;right:16px;z-index:5;width:32px;height:32px;border-radius:50%;border:1px solid var(--line);background:rgba(7,10,20,.6);color:var(--ink-dim);cursor:pointer;font-size:16px;transition:.25s}
+.xclose:hover{color:var(--gold-b);border-color:var(--line-strong);transform:rotate(90deg)}
+
+/* ---- EQUIP SCREEN ---- */
+.equip{flex-direction:column;gap:16px;overflow-y:auto;padding-right:4px}
+.equip-cols{display:flex;gap:16px;flex:none}
+.eqbar{flex:1;padding:22px 24px}
+.sect-h{font-family:'Noto Serif SC';font-weight:700;font-size:17px;letter-spacing:2px;display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.sect-h .en{font-family:'Cinzel';font-size:11px;letter-spacing:2px;color:var(--gold);opacity:.7;font-weight:500}
+.sect-h .x{margin-left:auto;font-size:11px;color:var(--ink-faint);letter-spacing:1px}
+.sect-sub{font-size:11.5px;color:var(--ink-faint);margin-bottom:18px;line-height:1.6}
+.slots{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.slot{aspect-ratio:1/1.08;border-radius:8px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:.3s;
+  border:1px solid var(--line);background:linear-gradient(165deg,rgba(24,33,60,.7),rgba(12,18,34,.8));overflow:hidden}
+.slot.filled{border-color:var(--src-github-d)}
+.slot.filled::before{content:"";position:absolute;inset:0;background:radial-gradient(110% 80% at 50% 0,rgba(216,184,106,.16),transparent 60%)}
+.slot.filled::after{content:"";position:absolute;top:0;left:10%;right:10%;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.slot:hover{transform:translateY(-5px);box-shadow:0 14px 30px -10px rgba(0,0,0,.6),0 0 22px -6px rgba(216,184,106,.4);border-color:var(--gold)}
+.slot .sic{font-size:38px;filter:drop-shadow(0 3px 10px rgba(0,0,0,.6));z-index:1;transition:.3s}
+.slot:hover .sic{transform:scale(1.12)}
+.slot .snm{font-size:11px;color:var(--ink-dim);text-align:center;line-height:1.3;padding:0 8px;z-index:1}
+.slot .unq{position:absolute;bottom:8px;font-size:9px;color:var(--ink-faint);opacity:0;transition:.25s;letter-spacing:1px;border:1px solid var(--line);padding:2px 8px;border-radius:20px}
+.slot:hover .unq{opacity:1;color:#ff9a9a;border-color:rgba(255,120,120,.4)}
+.slot.empty{border-style:dashed;border-color:var(--line);cursor:default}
+.slot.empty .sic{font-size:26px;opacity:.25}
+.slot.empty .snm{color:var(--ink-faint);opacity:.6}
+.slot.empty:hover{transform:none;box-shadow:none;border-color:var(--line)}
+.slot.pop{animation:equipPop .6s cubic-bezier(.2,1.4,.4,1)}
+@keyframes equipPop{0%{transform:scale(.6);opacity:0}50%{transform:scale(1.12)}100%{transform:scale(1)}}
+.ring{position:absolute;inset:0;border-radius:8px;pointer-events:none}
+.slot.pop .ring{animation:ringBurst .7s ease-out}
+@keyframes ringBurst{0%{box-shadow:0 0 0 0 rgba(244,226,173,.8)}100%{box-shadow:0 0 0 30px rgba(244,226,173,0)}}
+
+.loadcol{width:330px;flex:none;padding:22px 22px}
+.loadcards{display:flex;flex-direction:column;gap:12px}
+.lcard{border-radius:7px;padding:15px 16px;cursor:pointer;position:relative;overflow:hidden;transition:.28s;
+  background:linear-gradient(150deg,rgba(28,38,68,.8),rgba(14,20,38,.85));border:1px solid var(--line)}
+.lcard::after{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--gold-b),var(--gold-deep))}
+.lcard:hover{transform:translateX(4px);border-color:var(--line-strong);box-shadow:0 10px 26px -10px rgba(0,0,0,.6)}
+.lcard .lh{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+.lcard .lemoji{font-size:20px}
+.lcard .lname{font-family:'Noto Serif SC';font-weight:600;font-size:15px;letter-spacing:1px}
+.lcard .lcount{margin-left:auto;font-family:'Cinzel';font-size:11px;color:var(--gold)}
+.lchips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.lchip{font-size:10px;padding:3px 8px;border-radius:20px;background:rgba(7,10,20,.5);border:1px solid var(--line);color:var(--ink-dim);letter-spacing:.3px}
+.lchip.more{color:var(--gold);border-color:var(--line-strong)}
+.lbtn{width:100%;padding:10px;border-radius:5px;font-family:'Noto Serif SC';font-weight:600;font-size:13px;letter-spacing:2px;cursor:pointer;
+  border:1px solid var(--gold-deep);background:linear-gradient(180deg,rgba(216,184,106,.18),rgba(216,184,106,.06));color:var(--gold-b);transition:.25s}
+.lbtn:hover{background:linear-gradient(180deg,#f4e2ad,#d8b86a);color:#1a1505;box-shadow:0 6px 18px -4px rgba(216,184,106,.5)}
+
+/* lark suite shelf */
+.larkshelf{padding:22px 24px;flex:none}
+.suite-banner{display:flex;align-items:center;gap:14px;margin-bottom:16px;padding:14px 18px;border-radius:7px;
+  background:linear-gradient(100deg,rgba(95,201,230,.12),rgba(95,201,230,.02));border:1px solid var(--src-github-d);position:relative;overflow:hidden}
+.suite-banner::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 120% at 0 50%,rgba(95,201,230,.18),transparent)}
+.suite-banner .sbi{font-size:30px;z-index:1}
+.suite-banner .sbt{z-index:1}
+.suite-banner h4{font-family:'Noto Serif SC';font-weight:700;font-size:16px;letter-spacing:1px;color:#bfeaf6;display:flex;align-items:center;gap:10px}
+.lockmk{font-size:10px;padding:3px 9px;border-radius:20px;background:rgba(7,10,20,.6);border:1px solid var(--src-github-d);color:var(--src-github);letter-spacing:.5px}
+.suite-banner p{font-size:11.5px;color:var(--ink-dim);margin-top:5px;line-height:1.5}
+.suite-banner .sbc{margin-left:auto;font-family:'Cinzel';font-size:26px;color:var(--src-github);z-index:1;text-shadow:0 0 16px rgba(95,201,230,.5)}
+.larkgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.lkitem{display:flex;align-items:center;gap:9px;padding:10px 11px;border-radius:6px;cursor:default;transition:.25s;
+  background:linear-gradient(150deg,rgba(20,30,52,.7),rgba(12,18,34,.8));border:1px solid rgba(95,201,230,.18)}
+.lkitem:hover{border-color:var(--src-github);transform:translateY(-3px);box-shadow:0 0 18px -6px rgba(95,201,230,.5)}
+.lkitem .lke{font-size:18px}
+.lkitem .lkn{font-size:11.5px;color:var(--ink-dim);line-height:1.25;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.lkitem .lk{font-size:11px;opacity:.6}
+
+/* deploy affordance */
+.deploybar{display:flex;align-items:center;gap:14px;padding:16px 22px;flex:none}
+.deploybar .dlabel{font-family:'Noto Serif SC';font-size:13px;letter-spacing:1px;color:var(--ink-dim)}
+.proj-sel{flex:1;max-width:300px;background:rgba(7,10,20,.6);border:1px solid var(--line);color:var(--ink);padding:11px 13px;border-radius:5px;font-family:inherit;font-size:13px;outline:none}
+.deploy-btn{padding:12px 26px;border-radius:5px;font-family:'Noto Serif SC';font-weight:600;font-size:14px;letter-spacing:3px;cursor:pointer;
+  border:1px solid var(--gold-b);background:linear-gradient(180deg,#f4e2ad,#d8b86a);color:#1a1505;box-shadow:0 6px 20px -4px rgba(216,184,106,.5);transition:.25s}
+.deploy-btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px -4px rgba(216,184,106,.7)}
+
+/* stub screens */
+.stub{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;text-align:center}
+.stub .em{font-size:70px;filter:drop-shadow(0 6px 20px rgba(216,184,106,.4));animation:float 5s ease-in-out infinite}
+.stub h2{font-family:'Noto Serif SC';font-weight:700;font-size:24px;letter-spacing:3px}
+.stub p{font-size:13px;color:var(--ink-dim);max-width:440px;line-height:1.9}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;width:560px;max-width:90%;margin-top:6px}
+.statbox{padding:22px;border-radius:8px;background:linear-gradient(160deg,rgba(28,38,68,.7),rgba(12,18,34,.8));border:1px solid var(--line);position:relative;overflow:hidden}
+.statbox::after{content:"";position:absolute;top:0;left:15%;right:15%;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.statbox .sv{font-family:'Cinzel';font-weight:700;font-size:34px;color:var(--gold-b);text-shadow:0 0 18px rgba(216,184,106,.4)}
+.statbox .sk{font-size:12px;color:var(--ink-dim);letter-spacing:2px;margin-top:6px}
+
+/* toast */
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(80px);z-index:80;padding:13px 26px;border-radius:6px;
+  background:linear-gradient(180deg,rgba(28,38,68,.96),rgba(12,18,34,.96));border:1px solid var(--line-strong);
+  font-family:'Noto Serif SC';font-size:14px;letter-spacing:2px;color:var(--gold-b);box-shadow:0 16px 40px -10px #000;opacity:0;transition:.4s cubic-bezier(.2,1.3,.4,1);display:flex;align-items:center;gap:10px}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.toast .ti{font-size:18px}
+
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--gold-deep),rgba(160,125,54,.3));border-radius:6px;border:2px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background:var(--gold)}
+</style>
+</head>
+<body>
+<div class="bg"><div class="grid"></div><div class="stars" id="stars"></div><div class="vig"></div></div>
+
+<div class="app">
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="sigil">
+        <svg viewBox="0 0 100 100"><defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f9eec4"/><stop offset="1" stop-color="#a07d36"/></linearGradient></defs>
+        <path d="M50 6 L62 38 L96 38 L68 58 L80 92 L50 72 L20 92 L32 58 L4 38 L38 38 Z" fill="url(#g1)" stroke="#f4e2ad" stroke-width="1.2"/>
+        <circle cx="50" cy="52" r="10" fill="#0c1124" stroke="#f4e2ad" stroke-width="1.5"/></svg>
+      </div>
+      <div>
+        <h1>SkillHub</h1>
+        <div class="sub">技 能 养 成</div>
+      </div>
+    </div>
+    <nav class="nav" id="nav">
+      <button class="tab active" data-s="inv">背包<span class="en">INVENTORY</span></button>
+      <button class="tab" data-s="equip">出战<span class="en">EQUIP</span></button>
+      <button class="tab" data-s="upgrade">升级<span class="en">ASCEND</span></button>
+      <button class="tab" data-s="record">战绩<span class="en">RECORD</span></button>
+      <button class="tab" data-s="settings">设置<span class="en">SYSTEM</span></button>
+    </nav>
+    <div class="spacer"></div>
+    <div class="hud">
+      <div class="pill"><span class="v">86</span><span class="k">技能总数</span></div>
+      <div class="pill glow"><span class="v" id="hud-eq">6</span><span class="k">出战常驻</span></div>
+      <div class="pill"><span class="v">27</span><span class="k">飞书套装</span></div>
+    </div>
+  </header>
+
+  <!-- STAGE -->
+  <main class="stage">
+
+    <!-- ===== INVENTORY ===== -->
+    <section class="screen show" data-screen="inv">
+      <aside class="filters panel">
+        <div>
+          <div class="f-title">搜寻</div>
+          <input class="search" id="search" placeholder="搜索技能名称…">
+        </div>
+        <div>
+          <div class="f-title">来源</div>
+          <div class="srcrow" id="srcrow">
+            <button class="schip s-all active" data-src="all">全部</button>
+            <button class="schip s-github" data-src="github"><span class="dot" style="background:var(--src-github)"></span>GitHub</button>
+            <button class="schip s-self" data-src="self"><span class="dot" style="background:var(--src-self)"></span>自制</button>
+            <button class="schip s-web" data-src="web"><span class="dot" style="background:var(--src-web)"></span>网站</button>
+          </div>
+        </div>
+        <div style="flex:1;min-height:0;display:flex;flex-direction:column">
+          <div class="f-title">分类</div>
+          <div id="catlist" style="overflow-y:auto;display:flex;flex-direction:column;gap:3px"></div>
+        </div>
+        <div class="note">来源是<b>中性分类</b>，不代表强弱。GitHub · 自制 · 网站三者地位平等。唯一的「强度」是<b>熟练度</b>，只看真实使用次数。</div>
+      </aside>
+
+      <div class="invmain panel">
+        <div class="invhead">
+          <h2 id="inv-title">全部技能</h2>
+          <span class="cnt" id="inv-count">59</span>
+          <span class="hint">点击技能查看圣遗物档案 · 携带 / 升级 / 丢弃</span>
+        </div>
+        <div class="gridwrap"><div class="tilegrid" id="tilegrid"></div></div>
+      </div>
+    </section>
+
+    <!-- ===== EQUIP ===== -->
+    <section class="screen" data-screen="equip">
+      <div class="equip" style="flex:1">
+        <div class="equip-cols">
+          <div class="eqbar panel">
+            <div class="sect-h">出战槽位<span class="en">RESONANCE SLOTS</span><span class="x" id="slot-status">6 / 8 已装备</span></div>
+            <div class="sect-sub">常驻技能始终随身、每次对话自动加载。如同角色的圣遗物，决定你的基础战力。</div>
+            <div class="slots" id="slots"></div>
+          </div>
+          <div class="loadcol panel">
+            <div class="sect-h">队伍预设<span class="en">PARTY PRESET</span></div>
+            <div class="sect-sub">一键换上整套技能组合，像切换队伍配置一样。</div>
+            <div class="loadcards" id="loadcards"></div>
+          </div>
+        </div>
+
+        <div class="larkshelf panel">
+          <div class="suite-banner">
+            <span class="sbi">💬</span>
+            <div class="sbt">
+              <h4>飞书 · 官方全家桶<span class="lockmk">🔒 外部托管 · 只读</span></h4>
+              <p>27 件成套技能，由 <b style="color:#bfeaf6">npx skills / lark-cli</b> 自动维护与更新 · 始终在线，无需手动装备 · 此处不可增删改</p>
+            </div>
+            <span class="sbc">×27</span>
+          </div>
+          <div class="larkgrid" id="larkgrid"></div>
+        </div>
+
+        <div class="deploybar panel">
+          <span class="dlabel">⚓ 装备到项目</span>
+          <select class="proj-sel" id="projsel">
+            <option>seewow · 中心应用节点</option>
+            <option>skillhub-desktop · 当前工程</option>
+            <option>overseas-fetch · 海外抓取</option>
+            <option>＋ 新建工程…</option>
+          </select>
+          <button class="deploy-btn" id="deploybtn">应用配置</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== UPGRADE STUB ===== -->
+    <section class="screen" data-screen="upgrade">
+      <div class="stub panel" style="flex:1">
+        <div class="em">✦</div>
+        <h2>技能突破</h2>
+        <p>消耗使用经验与「精炼材料」突破技能等级，解锁更强表现。当前有 <b style="color:var(--gold-b)">5</b> 个 GitHub 技能可升级（演示数据）。完整养成系统建设中。</p>
+        <div class="stat-grid">
+          <div class="statbox"><div class="sv">5</div><div class="sk">可突破</div></div>
+          <div class="statbox"><div class="sv">Lv.4</div><div class="sk">最高熟练度</div></div>
+          <div class="statbox"><div class="sv">∞</div><div class="sk">精炼上限</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== RECORD STUB ===== -->
+    <section class="screen" data-screen="record">
+      <div class="stub panel" style="flex:1">
+        <div class="em">📜</div>
+        <h2>战绩档案</h2>
+        <p>记录每个技能的真实调用历史与熟练度成长曲线。熟练度是唯一合法的「强度」轴——只与真实使用挂钩，与来源无关。</p>
+        <div class="stat-grid">
+          <div class="statbox"><div class="sv">59</div><div class="sk">在库技能</div></div>
+          <div class="statbox"><div class="sv">18</div><div class="sk">开源 OSS</div></div>
+          <div class="statbox"><div class="sv">9</div><div class="sk">技能分类</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SETTINGS STUB ===== -->
+    <section class="screen" data-screen="settings">
+      <div class="stub panel" style="flex:1">
+        <div class="em">⚙</div>
+        <h2>系统设置</h2>
+        <p>~/skills 单一真源 · symlink 扇出 · skillctl 管理。飞书套装由 npx skills 自更新，本地技能手动维护。每周自动更新计划已就绪。</p>
+        <div class="stat-grid">
+          <div class="statbox"><div class="sv">86</div><div class="sk">技能总数</div></div>
+          <div class="statbox"><div class="sv">33</div><div class="sk">常驻全局</div></div>
+          <div class="statbox"><div class="sv">27</div><div class="sk">外部托管</div></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ITEM MODAL -->
+<div class="modal" id="modal">
+  <div class="scrim" id="scrim"></div>
+  <div class="card" id="card">
+    <button class="xclose" id="xclose">✕</button>
+    <div class="left"><div class="bigicon" id="m-icon">🛠</div></div>
+    <div class="right">
+      <div class="cat-line" id="m-cat">工具 · TOOLS</div>
+      <h3 id="m-name">技能名</h3>
+      <div class="tagrow" id="m-tags"></div>
+      <div class="desc" id="m-desc"></div>
+      <div class="profbar">
+        <div class="lab"><span>熟练度 · PROFICIENCY</span><span class="lv" id="m-lv">Lv.0</span></div>
+        <div class="track"><div class="fill" id="m-fill" style="width:0"></div></div>
+      </div>
+      <div class="actions" id="m-actions"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span class="ti">✦</span><span id="toast-t">已携带</span></div>
+
+<script>
+const DATA={"skills":[{"n":"agent-cli-creator","g":"tools","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"chatprd","g":"tools","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"chronicle","g":"utils","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"contract-review","g":"contracts","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"contract-review-v3","g":"contracts","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"dashboard","g":"web-creative","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"find-docs","g":"tools","t":"global","ch":"github","x":false,"oss":true,"lu":null},{"n":"frontend-design","g":"web-creative","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"guizang-ppt-skill","g":"web-creative","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"humanizer","g":"utils","t":"global","ch":"github","x":false,"oss":true,"lu":null},{"n":"ian-xiaohei-illustrations","g":"web-creative","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"image-asset-pipeline","g":"media","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"jarvis-class-presentation","g":"jarvis","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"jarvis-daguan-closing-package","g":"jarvis","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"jarvis-daguan-miniapp-smoke","g":"jarvis","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"jarvis-kb-retriever","g":"jarvis","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"jarvis-provenance-check","g":"jarvis","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"jarvis-safe-ingest-guard","g":"jarvis","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"jarvis-source-ingest","g":"jarvis","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"jarvis-wiki-lint","g":"jarvis","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"jarvis-wiki-merge","g":"jarvis","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"jarvis-workbuddy-law-workshop-webpage","g":"jarvis","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"jarvis-workbuddy-legal-ai-workshop-webpage","g":"jarvis","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"keep-codex-fast","g":"utils","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"kimi-webbridge","g":"tools","t":"global","ch":"github","x":false,"oss":true,"lu":0},{"n":"live-dashboard","g":"web-creative","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"mac-network-tuneup","g":"utils","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"md2wechat-local","g":"web-creative","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"minimax-tts","g":"media","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"newapi-imagegen","g":"media","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"pdf","g":"utils","t":"global","ch":"local","x":false,"oss":false,"lu":null},{"n":"pm-spec","g":"web-creative","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"qr-poster-compositor","g":"web-creative","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"skill-distributor","g":"utils","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"social-media-dashboard","g":"web-creative","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"tailscale-direct-connect","g":"utils","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"taobao-baiyi-jianlou","g":"utils","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"teaching-goal-contract-harness","g":"utils","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"video-dissection-local","g":"media","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"web-design-engineer","g":"web-creative","t":"global","ch":"github","x":false,"oss":true,"lu":0},{"n":"web-video-presentation","g":"web-creative","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"wechat-finder","g":"tools","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"workbuddy-tencent-esign","g":"workbuddy","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"workbuddy-tencent-inventory","g":"workbuddy","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"workbuddy-tmeet","g":"workbuddy","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"xhs-bounty-image-generator","g":"xhs","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"xhs-manual-bounty-run","g":"xhs","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"xiaozhi-activation-code","g":"tools","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"humanizer-zh","g":"tools","t":"on-demand","ch":"manual-port","x":false,"oss":false,"lu":null},{"n":"vercel-react-best-practices","g":"web-creative","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"web-design-guidelines","g":"web-creative","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"lark-accounts","g":"lark","t":"global","ch":"local","x":false,"oss":false,"lu":0},{"n":"stop-slop","g":"tools","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"guizang-social-card-skill","g":"web-creative","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"content-research-writer","g":"tools","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"notebooklm","g":"tools","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"punk-cover","g":"web-creative","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"punk-avatar","g":"web-creative","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"yao-meta-skill","g":"tools","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"lark-approval","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-apps","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-attendance","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-base","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-calendar","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-contact","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-doc","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-drive","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-event","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-im","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-mail","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-markdown","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-minutes","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-note","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-okr","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-openapi-explorer","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-shared","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-sheets","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-skill-maker","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-slides","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-task","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-vc","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-vc-agent","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-whiteboard","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-wiki","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-workflow-meeting-summary","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-workflow-standup-report","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null}],"loadouts":{"web":["web-design-engineer","frontend-design","qr-poster-compositor","guizang-ppt-skill"],"media":["image-asset-pipeline","minimax-tts","newapi-imagegen","video-dissection-local"],"jarvis":["jarvis-class-presentation","jarvis-daguan-closing-package","jarvis-daguan-miniapp-smoke","jarvis-kb-retriever","jarvis-provenance-check","jarvis-safe-ingest-guard","jarvis-source-ingest","jarvis-wiki-lint","jarvis-wiki-merge","jarvis-workbuddy-law-workshop-webpage","jarvis-workbuddy-legal-ai-workshop-webpage"],"xhs":["xhs-bounty-image-generator","xhs-manual-bounty-run"],"workbuddy":["workbuddy-tencent-esign","workbuddy-tencent-inventory","workbuddy-tmeet"],"contracts":["contract-review","contract-review-v3"]}};
+
+const GROUPS={
+  tools:{e:'🛠',name:'工具',en:'TOOLS'},
+  utils:{e:'🧰',name:'杂用',en:'UTILS'},
+  'web-creative':{e:'🎨',name:'网页创意',en:'WEB CREATIVE'},
+  media:{e:'🎬',name:'媒体',en:'MEDIA'},
+  jarvis:{e:'🤖',name:'Jarvis',en:'JARVIS'},
+  workbuddy:{e:'💼',name:'工作搭子',en:'WORKBUDDY'},
+  xhs:{e:'📕',name:'小红书',en:'XHS'},
+  contracts:{e:'📜',name:'合同',en:'CONTRACTS'},
+  lark:{e:'💬',name:'飞书',en:'LARK'}
+};
+const LOAD_META={web:'🎨',media:'🎬',jarvis:'🤖',xhs:'📕',workbuddy:'💼',contracts:'📜'};
+const LOAD_NAME={web:'网页创意队',media:'媒体生产队',jarvis:'Jarvis 知识队',xhs:'小红书赏金队',workbuddy:'工作搭子队',contracts:'合同审查队'};
+// illustrative upgradeable set (github skills) — demo only
+const UPGRADE=new Set(['find-docs','web-design-engineer','humanizer','stop-slop','notebooklm']);
+
+function srcOf(s){return s.ch==='local'?'self':'github';} // github/manual-port/lark-cli => github source; website bucket currently empty
+const SRC={
+  github:{name:'GitHub',cls:'github',c:'var(--src-github)',cd:'var(--src-github-d)',glow:'rgba(95,201,230,.28)'},
+  self:{name:'自制',cls:'self',c:'var(--src-self)',cd:'var(--src-self-d)',glow:'rgba(232,168,92,.26)'},
+  web:{name:'网站',cls:'web',c:'var(--src-web)',cd:'var(--src-web-d)',glow:'rgba(127,214,160,.26)'}
+};
+function levelOf(s){ // proficiency derived from real usage (lu). null=未用 Lv.0
+  if(s.lu===null) return 0;
+  if(s.lu<=1) return 4;
+  if(s.lu<=7) return 3;
+  if(s.lu<=30) return 2;
+  return 1;
+}
+const byName=Object.fromEntries(DATA.skills.map(s=>[s.n,s]));
+// equip state — start with the 6 in-hub globals
+let equipped=new Set(DATA.skills.filter(s=>s.t==='global'&&!s.x).map(s=>s.n));
+const MAX_SLOTS=8;
+
+/* ===== ambient stars ===== */
+(function(){const st=document.getElementById('stars');for(let i=0;i<46;i++){const d=document.createElement('div');d.className='star';const sz=Math.random()*2+1;d.style.width=d.style.height=sz+'px';d.style.left=Math.random()*100+'%';d.style.top=Math.random()*100+'%';d.style.animationDelay=(Math.random()*4)+'s';d.style.animationDuration=(3+Math.random()*4)+'s';st.appendChild(d);}})();
+
+/* ===== nav ===== */
+document.getElementById('nav').addEventListener('click',e=>{const b=e.target.closest('.tab');if(!b)return;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t===b));
+  const s=b.dataset.s;document.querySelectorAll('.screen').forEach(sc=>sc.classList.toggle('show',sc.dataset.screen===s));
+});
+
+/* ===== INVENTORY ===== */
+let curCat='all',curSrc='all',curQ='';
+function setStyle(el,s){const src=SRC[srcOf(s)];el.style.setProperty('--tc',src.c);el.style.setProperty('--tc-d',src.cd);el.style.setProperty('--tc-glow',src.glow);}
+function stars(lv){let h='<span class="stars">';for(let i=0;i<5;i++)h+=`<span style="color:${i<lv?'var(--gold-b)':'var(--ink-faint)'};font-size:10px;${i<lv?'text-shadow:0 0 6px rgba(244,226,173,.7)':''}">✦</span>`;return h+'</span>';}
+
+function buildCats(){
+  const list=document.getElementById('catlist');
+  const inHub=DATA.skills.filter(s=>!s.x);
+  const counts={all:inHub.length};
+  inHub.forEach(s=>counts[s.g]=(counts[s.g]||0)+1);
+  let h=`<div class="cat active" data-c="all"><span class="ce">✦</span><span class="cn">全部技能</span><span class="cc">${counts.all}</span></div>`;
+  Object.keys(GROUPS).filter(g=>g!=='lark').forEach(g=>{
+    if(!counts[g])return;
+    h+=`<div class="cat" data-c="${g}"><span class="ce">${GROUPS[g].e}</span><span class="cn">${GROUPS[g].name}</span><span class="cc">${counts[g]}</span></div>`;
+  });
+  h+=`<div class="cat" data-c="lark" style="opacity:.85"><span class="ce">💬</span><span class="cn">飞书 🔒外部</span><span class="cc">27</span></div>`;
+  list.innerHTML=h;
+  list.querySelectorAll('.cat').forEach(c=>c.onclick=()=>{curCat=c.dataset.c;list.querySelectorAll('.cat').forEach(x=>x.classList.toggle('active',x===c));renderInv();});
+}
+document.getElementById('srcrow').addEventListener('click',e=>{const b=e.target.closest('.schip');if(!b)return;curSrc=b.dataset.src;document.querySelectorAll('.schip').forEach(x=>x.classList.toggle('active',x===b));renderInv();});
+document.getElementById('search').addEventListener('input',e=>{curQ=e.target.value.toLowerCase().trim();renderInv();});
+
+function renderInv(){
+  const grid=document.getElementById('tilegrid');
+  let items=DATA.skills.filter(s=>{
+    if(curCat==='lark') return s.x;
+    if(curCat==='all'){if(s.x)return false;}else{if(s.g!==curCat||s.x)return false;}
+    if(curSrc!=='all'&&srcOf(s)!==curSrc)return false;
+    if(curQ&&!s.n.toLowerCase().includes(curQ))return false;
+    return true;
+  });
+  document.getElementById('inv-title').textContent=curCat==='all'?'全部技能':(curCat==='lark'?'飞书 · 外部托管':GROUPS[curCat].name);
+  document.getElementById('inv-count').textContent=items.length;
+  grid.innerHTML=items.map((s,i)=>{
+    const src=SRC[srcOf(s)];const lv=levelOf(s);const isEq=equipped.has(s.n);const up=UPGRADE.has(s.n)&&!s.x;
+    return `<div class="tile ${s.x?'ext':''} ${up?'up':''}" data-n="${s.n}" style="--tc:${src.c};--tc-d:${src.cd};--tc-glow:${src.glow};animation-delay:${Math.min(i*22,600)}ms">
+      <div class="corner">
+        ${isEq?'<span class="badge b-eq">出战中</span>':''}
+        ${s.x?'<span class="badge b-ext">🔒外部</span>':''}
+        ${up?'<span class="badge b-up">可升级</span>':''}
+      </div>
+      <span class="ic">${GROUPS[s.g].e}</span>
+      <div class="nm">${s.n}</div>
+      <div class="meta">
+        <span class="srctag"><span class="d"></span>${src.name}</span>
+        ${stars(lv)}
+      </div>
+      <span class="spark" style="--dx:20px;--dy:-30px;top:30%;left:60%"></span>
+      <span class="spark" style="--dx:-25px;--dy:-20px;top:40%;left:40%"></span>
+    </div>`;
+  }).join('')||`<div style="color:var(--ink-faint);padding:40px;font-size:13px">没有匹配的技能</div>`;
+  grid.querySelectorAll('.tile').forEach(t=>t.onclick=()=>openModal(byName[t.dataset.n]));
+}
+
+/* ===== MODAL ===== */
+const modal=document.getElementById('modal'),card=document.getElementById('card');
+function openModal(s){
+  const src=SRC[srcOf(s)];const lv=levelOf(s);const up=UPGRADE.has(s.n)&&!s.x;
+  card.style.setProperty('--tc',src.c);card.style.setProperty('--tc-d',src.cd);card.style.setProperty('--tc-glow',src.glow);
+  document.getElementById('m-icon').textContent=GROUPS[s.g].e;
+  document.getElementById('m-cat').textContent=`${GROUPS[s.g].name} · ${GROUPS[s.g].en}`;
+  document.getElementById('m-name').textContent=s.n;
+  const tags=[`<span class="tg src"><span class="d"></span>来源 · ${src.name}</span>`];
+  tags.push(s.x?`<span class="tg lock">🔒 外部托管 · 只读</span>`:`<span class="tg">🏠 在库 · 可管理</span>`);
+  tags.push(s.t==='global'?`<span class="tg">⚡ 常驻</span>`:`<span class="tg">🎒 按需</span>`);
+  if(s.oss)tags.push(`<span class="tg">开源</span>`);
+  document.getElementById('m-tags').innerHTML=tags.join('');
+  document.getElementById('m-desc').textContent=s.x
+    ? `飞书官方全家桶的一员，由 npx skills / lark-cli 自动维护与更新，始终在线。无需也无法在此手动装备或删除——它替你照看好自己。`
+    : `「${s.n}」是一项${GROUPS[s.g].name}类技能。携带后将参与对应任务的处理流程。描述占位文本，可在技能 manifest 中补充详细说明。`;
+  document.getElementById('m-lv').textContent='Lv.'+lv+(lv===0?' · 未使用':'');
+  const fill=document.getElementById('m-fill');fill.style.width='0';
+  setTimeout(()=>fill.style.width=(lv/5*100)+'%',60);
+  // actions
+  const act=document.getElementById('m-actions');
+  if(s.x){
+    act.innerHTML=`<div class="btn locked">🔒 外部托管 · 仅供查看</div>`;
+  }else{
+    const eq=equipped.has(s.n);
+    let h=`<button class="btn prime" id="b-eq">${eq?'卸下':'携带'}</button>`;
+    if(up)h+=`<button class="btn up" id="b-up">升级 ✦</button>`;
+    h+=`<button class="btn danger" id="b-del">丢弃</button>`;
+    act.innerHTML=h;
+    document.getElementById('b-eq').onclick=()=>{toggleEquip(s.n);openModal(byName[s.n]);renderInv();renderEquip();};
+    if(up)document.getElementById('b-up').onclick=()=>{toast('✦ 升级演示 · 熟练度只随真实使用增长');burst(card);};
+    document.getElementById('b-del').onclick=()=>{toast('🗑 已丢弃（演示，不影响真实文件）');closeModal();};
+  }
+  modal.classList.add('show');
+}
+function closeModal(){modal.classList.remove('show');}
+document.getElementById('xclose').onclick=closeModal;
+document.getElementById('scrim').onclick=closeModal;
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+function toggleEquip(n){
+  if(equipped.has(n)){equipped.delete(n);toast('已卸下 · '+n);}
+  else{if(equipped.size>=MAX_SLOTS){toast('⚠ 出战槽位已满（'+MAX_SLOTS+'）');return;}equipped.add(n);toast('✦ 已携带 · '+n);}
+  document.getElementById('hud-eq').textContent=equipped.size;
+}
+
+/* ===== EQUIP SCREEN ===== */
+function renderEquip(){
+  const slots=document.getElementById('slots');
+  const eq=[...equipped];
+  document.getElementById('slot-status').textContent=`${eq.length} / ${MAX_SLOTS} 已装备`;
+  document.getElementById('hud-eq').textContent=equipped.size;
+  let h='';
+  for(let i=0;i<MAX_SLOTS;i++){
+    if(i<eq.length){const s=byName[eq[i]];const src=SRC[srcOf(s)];
+      h+=`<div class="slot filled" data-n="${s.n}" style="--tc:${src.c}"><span class="ring"></span><span class="sic">${GROUPS[s.g].e}</span><span class="snm">${s.n}</span><span class="unq">点击卸下</span></div>`;
+    }else{
+      h+=`<div class="slot empty"><span class="sic">✦</span><span class="snm">空槽位</span></div>`;
+    }
+  }
+  slots.innerHTML=h;
+  slots.querySelectorAll('.slot.filled').forEach(sl=>sl.onclick=()=>{toggleEquip(sl.dataset.n);renderEquip();renderInv();});
+  // loadouts
+  document.getElementById('loadcards').innerHTML=Object.entries(DATA.loadouts).map(([k,arr])=>{
+    const shown=arr.slice(0,3),extra=arr.length-shown.length;
+    return `<div class="lcard" data-k="${k}">
+      <div class="lh"><span class="lemoji">${LOAD_META[k]||'✦'}</span><span class="lname">${LOAD_NAME[k]||k}</span><span class="lcount">×${arr.length}</span></div>
+      <div class="lchips">${shown.map(n=>`<span class="lchip">${n}</span>`).join('')}${extra>0?`<span class="lchip more">+${extra}</span>`:''}</div>
+      <button class="lbtn">一键装备</button>
+    </div>`;
+  }).join('');
+  document.querySelectorAll('.lcard .lbtn').forEach(b=>b.onclick=e=>{
+    const k=e.target.closest('.lcard').dataset.k;equipLoadout(k);
+  });
+  // lark shelf
+  document.getElementById('larkgrid').innerHTML=DATA.skills.filter(s=>s.x).map(s=>
+    `<div class="lkitem"><span class="lke">💬</span><span class="lkn">${s.n}</span><span class="lk">🔒</span></div>`
+  ).join('');
+}
+function equipLoadout(k){
+  const arr=DATA.loadouts[k].filter(n=>byName[n]&&!byName[n].x);
+  // fill up to MAX_SLOTS, prioritizing loadout
+  const next=new Set();
+  arr.forEach(n=>{if(next.size<MAX_SLOTS)next.add(n);});
+  equipped=next;
+  renderEquip();renderInv();
+  // pop animation
+  document.querySelectorAll('#slots .slot.filled').forEach((sl,i)=>{sl.style.animationDelay=(i*60)+'ms';sl.classList.add('pop');});
+  toast(`⚔ 已换上「${LOAD_NAME[k]}」· ${arr.length} 件技能`);
+}
+document.getElementById('deploybtn').onclick=()=>{const p=document.getElementById('projsel').value;toast('⚓ 配置已应用到 · '+p.split(' · ')[0]);};
+
+/* ===== fx ===== */
+let toT;
+function toast(msg){const t=document.getElementById('toast');document.getElementById('toast-t').textContent=msg;t.classList.add('show');clearTimeout(toT);toT=setTimeout(()=>t.classList.remove('show'),2200);}
+function burst(host){for(let i=0;i<14;i++){const s=document.createElement('div');s.style.cssText='position:absolute;width:5px;height:5px;border-radius:50%;background:#f4e2ad;box-shadow:0 0 8px #f4e2ad;pointer-events:none;z-index:9;left:18%;top:45%';host.appendChild(s);const a=Math.random()*Math.PI*2,d=60+Math.random()*120;s.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:`translate(${Math.cos(a)*d}px,${Math.sin(a)*d}px) scale(0)`,opacity:0}],{duration:700+Math.random()*400,easing:'cubic-bezier(.2,.8,.2,1)'}).onfinish=()=>s.remove();}}
+
+buildCats();renderInv();renderEquip();
+</script>
+</body>
+</html>

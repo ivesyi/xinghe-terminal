@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkillHub · 技能装备库</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;450;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ground:#08090D;--s1:#13141A;--s2:#1A1B22;--s3:#23242C;--s4:#2D2E37;
+  --glass:linear-gradient(165deg,rgba(33,35,44,.92),rgba(17,18,24,.92));
+  --hair:rgba(255,255,255,.07);--hair2:rgba(255,255,255,.12);
+  --txt:#F4F5F8;--txt2:#A6ABBA;--txt3:#6C7182;--txt4:#474C5A;
+  --accent:#7C86E6;--accent2:#a3aaf2;--accent-soft:rgba(124,134,230,.16);
+  /* 来源色:中性出身标识,不分高下 —— 但用辉光呈现,有质感 */
+  --src-gh:#46C2B0;   /* GitHub 青 */
+  --src-self:#D6A45E; /* 自制   琥珀金 */
+  --src-web:#7FBF6A;  /* 网站   绿 */
+  --up:#F0CB52;--warn:#E08B4B;
+  --ease:cubic-bezier(.22,1,.36,1);--spring:cubic-bezier(.34,1.56,.64,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}html,body{height:100%}
+body{background:var(--ground);color:var(--txt);font:14px/1.55 'Inter',-apple-system,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+.disp{font-family:'Inter Tight',sans-serif;letter-spacing:-.02em}.mono{font-family:'JetBrains Mono',monospace}
+svg{display:block}
+::-webkit-scrollbar{width:9px;height:9px}::-webkit-scrollbar-thumb{background:var(--s3);border-radius:6px}::-webkit-scrollbar-thumb:hover{background:var(--s4)}::-webkit-scrollbar-track{background:transparent}
+/* 氛围:多层缓慢漂移辉光 + 极淡六边形网格,有"场域"感但不抢内容 */
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bg::before{content:"";position:absolute;inset:-20%;
+  background:radial-gradient(620px 420px at 18% 12%,rgba(124,134,230,.13),transparent 60%),
+            radial-gradient(560px 420px at 86% 8%,rgba(70,194,176,.09),transparent 60%),
+            radial-gradient(680px 520px at 70% 96%,rgba(214,164,94,.06),transparent 62%);
+  animation:drift 26s var(--ease) infinite alternate}
+.bg::after{content:"";position:absolute;inset:0;opacity:.5;
+  background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
+  background-size:34px 34px;mask:radial-gradient(circle at 50% 30%,#000,transparent 78%)}
+@keyframes drift{to{transform:translate3d(-26px,18px,0) scale(1.06)}}
+.app{position:relative;z-index:1;height:100vh;display:flex}
+
+/* 左栏 */
+.rail{width:218px;flex:none;border-right:1px solid var(--hair);display:flex;flex-direction:column;padding:16px 12px;background:linear-gradient(180deg,rgba(255,255,255,.018),transparent 40%)}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 8px 18px}
+.brand .mark{width:30px;height:30px;border-radius:9px;background:linear-gradient(145deg,var(--accent),#3e47a8);display:grid;place-items:center;box-shadow:0 5px 18px rgba(124,134,230,.4),inset 0 1px 0 rgba(255,255,255,.3)}
+.brand .mark svg{width:16px;height:16px;color:#fff}
+.brand b{font-size:15.5px;font-weight:600}
+.nav{display:flex;flex-direction:column;gap:3px}
+.nav a{position:relative;display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:9px;color:var(--txt2);cursor:pointer;font-size:13.5px;font-weight:450;transition:.16s var(--ease)}
+.nav a svg{width:17px;height:17px;flex:none;opacity:.8}
+.nav a:hover{background:var(--s1);color:var(--txt)}
+.nav a.on{background:linear-gradient(100deg,var(--accent-soft),transparent);color:var(--txt)}
+.nav a.on::before{content:"";position:absolute;left:0;top:7px;bottom:7px;width:2.5px;border-radius:3px;background:var(--accent2);box-shadow:0 0 8px var(--accent2)}
+.nav a.on svg{opacity:1;color:var(--accent2)}
+.nav a .ct{margin-left:auto;font-size:11px;color:var(--txt3);font-variant-numeric:tabular-nums}
+.rail .foot{margin-top:auto;padding:11px 9px 2px;border-top:1px solid var(--hair);font-size:11px;color:var(--txt3);line-height:1.6}
+
+/* 主区 */
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.top{flex:none;display:flex;align-items:center;gap:16px;padding:18px 28px 15px;border-bottom:1px solid var(--hair)}
+.top h1{font-size:20px;font-weight:600}.top h1 small{font-size:12.5px;color:var(--txt3);font-weight:400;margin-left:11px}
+.search{margin-left:auto;position:relative;width:234px}
+.search input{width:100%;background:var(--s1);border:1px solid var(--hair);border-radius:9px;color:var(--txt);padding:8px 11px 8px 33px;font-size:13px;outline:none;transition:.16s}
+.search input:focus{border-color:var(--accent);background:var(--s2);box-shadow:0 0 0 3px var(--accent-soft)}
+.search svg{position:absolute;left:11px;top:9px;width:15px;height:15px;color:var(--txt3)}
+.scroll{flex:1;overflow:auto;padding:22px 28px 52px}
+
+/* 过滤 */
+.filters{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:22px}
+.chip{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--txt2);background:var(--s1);border:1px solid var(--hair);padding:6px 12px;border-radius:9px;cursor:pointer;transition:.14s}
+.chip svg{width:14px;height:14px;opacity:.8}
+.chip:hover{color:var(--txt);border-color:var(--hair2);transform:translateY(-1px)}
+.chip.on{background:linear-gradient(120deg,var(--accent-soft),rgba(124,134,230,.05));color:var(--txt);border-color:rgba(124,134,230,.4)}
+.chip .n{color:var(--txt3);font-size:11px;font-variant-numeric:tabular-nums}
+.chip .sdot{width:8px;height:8px;border-radius:50%;box-shadow:0 0 7px -1px currentColor}
+.sep{width:1px;height:18px;background:var(--hair);margin:0 4px}
+
+/* 徽章框(线性图标 + 出身辉光环)—— 取代 emoji,是质感核心 */
+.med{position:relative;flex:none;display:grid;place-items:center}
+.med .face{position:absolute;inset:0;border-radius:12px;background:linear-gradient(158deg,#23252e,#14151b);
+  border:1px solid var(--hair2);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),inset 0 -6px 14px rgba(0,0,0,.45)}
+.med .ring{position:absolute;inset:-1.5px;border-radius:13px;opacity:.0;transition:.22s var(--ease);
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--sc) 60%,transparent),0 0 16px -3px var(--sc)}
+.med svg{position:relative;color:#dfe2ee}
+.med.lg{width:42px;height:42px}.med.lg svg{width:20px;height:20px}
+.med.sm{width:34px;height:34px;border-radius:10px}.med.sm svg{width:17px;height:17px}
+
+/* 技能库 —— 收藏品卡 */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(256px,1fr));gap:12px}
+.card{position:relative;background:var(--glass);border:1px solid var(--hair);border-radius:15px;padding:15px 16px 14px;cursor:pointer;overflow:hidden;
+  box-shadow:0 1px 0 rgba(255,255,255,.03) inset,0 4px 16px -6px rgba(0,0,0,.5);transition:.18s var(--ease)}
+/* 出身光,沿左缘 */
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--sc);opacity:.55;box-shadow:0 0 14px -1px var(--sc)}
+/* 悬停箔光扫过 */
+.card::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.06) 48%,transparent 60%);transform:translateX(-120%);transition:.55s var(--ease);pointer-events:none}
+.card:hover{border-color:var(--hair2);transform:translateY(-3px);box-shadow:0 14px 32px -14px rgba(0,0,0,.7),0 0 0 1px var(--hair)}
+.card:hover::after{transform:translateX(120%)}
+.card:hover .med .ring{opacity:1}
+.card.eq{border-color:color-mix(in srgb,var(--accent) 36%,var(--hair))}
+.card.eq .med .ring{opacity:.85}
+.card .h{display:flex;align-items:flex-start;gap:12px}
+.card .nm{font-size:14.5px;font-weight:600;line-height:1.28;word-break:break-word}
+.card .meta{display:flex;align-items:center;gap:9px;margin-top:12px;flex-wrap:wrap}
+.tag{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--txt3)}
+.tag .sdot{width:7px;height:7px;border-radius:50%;box-shadow:0 0 6px -1px currentColor;flex:none}
+.lvl{display:inline-flex;gap:2.5px;align-items:center;margin-left:auto}
+.lvl i{width:5px;height:5px;border-radius:50%;background:var(--s4)}.lvl i.on{background:var(--accent2);box-shadow:0 0 5px -1px var(--accent2)}
+.badge{position:absolute;top:13px;right:14px;display:flex;gap:7px;align-items:center}
+.b-eq{font-size:10.5px;font-weight:600;color:var(--accent2);background:var(--accent-soft);padding:3px 8px;border-radius:6px;display:inline-flex;align-items:center;gap:4px;border:1px solid rgba(124,134,230,.3)}
+.b-eq svg{width:11px;height:11px}
+.b-up{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;color:var(--up);background:rgba(240,203,82,.14);box-shadow:0 0 0 1px rgba(240,203,82,.3);animation:pulse 2.2s var(--ease) infinite}
+.b-up svg{width:12px;height:12px}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 1px rgba(240,203,82,.3),0 0 0 0 rgba(240,203,82,.25)}50%{box-shadow:0 0 0 1px rgba(240,203,82,.5),0 0 0 5px rgba(240,203,82,0)}}
+.b-lock{color:var(--txt3)}.b-lock svg{width:13px;height:13px}
+
+/* 出战 */
+.section{margin-bottom:30px}
+.sec-h{display:flex;align-items:baseline;gap:10px;margin-bottom:15px}
+.sec-h .t{font-size:14px;font-weight:600}.sec-h .d{font-size:11.5px;color:var(--txt3)}
+.sec-h .more{margin-left:auto;font-size:11.5px;color:var(--accent2);cursor:pointer}
+
+/* 出战插槽 —— 六边形 socket,有就位感 */
+.socks{display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:12px}
+.sock{position:relative;display:flex;align-items:center;gap:13px;background:var(--glass);border:1px solid var(--hair);border-radius:13px;padding:12px 13px;transition:.16s var(--ease);overflow:hidden}
+.sock::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--sc);opacity:.6;box-shadow:0 0 12px -1px var(--sc)}
+.sock:hover{border-color:var(--hair2);transform:translateY(-2px)}
+.hex{position:relative;width:42px;height:46px;flex:none;display:grid;place-items:center}
+.hex .face{position:absolute;inset:0;clip-path:polygon(50% 1%,93% 25%,93% 75%,50% 99%,7% 75%,7% 25%);
+  background:linear-gradient(160deg,#23252e,#13141a);box-shadow:inset 0 0 14px rgba(0,0,0,.5)}
+.hex .edge{position:absolute;inset:0;clip-path:polygon(50% 1%,93% 25%,93% 75%,50% 99%,7% 75%,7% 25%);
+  background:linear-gradient(160deg,color-mix(in srgb,var(--sc) 70%,transparent),transparent 55%);opacity:.5}
+.hex svg{position:relative;width:18px;height:18px;color:#e6e9f3}
+.sock .nm{font-size:13px;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sock .nm small{display:block;font-size:10.5px;color:var(--txt3);font-weight:400;margin-top:2px}
+.sock .x{margin-left:auto;width:23px;height:23px;border-radius:7px;display:grid;place-items:center;color:var(--txt4);cursor:pointer;flex:none;transition:.13s}
+.sock .x:hover{color:var(--warn);background:var(--s3)}.sock .x svg{width:13px;height:13px}
+.sock.empty{justify-content:center;border-style:dashed;border-color:var(--hair2);color:var(--txt3);cursor:pointer;background:rgba(255,255,255,.012)}
+.sock.empty:hover{border-color:var(--accent);color:var(--accent2)}
+.sock.empty .hex .face{background:transparent;border:1px dashed var(--hair2)}
+.sock.empty svg{width:15px;height:15px}.sock.empty span{font-size:12.5px}
+
+/* 套装预设 —— 卡组 */
+.builds{display:grid;grid-template-columns:repeat(auto-fill,minmax(228px,1fr));gap:12px}
+.build{position:relative;background:var(--glass);border:1px solid var(--hair);border-radius:15px;padding:15px 16px;transition:.16s var(--ease);overflow:hidden;box-shadow:0 4px 16px -8px rgba(0,0,0,.5)}
+.build:hover{border-color:var(--hair2);transform:translateY(-2px)}
+.build .bt{display:flex;align-items:center;gap:9px}
+.build .bt b{font-size:14px;font-weight:600;text-transform:capitalize}
+.build .bt .c{font-size:11px;color:var(--txt3);margin-left:auto}
+.stack{display:flex;margin:14px 0 14px;padding-left:6px}
+.stack .med.sm{margin-left:-10px;border-radius:9px}.stack .med.sm .face{border-radius:9px}
+.stack .more{font-size:10.5px;color:var(--txt3);align-self:center;margin-left:10px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:9px;border-radius:9px;font-size:12.5px;font-weight:600;cursor:pointer;border:1px solid var(--hair2);background:var(--s2);color:var(--txt);transition:.14s}
+.btn:hover{background:var(--s3);transform:translateY(-1px)}
+.btn.pri{background:linear-gradient(120deg,var(--accent),#5b64c8);border-color:transparent;color:#fff;box-shadow:0 4px 14px -4px rgba(124,134,230,.6)}
+.btn.pri:hover{box-shadow:0 6px 18px -4px rgba(124,134,230,.75)}
+.btn svg{width:14px;height:14px}
+
+/* 飞书货架 */
+.shelf{position:relative;background:linear-gradient(165deg,rgba(70,194,176,.06),rgba(17,18,24,.5));border:1px solid var(--hair);border-radius:15px;padding:17px 18px;overflow:hidden}
+.shelf::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--src-gh);opacity:.6;box-shadow:0 0 14px -1px var(--src-gh)}
+.shelf .sh{display:flex;align-items:center;gap:11px;margin-bottom:14px}
+.shelf .sh b{font-size:14px;font-weight:600}
+.shelf .sh .lk{margin-left:auto;display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--txt3)}
+.shelf .sh .lk svg{width:12px;height:12px}
+.tiles{display:flex;flex-wrap:wrap;gap:7px}
+.tile{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--txt2);background:var(--s1);border:1px solid var(--hair);border-radius:8px;padding:6px 10px;transition:.13s}
+.tile:hover{border-color:var(--hair2);color:var(--txt)}
+.tile .sdot{width:6px;height:6px;border-radius:50%;background:var(--src-gh);box-shadow:0 0 6px -1px var(--src-gh)}
+
+.note{font-size:11.5px;color:var(--txt3);background:var(--s1);border:1px solid var(--hair);border-radius:10px;padding:10px 13px;margin-bottom:20px;line-height:1.65}
+.note b{color:var(--txt2);font-weight:600}
+.empty{color:var(--txt3);padding:46px;text-align:center}
+
+/* 详情抽屉 */
+.scrim{position:fixed;inset:0;background:rgba(4,5,8,.55);backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:.3s;z-index:30}.scrim.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:404px;background:linear-gradient(180deg,#15161c,#101117);border-left:1px solid var(--hair2);transform:translateX(100%);transition:.36s var(--ease);z-index:31;display:flex;flex-direction:column;box-shadow:-16px 0 60px rgba(0,0,0,.5)}
+.drawer.open{transform:none}
+.dh{padding:24px 22px 20px;border-bottom:1px solid var(--hair);position:relative;overflow:hidden}
+.dh::before{content:"";position:absolute;top:-60px;right:-40px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--sc) 22%,transparent),transparent 70%)}
+.dh .close{position:absolute;right:16px;top:16px;width:29px;height:29px;border-radius:8px;display:grid;place-items:center;color:var(--txt3);cursor:pointer;z-index:2}.dh .close:hover{background:var(--s3);color:var(--txt)}.dh .close svg{width:15px;height:15px}
+.dh .top{display:flex;gap:15px;align-items:center;position:relative;z-index:1}
+/* 大徽章 + 缓转法阵 */
+.bigwrap{position:relative;width:64px;height:64px;flex:none;display:grid;place-items:center}
+.bigwrap .halo{position:absolute;inset:-7px;border-radius:50%;border:1px dashed color-mix(in srgb,var(--sc) 50%,transparent);opacity:.5;animation:spin 18s linear infinite}
+.bigwrap .halo2{position:absolute;inset:2px;border-radius:50%;border:1px solid color-mix(in srgb,var(--sc) 30%,transparent);opacity:.4;animation:spin 26s linear infinite reverse}
+@keyframes spin{to{transform:rotate(360deg)}}
+.bigwrap .med{width:50px;height:50px}.bigwrap .med .face{border-radius:14px}.bigwrap .med svg{width:24px;height:24px}.bigwrap .med .ring{opacity:1;border-radius:15px}
+.dh h2{font-size:18.5px;font-weight:600;line-height:1.25;word-break:break-word}
+.dh .sub{font-size:12px;color:var(--txt3);margin-top:4px}
+.db{flex:1;overflow:auto;padding:20px 22px}
+.db h4{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--txt3);font-weight:600;margin:20px 0 9px}.db h4:first-child{margin-top:0}
+.kv{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;padding:8px 0;border-bottom:1px solid var(--hair)}.kv span{color:var(--txt3)}.kv b{font-weight:500}
+.kv .src{display:inline-flex;align-items:center;gap:6px}.kv .src .sdot{width:8px;height:8px;border-radius:50%;box-shadow:0 0 7px -1px currentColor}
+.mlvl{display:flex;gap:4px;align-items:center}.mlvl i{width:7px;height:7px;border-radius:50%;background:var(--s4)}.mlvl i.on{background:var(--accent2);box-shadow:0 0 6px -1px var(--accent2)}
+.df{flex:none;padding:15px 22px;border-top:1px solid var(--hair);display:flex;gap:9px}
+.df .btn{flex:1}
+.df .ro{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;font-size:12px;color:var(--txt3);background:var(--s2);border:1px solid var(--hair);border-radius:9px;padding:9px}.df .ro svg{width:13px;height:13px}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="app">
+  <aside class="rail">
+    <div class="brand"><div class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3l2.5 5 5.5.7-4 3.9 1 5.4L12 16l-5 2.9 1-5.4-4-3.9 5.5-.7z"/></svg></div><b class="disp">SkillHub</b></div>
+    <nav class="nav" id="nav"></nav>
+    <div class="foot">59 在库 · 27 飞书外部<br>共 86 技能</div>
+  </aside>
+  <main class="main">
+    <div class="top"><h1 class="disp" id="title"></h1>
+      <div class="search" id="searchBox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg><input id="search" placeholder="搜索技能…"></div>
+    </div>
+    <div class="scroll" id="content"></div>
+  </main>
+</div>
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer"></aside>
+
+<script>
+const $=id=>document.getElementById(id);
+const P=(d,sw=1.8)=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+const ICON={
+  tools:'<path d="M15 7a4 4 0 0 1-5.1 5.1L5 17l2 2 4.9-4.9A4 4 0 0 0 17 9l-2.3 2.3-2-2z"/>',
+  utils:'<path d="M4 7h10M18 7h2M4 12h2M10 12h10M4 17h14M20 17h0"/><circle cx="15" cy="7" r="1.5"/><circle cx="8" cy="12" r="1.5"/><circle cx="17" cy="17" r="1.5"/>',
+  'web-creative':'<path d="M4 20l1-4L15.5 5.5a2 2 0 0 1 3 3L8 19l-4 1z"/><path d="M13.5 7.5l3 3"/>',
+  media:'<rect x="4" y="5" width="16" height="14" rx="2"/><path d="M10 9l5 3-5 3z"/>',
+  jarvis:'<rect x="7" y="7" width="10" height="10" rx="2"/><path d="M9 3v2M15 3v2M9 19v2M15 19v2M3 9h2M3 15h2M19 9h2M19 15h2"/>',
+  workbuddy:'<rect x="3" y="8" width="18" height="11" rx="2"/><path d="M8 8V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18"/>',
+  xhs:'<path d="M6 4h9a2 2 0 0 1 2 2v14H8a2 2 0 0 1-2-2z"/><path d="M10 4v16M13 9h2M13 13h2"/>',
+  contracts:'<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M10 13h5M10 16h5"/>',
+  lark:'<path d="M5 5h14v9H9l-4 4z"/><path d="M9 9.5h6M9 12h4"/>',
+  inv:'<rect x="3" y="3" width="7" height="7" rx="1.6"/><rect x="14" y="3" width="7" height="7" rx="1.6"/><rect x="3" y="14" width="7" height="7" rx="1.6"/><rect x="14" y="14" width="7" height="7" rx="1.6"/>',
+  equip:'<path d="M13 2L4.5 13H11l-1 9 8.5-12H12z"/>',
+  up:'<path d="M12 19V6M6 12l6-6 6 6"/>',
+  chart:'<path d="M5 20V11M12 20V4M19 20v-6M3 20h18"/>',
+  gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 13a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V19a2 2 0 1 1-4 0a1.6 1.6 0 0 0-2.7-1.1l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 4 13a2 2 0 1 1 0-4a1.6 1.6 0 0 0 1.1-2.7l-.1-.1A2 2 0 1 1 7.7 3.4l.1.1A1.6 1.6 0 0 0 10 4a2 2 0 1 1 4 0a1.6 1.6 0 0 0 2.7 1.1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1A1.6 1.6 0 0 0 20 9a2 2 0 1 1 0 4z"/>',
+  lock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  check:'<path d="M20 6L9 17l-5-5"/>',plus:'<path d="M12 5v14M5 12h14"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',
+};
+const ic=(k,sw)=>P(ICON[k]||ICON.tools,sw);
+const GI=g=>ICON[g]?g:'tools';
+const med=(g,cls='lg')=>`<div class="med ${cls}"><div class="ring"></div><div class="face"></div>${ic(GI(g))}</div>`;
+
+const SRC={github:{c:'var(--src-gh)',zh:'GitHub'},local:{c:'var(--src-self)',zh:'自制'},'manual-port':{c:'var(--src-gh)',zh:'GitHub·改'},website:{c:'var(--src-web)',zh:'网站'}};
+const srcOf=s=>s.ch==='local'?'local':(s.ch==='manual-port'?'manual-port':'github');
+const GNAME={tools:'工具',utils:'实用',media:'媒体',jarvis:'Jarvis',workbuddy:'WorkBuddy',xhs:'小红书',contracts:'合同',lark:'飞书','web-creative':'网页创作'};
+
+const DATA={"skills":[{"n":"agent-cli-creator","g":"tools","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"chatprd","g":"tools","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"chronicle","g":"utils","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"contract-review","g":"contracts","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"contract-review-v3","g":"contracts","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"dashboard","g":"web-creative","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"find-docs","g":"tools","t":"global","ch":"github","x":false,"oss":true,"lu":null},{"n":"frontend-design","g":"web-creative","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"guizang-ppt-skill","g":"web-creative","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"humanizer","g":"utils","t":"global","ch":"github","x":false,"oss":true,"lu":null},{"n":"ian-xiaohei-illustrations","g":"web-creative","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"image-asset-pipeline","g":"media","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"jarvis-class-presentation","g":"jarvis","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"jarvis-daguan-closing-package","g":"jarvis","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"jarvis-daguan-miniapp-smoke","g":"jarvis","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"jarvis-kb-retriever","g":"jarvis","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"jarvis-provenance-check","g":"jarvis","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"jarvis-safe-ingest-guard","g":"jarvis","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"jarvis-source-ingest","g":"jarvis","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"jarvis-wiki-lint","g":"jarvis","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"jarvis-wiki-merge","g":"jarvis","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"jarvis-workbuddy-law-workshop-webpage","g":"jarvis","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"jarvis-workbuddy-legal-ai-workshop-webpage","g":"jarvis","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"keep-codex-fast","g":"utils","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"kimi-webbridge","g":"tools","t":"global","ch":"github","x":false,"oss":true,"lu":0},{"n":"live-dashboard","g":"web-creative","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"mac-network-tuneup","g":"utils","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"md2wechat-local","g":"web-creative","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"minimax-tts","g":"media","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"newapi-imagegen","g":"media","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"pdf","g":"utils","t":"global","ch":"local","x":false,"oss":false,"lu":null},{"n":"pm-spec","g":"web-creative","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"qr-poster-compositor","g":"web-creative","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"skill-distributor","g":"utils","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"social-media-dashboard","g":"web-creative","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"tailscale-direct-connect","g":"utils","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"taobao-baiyi-jianlou","g":"utils","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"teaching-goal-contract-harness","g":"utils","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"video-dissection-local","g":"media","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"web-design-engineer","g":"web-creative","t":"global","ch":"github","x":false,"oss":true,"lu":0},{"n":"web-video-presentation","g":"web-creative","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"wechat-finder","g":"tools","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"workbuddy-tencent-esign","g":"workbuddy","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"workbuddy-tencent-inventory","g":"workbuddy","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"workbuddy-tmeet","g":"workbuddy","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"xhs-bounty-image-generator","g":"xhs","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"xhs-manual-bounty-run","g":"xhs","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"xiaozhi-activation-code","g":"tools","t":"on-demand","ch":"local","x":false,"oss":false,"lu":null},{"n":"humanizer-zh","g":"tools","t":"on-demand","ch":"manual-port","x":false,"oss":false,"lu":null},{"n":"vercel-react-best-practices","g":"web-creative","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"web-design-guidelines","g":"web-creative","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"lark-accounts","g":"lark","t":"global","ch":"local","x":false,"oss":false,"lu":0},{"n":"stop-slop","g":"tools","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"guizang-social-card-skill","g":"web-creative","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"content-research-writer","g":"tools","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"notebooklm","g":"tools","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"punk-cover","g":"web-creative","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"punk-avatar","g":"web-creative","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"yao-meta-skill","g":"tools","t":"on-demand","ch":"github","x":false,"oss":true,"lu":null},{"n":"lark-approval","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-apps","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-attendance","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-base","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-calendar","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-contact","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-doc","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-drive","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-event","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-im","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-mail","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-markdown","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-minutes","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-note","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-okr","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-openapi-explorer","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-shared","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-sheets","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-skill-maker","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-slides","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-task","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-vc","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-vc-agent","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-whiteboard","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-wiki","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-workflow-meeting-summary","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null},{"n":"lark-workflow-standup-report","g":"lark","t":"global","ch":"lark-cli","x":true,"oss":false,"lu":null}],"loadouts":{"web":["web-design-engineer","frontend-design","qr-poster-compositor","guizang-ppt-skill"],"media":["image-asset-pipeline","minimax-tts","newapi-imagegen","video-dissection-local"],"jarvis":["jarvis-class-presentation","jarvis-daguan-closing-package","jarvis-daguan-miniapp-smoke","jarvis-kb-retriever","jarvis-provenance-check","jarvis-safe-ingest-guard","jarvis-source-ingest","jarvis-wiki-lint","jarvis-wiki-merge","jarvis-workbuddy-law-workshop-webpage","jarvis-workbuddy-legal-ai-workshop-webpage"],"xhs":["xhs-bounty-image-generator","xhs-manual-bounty-run"],"workbuddy":["workbuddy-tencent-esign","workbuddy-tencent-inventory","workbuddy-tmeet"],"contracts":["contract-review","contract-review-v3"]},"stats":{"total":86,"global":33,"oss":18,"external":27,"groups":["contracts","jarvis","lark","media","tools","utils","web-creative","workbuddy","xhs"]}};
+const S=DATA.skills;
+const inHub=S.filter(s=>!s.x), lark=S.filter(s=>s.x);
+const equipped=inHub.filter(s=>s.t==='global');
+const upgradable=new Set(['guizang-ppt-skill','notebooklm','stop-slop','web-design-guidelines']);
+const state={view:'inv',q:'',cat:'all',src:'all',sel:null};
+
+const lvlOf=s=>s.lu===null?0:s.lu===0?5:s.lu<7?4:s.lu<30?3:s.lu<90?2:1;
+const lvlDots=(n,cls='lvl')=>{let h='';for(let i=0;i<5;i++)h+=`<i class="${i<n?'on':''}"></i>`;return `<div class="${cls}">${h}</div>`;};
+
+const NAV=[['inv','inv','技能库',inHub.length],['equip','equip','出战装备',''],['up','up','升级',upgradable.size],['stats','chart','战绩',''],['set','gear','设置','']];
+const TITLES={inv:['技能库','浏览 · 装备 · 收藏'],equip:['出战装备','你携带什么,决定 AI 会什么'],up:['升级','开源技能的上游更新'],stats:['战绩','用得越多,熟练度越高'],set:['设置','']};
+function buildNav(){$('nav').innerHTML=NAV.map(([v,i,t,c])=>`<a data-v="${v}" class="${state.view===v?'on':''}">${ic(i)}<span>${t}</span>${c!==''?`<span class="ct">${c}</span>`:''}</a>`).join('');}
+$('nav').onclick=e=>{const a=e.target.closest('a[data-v]');if(!a)return;state.view=a.dataset.v;$('searchBox').style.display=a.dataset.v==='inv'?'block':'none';buildNav();render();};
+$('search').oninput=e=>{state.q=e.target.value.toLowerCase();render();};
+function render(){const t=TITLES[state.view];$('title').innerHTML=t[0]+(t[1]?` <small>${t[1]}</small>`:'');
+  $('content').innerHTML=({inv:invView,equip:equipView,up:upView,stats:statsView,set:setView})[state.view]();}
+
+const matchQ=s=>!state.q||s.n.toLowerCase().includes(state.q);
+function card(s){
+  const sr=SRC[srcOf(s)],eq=s.t==='global'&&!s.x,up=upgradable.has(s.n);
+  return `<div class="card${eq?' eq':''}" style="--sc:${sr.c}" data-n="${s.n}">
+    <div class="badge">${up?`<span class="b-up" title="可升级">${ic('up',2.2)}</span>`:''}${s.x?`<span class="b-lock" title="外部·只读">${ic('lock')}</span>`:eq?`<span class="b-eq">${ic('check',2.6)}携带</span>`:''}</div>
+    <div class="h">${med(s.g,'lg')}<div style="min-width:0;padding-top:1px"><div class="nm">${s.n}</div></div></div>
+    <div class="meta"><span class="tag"><span class="sdot" style="background:${sr.c};color:${sr.c}"></span>${sr.zh}</span><span class="tag">${GNAME[s.g]||s.g}</span>${lvlDots(lvlOf(s))}</div>
+  </div>`;
+}
+function invView(){
+  const cats=[...new Set(inHub.map(s=>s.g))].sort();
+  const srcChips=[['github','GitHub'],['local','自制']].map(([k,z])=>`<span class="chip ${state.src===k?'on':''}" data-src="${k}"><span class="sdot" style="background:${SRC[k].c};color:${SRC[k].c}"></span>${z}<span class="n">${inHub.filter(s=>srcOf(s)===k).length}</span></span>`).join('');
+  const catChips=cats.map(g=>`<span class="chip ${state.cat===g?'on':''}" data-cat="${g}">${ic(GI(g))}${GNAME[g]||g}<span class="n">${inHub.filter(s=>s.g===g).length}</span></span>`).join('');
+  const list=inHub.filter(s=>(state.cat==='all'||s.g===state.cat)&&(state.src==='all'||srcOf(s)===state.src)&&matchQ(s)).sort((a,b)=>(b.t==='global')-(a.t==='global')||a.n.localeCompare(b.n));
+  return `<div class="filters"><span class="chip ${state.cat==='all'&&state.src==='all'?'on':''}" data-cat="all" data-src="all">全部<span class="n">${inHub.length}</span></span><span class="sep"></span>${srcChips}<span class="sep"></span>${catChips}</div>
+    <div class="grid">${list.map(card).join('')||'<div class="empty">没有匹配的技能</div>'}</div>`;
+}
+function equipView(){
+  const socks=equipped.map(s=>{const sr=SRC[srcOf(s)];return `<div class="sock" style="--sc:${sr.c}" data-n="${s.n}">
+    <div class="hex"><div class="face"></div><div class="edge"></div>${ic(GI(s.g))}</div>
+    <div style="min-width:0" class="nm">${s.n}<small>${sr.zh} · ${GNAME[s.g]||s.g}</small></div>
+    <div class="x" title="卸下">${ic('x')}</div></div>`;}).join('');
+  const empty=`<div class="sock empty"><div class="hex"><div class="face"></div>${ic('plus')}</div><span>从技能库装备</span></div>`;
+  const builds=Object.entries(DATA.loadouts).map(([n,m])=>{
+    const av=m.slice(0,4).map(nm=>{const sk=S.find(x=>x.n===nm);return med(sk?sk.g:'tools','sm');}).join('');
+    return `<div class="build"><div class="bt"><b>${n}</b><span class="c">${m.length} 技能</span></div><div class="stack">${av}${m.length>4?`<span class="more">+${m.length-4}</span>`:''}</div><button class="btn pri">${ic('equip',2.2)}一键出战</button></div>`;
+  }).join('');
+  const tiles=lark.map(s=>`<span class="tile"><span class="sdot"></span>${s.n.replace('lark-','')}</span>`).join('');
+  return `<div class="note">「<b>携带 / 常驻</b>」的技能在<b>每个项目</b>自动生效;其余留在技能库按项目临时装备。来源只是出身,<b>不分高下</b>;唯一强弱是真实<b>熟练度</b>。</div>
+   <div class="section"><div class="sec-h"><span class="t">随身携带</span><span class="d">${equipped.length} 常驻 · 所有项目自带</span></div><div class="socks">${socks}${empty}</div></div>
+   <div class="section"><div class="sec-h"><span class="t">套装预设</span><span class="d">一键装备一整组</span></div><div class="builds">${builds}</div></div>
+   <div class="section"><div class="shelf"><div class="sh">${med('lark','sm')}<b>飞书全家桶</b><span class="lk">${ic('lock')}外部托管 · 只读 · 随 lark-cli 升级</span></div><div class="tiles">${tiles}</div></div></div>`;
+}
+function upView(){
+  const ups=inHub.filter(s=>upgradable.has(s.n));
+  const rows=ups.map(s=>{const sr=SRC[srcOf(s)];return `<div class="sock" style="--sc:${sr.c}" data-n="${s.n}"><div class="hex"><div class="face"></div><div class="edge"></div>${ic(GI(s.g))}</div><div style="min-width:0" class="nm">${s.n}<small>${sr.zh} · 有新版本</small></div><button class="btn pri" style="width:auto;padding:8px 14px;margin-left:auto">${ic('up',2.2)}升级</button></div>`;}).join('');
+  return `<div class="note">GitHub 来源会比对上游 commit,每周一自动判定,这里可手动<b>立即检查</b>。飞书走 lark-cli 自己升级。</div>
+   <div class="section"><div class="sec-h"><span class="t">可升级</span><span class="d">${ups.length} 个有上游更新</span><span class="more">立即检查 ↻</span></div><div class="socks" style="grid-template-columns:1fr">${rows}</div></div>`;
+}
+function statsView(){
+  const sorted=[...inHub].sort((a,b)=>(b.lu===null?1e9:b.lu)-(a.lu===null?1e9:a.lu));
+  return `<div class="note">熟练度来自真实调用次数(PostToolUse hook)。久未使用排最前 = 删除候选,这是唯一诚实的"强弱"轴。</div>
+   <div class="section"><div class="sec-h"><span class="t">久未使用</span><span class="d">考虑卸下或删除</span></div>
+   <div class="socks">${sorted.slice(0,12).map(s=>{const sr=SRC[srcOf(s)];return `<div class="sock" style="--sc:${sr.c}" data-n="${s.n}"><div class="hex"><div class="face"></div><div class="edge"></div>${ic(GI(s.g))}</div><div style="min-width:0" class="nm">${s.n}<small>${s.lu===null?'从未使用':s.lu+' 天前'}</small></div>${lvlDots(lvlOf(s))}</div>`;}).join('')}</div></div>`;
+}
+function setView(){return `<div class="note">这是设计原型。真实功能(常驻切换/项目装备/删除/同步/立即检查)已在主程序实现并通过沙箱实测。</div><div class="empty">设置项见主程序</div>`;}
+
+function openDrawer(n){
+  const s=S.find(x=>x.n===n);if(!s)return;state.sel=n;
+  const sr=SRC[srcOf(s)],eq=s.t==='global'&&!s.x,lv=lvlOf(s),up=upgradable.has(s.n);
+  let mlvl='';for(let i=0;i<5;i++)mlvl+=`<i class="${i<lv?'on':''}"></i>`;
+  $('drawer').innerHTML=`
+   <div class="dh" style="--sc:${sr.c}"><div class="close" onclick="closeDrawer()">${ic('x')}</div>
+     <div class="top"><div class="bigwrap" style="--sc:${sr.c}"><div class="halo"></div><div class="halo2"></div>${med(s.g,'lg')}</div>
+       <div style="min-width:0"><h2>${s.n}</h2><div class="sub">${GNAME[s.g]||s.g} · ${s.x?'飞书全家桶':eq?'携带中':'在库'}</div></div></div></div>
+   <div class="db">
+     <h4>出身与来源</h4>
+     <div class="kv"><span>来源</span><b class="src"><span class="sdot" style="background:${sr.c};color:${sr.c}"></span>${sr.zh}${s.x?' (larksuite/cli)':''}</b></div>
+     <div class="kv"><span>归谁管</span><b>${s.x?'外部 · lark-cli 托管(只读)':'本 hub · 可编辑'}</b></div>
+     <div class="kv"><span>更新</span><b>${s.x?'随 lark-cli 自动升级':up?'有上游更新 ↑':srcOf(s)==='github'?'比对 GitHub 上游':'本地自制'}</b></div>
+     <h4>熟练度</h4>
+     <div class="kv"><span>等级(按真实用量)</span><b><div class="mlvl">${mlvl}</div></b></div>
+     <div class="kv"><span>最近使用</span><b>${s.lu===null?'从未使用':s.lu===0?'今天':s.lu+' 天前'}</b></div>
+     <h4>说明</h4>
+     <div style="font-size:12.5px;color:var(--txt2);line-height:1.65">${s.n} —— ${GNAME[s.g]||s.g}类技能。${s.x?'飞书官方套件之一,覆盖飞书生态;此处只读,更新与卸载用 lark-cli / npx skills。':'真实说明读取自该技能的 SKILL.md(原型中略)。'}</div>
+   </div>
+   <div class="df">${s.x?`<div class="ro">${ic('lock')}外部 · 只读</div>`:`<button class="btn pri">${eq?ic('x',2.2)+'卸下':ic('equip',2.2)+'携带'}</button><button class="btn">${ic('up',2.2)}升级</button>`}</div>`;
+  $('drawer').classList.add('open');$('scrim').classList.add('open');
+}
+function closeDrawer(){$('drawer').classList.remove('open');$('scrim').classList.remove('open');state.sel=null;}
+$('scrim').onclick=closeDrawer;
+$('content').onclick=e=>{const t=e.target;
+  const cat=t.closest('[data-cat]');if(cat){state.cat=cat.dataset.cat;if(cat.dataset.src)state.src=cat.dataset.src;return render();}
+  const src=t.closest('[data-src]');if(src){state.src=src.dataset.src;return render();}
+  const item=t.closest('[data-n]');if(item){if(t.closest('.x'))return;openDrawer(item.dataset.n);}
+};
+buildNav();$('searchBox').style.display='block';render();
+</script>
+</body>
+</html>

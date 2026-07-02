@@ -5,6 +5,7 @@ contextBridge.exposeInMainWorld('skapi', {
   getData: () => call('getData'),
   setTier: (n, t) => call('setTier', n, t),
   useInProject: (n, p, on) => call('useInProject', n, p, on),
+  applyLoadout: (lo, p) => call('applyLoadout', lo, p),
   projectInfo: p => call('projectInfo', p),
   recentProjects: () => call('recentProjects'),
   readSkillMd: n => call('readSkillMd', n),

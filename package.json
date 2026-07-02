@@ -7,6 +7,7 @@
   "main": "src/main/main.js",
   "scripts": {
     "start": "electron .",
+    "dev": "electron .",
     "dist": "electron-builder",
     "dist:mac": "electron-builder --mac",
     "dist:win": "electron-builder --win"
@@ -18,10 +19,35 @@
   "build": {
     "appId": "io.skillhub.desktop",
     "productName": "SkillHub",
-    "directories": { "output": "release", "buildResources": "build" },
-    "files": ["src/**/*", "package.json"],
-    "mac": { "target": ["dmg"], "category": "public.app-category.developer-tools", "icon": "build/icon.png" },
-    "win": { "target": ["nsis"], "icon": "build/icon.png" },
-    "linux": { "target": ["AppImage"], "category": "Development" }
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "category": "public.app-category.developer-tools",
+      "icon": "build/icon.png"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "build/icon.png"
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "Development"
+    }
+  },
+  "dependencies": {
+    "proper-lockfile": "^4.1.2"
   }
 }

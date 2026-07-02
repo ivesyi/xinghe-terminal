@@ -17,6 +17,15 @@ setPaths(readCfg().hubPath || process.env.SKILL_HUB || path.join(os.homedir(), '
 
 const readReg = () => JSON.parse(fs.readFileSync(REG, 'utf8'));
 const writeReg = r => fs.writeFileSync(REG, JSON.stringify(r, null, 2));
+
+// 文件锁:防 GUI 与 skillctl / 其他实例并发写 registry+软链(PRD: proper-lockfile)。
+// ponytail: 锁粒度=整个 registry,一把锁包一次操作;单人桌面场景足够。
+let lockfile = null; try { lockfile = require('proper-lockfile'); } catch {}
+async function withLock(fn) {
+  if (!lockfile || !fs.existsSync(REG)) return fn();
+  const release = await lockfile.lock(REG, { stale: 30000, retries: { retries: 20, minTimeout: 50, maxTimeout: 250 } });
+  try { return fn(); } finally { await release(); }
+}
 const readState = () => { try { return JSON.parse(fs.readFileSync(STATE, 'utf8')); } catch { return { recent: [] }; } };
 const writeState = s => fs.writeFileSync(STATE, JSON.stringify(s, null, 2));
 const hasHub = () => fs.existsSync(REG);
@@ -77,21 +86,43 @@ function getData() {
 }
 
 function setTier(name, tier) {
-  const r = readReg();
-  if (!r.skills[name]) throw new Error('unknown skill ' + name);
-  r.skills[name].tier = tier; writeReg(r);
-  for (const dir of Object.values(r.global_dirs || {})) tier === 'global' ? link(name, exp(dir)) : unlink(name, exp(dir));
-  return true;
+  return withLock(() => {
+    const r = readReg();
+    if (!r.skills[name]) throw new Error('unknown skill ' + name);
+    r.skills[name].tier = tier; writeReg(r);
+    for (const dir of Object.values(r.global_dirs || {})) tier === 'global' ? link(name, exp(dir)) : unlink(name, exp(dir));
+    return true;
+  });
 }
 
 const projectDirs = (r, root) => Object.values(r.project_dirs || {}).map(rel => path.join(root, rel));
 function logUse(name, proj) { try { fs.appendFileSync(USAGE, `${new Date().toISOString().slice(0, 19).replace('T', ' ')}\tuse\t${name}\t${proj}\n`); } catch {} }
 
+const touchRecent = proj => { const s = readState(); s.recent = [proj, ...(s.recent || []).filter(p => p !== proj)].slice(0, 8); writeState(s); };
+
 function useInProject(name, proj, on) {
-  const r = readReg();
-  for (const dir of projectDirs(r, proj)) on ? link(name, dir) : unlink(name, dir);
-  if (on) { logUse(name, proj); const s = readState(); s.recent = [proj, ...(s.recent || []).filter(p => p !== proj)].slice(0, 8); writeState(s); }
-  return true;
+  return withLock(() => {
+    const r = readReg();
+    for (const dir of projectDirs(r, proj)) on ? link(name, dir) : unlink(name, dir);
+    if (on) { logUse(name, proj); touchRecent(proj); }
+    return true;
+  });
+}
+
+// loadout 整套装入项目:一把锁内批量软链(与 skillctl load 同源行为)
+function applyLoadout(loName, proj) {
+  return withLock(() => {
+    const r = readReg(), members = (r.loadouts || {})[loName] || [];
+    if (!members.length) throw new Error('空 loadout: ' + loName);
+    const done = [];
+    for (const name of members) {
+      if (!r.skills[name]) continue; // registry 里没有的成员跳过,不硬编码任何名字
+      for (const dir of projectDirs(r, proj)) link(name, dir);
+      logUse(name, proj); done.push(name);
+    }
+    touchRecent(proj);
+    return done;
+  });
 }
 
 function projectInfo(proj) {
@@ -107,14 +138,16 @@ const readSkillMd = name => { try { return fs.readFileSync(path.join(SK, name, '
 
 // 删除 skill:撤掉全局+近期项目的软链,删 skill 目录,移出 registry/loadouts。不可撤销。
 function deleteSkill(name) {
-  const r = readReg();
-  if (!r.skills[name]) throw new Error('unknown skill ' + name);
-  for (const dir of Object.values(r.global_dirs || {})) unlink(name, exp(dir));
-  for (const proj of recentProjects()) for (const dir of projectDirs(r, proj)) unlink(name, dir);
-  for (const k of Object.keys(r.loadouts || {})) r.loadouts[k] = (r.loadouts[k] || []).filter(x => x !== name);
-  delete r.skills[name]; writeReg(r);
-  try { fs.rmSync(path.join(SK, name), { recursive: true, force: true }); } catch {}
-  return true;
+  return withLock(() => {
+    const r = readReg();
+    if (!r.skills[name]) throw new Error('unknown skill ' + name);
+    for (const dir of Object.values(r.global_dirs || {})) unlink(name, exp(dir));
+    for (const proj of recentProjects()) for (const dir of projectDirs(r, proj)) unlink(name, dir);
+    for (const k of Object.keys(r.loadouts || {})) r.loadouts[k] = (r.loadouts[k] || []).filter(x => x !== name);
+    delete r.skills[name]; writeReg(r);
+    try { fs.rmSync(path.join(SK, name), { recursive: true, force: true }); } catch {}
+    return true;
+  });
 }
 
 // ---- 多人使用:配置 / 远端 / 同步 ----
@@ -171,7 +204,7 @@ async function checkUpdates() {
 }
 
 module.exports = {
-  getData, setTier, useInProject, projectInfo, recentProjects, readSkillMd, deleteSkill,
+  getData, setTier, useInProject, applyLoadout, projectInfo, recentProjects, readSkillMd, deleteSkill,
   getConfig, setHubPath, cloneHub, getRemote, setRemote, validateRemote, gitPull, gitPush, checkUpdates,
 };
 
@@ -182,4 +215,33 @@ if (require.main === module && process.argv.includes('--check')) {
   console.assert(d.stats.groups.length > 0, 'no groups');
   console.assert(d.skills.every(s => s.name && s.tier), 'bad skill shape');
   console.log('OK', d.skills.length, 'skills /', d.stats.global, 'global /', d.stats.oss, 'oss /', d.stats.groups.length, 'groups; hub=', HUB);
+}
+
+// 装卸自测 — `node engine.js --selftest <临时项目目录>`:只在传入的临时目录里建/删软链,
+// 不碰 registry 内容、不碰全局层。目录必须在 /tmp 或 /private/tmp 下,防误伤真实项目。
+if (require.main === module && process.argv.includes('--selftest')) {
+  (async () => {
+    const proj = process.argv[process.argv.indexOf('--selftest') + 1];
+    if (!proj || !/^(\/private)?\/tmp\//.test(proj)) throw new Error('selftest 需要 /tmp 下的临时项目目录');
+    fs.mkdirSync(proj, { recursive: true });
+    const regBefore = fs.readFileSync(REG, 'utf8');
+    const d = getData();
+    const pick = d.skills.find(s => !s.external && s.tier === 'on-demand').name;
+    const lo = Object.keys(d.loadouts)[0];
+
+    await useInProject(pick, proj, true);
+    console.assert(projectInfo(proj).includes(pick), 'use 后应已装: ' + pick);
+    await useInProject(pick, proj, false);
+    console.assert(!projectInfo(proj).includes(pick), 'unuse 后应已卸: ' + pick);
+
+    const done = await applyLoadout(lo, proj);
+    const inst = new Set(projectInfo(proj));
+    console.assert(done.length > 0 && done.every(n => inst.has(n)), 'loadout 成员应全部装上');
+
+    // 清理:卸掉 loadout,项目恢复干净
+    for (const n of done) await useInProject(n, proj, false);
+    console.assert(projectInfo(proj).length === 0, '清理后应无残留软链');
+    console.assert(fs.readFileSync(REG, 'utf8') === regBefore, 'registry 内容不得被改动');
+    console.log(`SELFTEST OK: use/unuse(${pick}) + loadout(${lo}: ${done.length} 个) @ ${proj}; registry 未变`);
+  })().catch(e => { console.error('SELFTEST FAIL:', e.message); process.exit(1); });
 }

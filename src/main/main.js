@@ -6,6 +6,7 @@ const E = require('./engine');
 ipcMain.handle('getData', () => E.getData());
 ipcMain.handle('setTier', (_e, name, tier) => E.setTier(name, tier));
 ipcMain.handle('useInProject', (_e, name, proj, on) => E.useInProject(name, proj, on));
+ipcMain.handle('applyLoadout', (_e, lo, proj) => E.applyLoadout(lo, proj));
 ipcMain.handle('projectInfo', (_e, proj) => E.projectInfo(proj));
 ipcMain.handle('recentProjects', () => E.recentProjects());
 ipcMain.handle('readSkillMd', (_e, name) => E.readSkillMd(name));
@@ -34,6 +35,15 @@ function createWindow() {
     webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true },
   });
   win.loadFile(path.join(__dirname, '..', 'renderer', 'index.html'));
+  // 自检截图:`electron . --screenshot /path/out.png` 渲染 1.5s 后截图退出(headless 验收用)
+  const i = process.argv.indexOf('--screenshot');
+  if (i > -1 && process.argv[i + 1]) {
+    win.webContents.on('did-finish-load', () => setTimeout(async () => {
+      const img = await win.webContents.capturePage();
+      require('fs').writeFileSync(process.argv[i + 1], img.toPNG());
+      app.quit();
+    }, 1500));
+  }
 }
 app.whenReady().then(createWindow);
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
