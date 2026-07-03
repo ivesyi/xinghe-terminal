@@ -264,8 +264,10 @@ async function gitPush() {
   const nothing = /nothing to commit|working tree clean/i.test(c.out + c.err);
   // 没有本地改动时,仍尝试 push(可能之前 commit 了没推);推成功=推了历史积压,失败且无改动=已同步
   const p = await git(['push']);
-  if (p.ok) return { ok: true, msg: nothing ? '无新改动,已推送历史积压' : '已提交并推送:' + msg };
-  if (nothing && /Everything up-to-date|up to date/i.test(p.out + p.err)) return { ok: true, msg: '无改动,已是最新' };
+  if (p.ok) {
+    if (/Everything up-to-date|up to date/i.test(p.out + p.err)) return { ok: true, msg: '无改动,已是最新' };
+    return { ok: true, msg: nothing ? '已推送历史积压提交' : '已提交并推送:' + msg };
+  }
   return { ok: false, msg: gitHint(p.err || p.out) };
 }
 
