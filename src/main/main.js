@@ -17,6 +17,7 @@ ipcMain.handle('checkUpdates', () => E.checkUpdates());
 ipcMain.handle('getConfig', () => E.getConfig());
 ipcMain.handle('setHubPath', (_e, p) => E.setHubPath(p));
 ipcMain.handle('cloneHub', (_e, url, dest) => E.cloneHub(url, dest));
+ipcMain.handle('initHub', (_e, dest) => E.initHub(dest));
 ipcMain.handle('getRemote', () => E.getRemote());
 ipcMain.handle('setRemote', (_e, url) => E.setRemote(url));
 ipcMain.handle('validateRemote', () => E.validateRemote());

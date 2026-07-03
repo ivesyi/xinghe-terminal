@@ -16,6 +16,7 @@ contextBridge.exposeInMainWorld('skapi', {
   getConfig: () => call('getConfig'),
   setHubPath: p => call('setHubPath', p),
   cloneHub: (u, d) => call('cloneHub', u, d),
+  initHub: d => call('initHub', d),
   getRemote: () => call('getRemote'),
   setRemote: u => call('setRemote', u),
   validateRemote: () => call('validateRemote'),

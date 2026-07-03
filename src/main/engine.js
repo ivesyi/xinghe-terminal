@@ -201,9 +201,33 @@ function setHubPath(p) {
 }
 async function cloneHub(url, dest) {
   dest = exp(dest);
+  if (!String(url || '').trim()) return { ok: false, err: '请填写 git 地址' };
+  // 目录非空则 git clone 会失败,提前给清晰中文报错(空目录 / 不存在都可以)
+  try { if (fs.existsSync(dest) && fs.readdirSync(dest).length) return { ok: false, err: `目标目录非空:${dest}(请选空目录或换一个路径)` }; } catch {}
   const r = await sh('git', ['clone', url, dest]);
-  if (r.ok) { try { setHubPath(dest); } catch (e) { return { ok: false, err: String(e.message || e) }; } }
-  return { ok: r.ok, err: r.err.slice(-300) };
+  if (r.ok) {
+    try { setHubPath(dest); }
+    catch (e) { return { ok: false, err: '克隆成功但该仓库缺少 registry.json,不是有效 hub:' + String(e.message || e) }; }
+    return { ok: true };
+  }
+  return { ok: false, err: gitHint(r.err) };
+}
+// 空技能库:git init + 写最小 registry.json(空 skills/loadouts + 默认 global/project 目录)
+async function initHub(dest) {
+  dest = exp(dest);
+  const reg = path.join(dest, 'registry.json');
+  if (fs.existsSync(reg)) return { ok: false, err: `该目录已有 registry.json,请改用「指向本地已有 hub」:${dest}` };
+  try { fs.mkdirSync(path.join(dest, 'skills'), { recursive: true }); } catch (e) { return { ok: false, err: '无法创建目录:' + String(e.message || e) }; }
+  const r = await sh('git', ['-C', dest, 'init']);
+  if (!r.ok) return { ok: false, err: gitHint(r.err) };
+  const seed = {
+    skills: {}, loadouts: {},
+    global_dirs: { claude: '~/.claude/skills', codex: '~/.codex/skills', cursor: '~/.cursor/skills' },
+    project_dirs: { claude: '.claude/skills', codex: '.codex/skills', cursor: '.cursor/skills' },
+  };
+  fs.writeFileSync(reg, JSON.stringify(seed, null, 2) + '\n');
+  try { setHubPath(dest); } catch (e) { return { ok: false, err: String(e.message || e) }; }
+  return { ok: true };
 }
 async function getRemote() { const r = await git(['remote', 'get-url', 'origin']); return r.ok ? r.out : ''; }
 async function setRemote(url) { const has = await getRemote(); const r = await git(['remote', has ? 'set-url' : 'add', 'origin', url]); return { ok: r.ok, err: r.err.slice(-200) }; }
@@ -215,16 +239,34 @@ function relinkGlobals() {
   for (const [n, e] of Object.entries(r.skills)) if (e.tier === 'global') for (const dir of Object.values(r.global_dirs || {})) link(n, exp(dir));
   return true;
 }
-async function gitPull() {
-  const r = await git(['pull', '--ff-only']);
-  if (r.ok) relinkGlobals();
-  return { ok: r.ok, msg: (r.err || r.out || '已是最新').slice(-200) };
+// 常见 git 错误 → 中文提示(无远端 / auth / 冲突);其余原样保留尾部
+function gitHint(err) {
+  const e = String(err || '');
+  if (/could not read Username|Authentication failed|Permission denied|publickey|403|401/i.test(e)) return '认证失败,请检查 git 凭据 / SSH key / 仓库权限';
+  if (/no upstream|no tracking information|does not appear to be a git repo|No configured push|origin.*not|no such remote/i.test(e)) return '没有配置远端 origin,请先到设置里保存 git 地址';
+  if (/CONFLICT|conflict|Automatic merge failed|needs merge|rebase.*conflict|unmerged/i.test(e)) return '存在冲突,已停止自动合并;请到命令行 git rebase 手动解决后重试';
+  if (/Could not resolve host|unable to access|timed out|network/i.test(e)) return '网络不可用,连不上远端';
+  return e.slice(-200) || '未知错误';
 }
-function gitPush() {
-  return new Promise(res =>
-    execFile('git', ['-C', HUB, 'add', '-A'], () =>
-      execFile('git', ['-C', HUB, 'commit', '-q', '-m', 'desktop: update'], () =>
-        execFile('git', ['-C', HUB, 'push'], (e, o, er) => res({ ok: !e, msg: (er || o || '').toString().slice(-200) })))));
+async function gitPull() {
+  if (!(await getRemote())) return { ok: false, msg: '没有配置远端 origin,请先到设置里保存 git 地址' };
+  const r = await git(['pull', '--rebase']);
+  if (r.ok) { relinkGlobals(); return { ok: true, msg: (r.out || r.err || '已是最新').slice(-200) }; }
+  // 冲突时 pull --rebase 会把仓库留在 rebase 中途,中止它,让用户去命令行处理(别硬合)
+  await git(['rebase', '--abort']);
+  return { ok: false, msg: gitHint(r.err || r.out) };
+}
+async function gitPush() {
+  if (!(await getRemote())) return { ok: false, msg: '没有配置远端 origin,请先到设置里保存 git 地址' };
+  await git(['add', '-A']);
+  const msg = '星核同步 ' + new Date().toISOString().slice(0, 19).replace('T', ' ');
+  const c = await git(['commit', '-q', '-m', msg]);
+  const nothing = /nothing to commit|working tree clean/i.test(c.out + c.err);
+  // 没有本地改动时,仍尝试 push(可能之前 commit 了没推);推成功=推了历史积压,失败且无改动=已同步
+  const p = await git(['push']);
+  if (p.ok) return { ok: true, msg: nothing ? '无新改动,已推送历史积压' : '已提交并推送:' + msg };
+  if (nothing && /Everything up-to-date|up to date/i.test(p.out + p.err)) return { ok: true, msg: '无改动,已是最新' };
+  return { ok: false, msg: gitHint(p.err || p.out) };
 }
 
 // 立即检查 OSS skill 上游:比对已记录 ref 与远端最新 sha(轻量,不跑 claude 判定)
@@ -244,7 +286,7 @@ async function checkUpdates() {
 module.exports = {
   getData, setTier, useInProject, applyLoadout, projectInfo, recentProjects, readSkillMd, deleteSkill,
   createLoadout, deleteLoadout,
-  getConfig, setHubPath, cloneHub, getRemote, setRemote, validateRemote, gitPull, gitPush, checkUpdates, gitSyncStatus,
+  getConfig, setHubPath, cloneHub, initHub, getRemote, setRemote, validateRemote, gitPull, gitPush, checkUpdates, gitSyncStatus,
 };
 
 // ponytail: 自测 — `node engine.js --check`(只读,不改任何东西)

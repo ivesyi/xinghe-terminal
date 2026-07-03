@@ -601,14 +601,18 @@ async function load(){
   refreshAll();bootStatus();
 }
 function renderOnboard(){
+  switchTo('inventory');
   $('inv-grid').innerHTML=`<div class="onboard" style="grid-column:1/-1"><h2>还没有连接 Skill Hub</h2>
    <p>hub 是一个 git 仓库,集中管理你的全部 skill。选一种方式接入星核:</p>
-   <div class="ob-card"><b>① 克隆团队 hub</b><p>拿到 git 地址,克隆到本地即可使用同一套 skill。</p>
-     <div class="inrow"><input class="inp" id="obUrl" placeholder="git@github.com:org/skill-hub.git"></div>
+   <div class="ob-card"><b>① 克隆已有技能库</b><p>拿到 git 地址,克隆到本地即可使用同一套 skill。</p>
+     <div class="inrow"><input class="inp" id="obUrl" value="https://github.com/ivesyi/skill-hub.git" placeholder="git@github.com:org/skill-hub.git"></div>
      <div class="inrow"><input class="inp" id="obDest" value="~/skills"><button class="sbtn gold" data-act="ob-clone">克隆并连接</button></div>
      <div class="msg" id="obMsg"></div></div>
    <div class="ob-card"><b>② 指向本地已有 hub</b><p>本机已有 skill hub 目录,直接选中它。</p>
-     <button class="sbtn" data-act="ob-pick">选择目录…</button></div></div>`;
+     <button class="sbtn" data-act="ob-pick">选择目录…</button></div>
+   <div class="ob-card"><b>③ 新建空技能库</b><p>在选定的空目录里 git init 并生成最小 registry.json,从零开始搭建。</p>
+     <button class="sbtn" data-act="ob-init">选择目录并新建…</button>
+     <div class="msg" id="obInitMsg"></div></div></div>`;
 }
 
 /* ---- header / nav counters ---- */
@@ -620,11 +624,13 @@ function renderStatus(){
   if(UPD!==null)one+=UPD>0?` · <span style="color:var(--warn)">${UPD} 待更新</span>`:' · 全部最新';
   $('hub-stat').innerHTML=one;
   const c=$('commander');
-  if(UPD>0)c.dataset.act='goto-settings';else delete c.dataset.act;
   const g=$('sync-stat');
+  let unpushed=0;
   if(!GITST)g.textContent='…';
   else if(!GITST.repo||!GITST.remote)g.textContent='本地仓库';
-  else{const k=GITST.dirty+GITST.ahead;g.textContent=k===0?'已同步':k+' 项未推送';}
+  else{unpushed=GITST.dirty+GITST.ahead;g.innerHTML=unpushed===0?'已同步':`<span style="color:var(--warn)">${unpushed} 项未推送</span>`;}
+  // 有待更新或未推送 → 状态面板可点,跳设置同步区
+  if(UPD>0||unpushed>0)c.dataset.act='goto-settings';else delete c.dataset.act;
 }
 async function refreshStatus(){GITST=await api.gitSyncStatus();renderStatus();}
 function bootStatus(){ /* 启动一次:git 状态 + 上游更新检查(后台,不阻塞) */
@@ -952,15 +958,18 @@ document.addEventListener('click',async e=>{
     case 'val-remote':{$('remoteMsg').textContent='验证中…';const r=await api.validateRemote();
       $('remoteMsg').textContent=r.ok?'✓ 可访问,有权限':'✗ '+r.err;return;}
     case 'pull':{$('syncMsg').textContent='拉取中…';const r=await api.gitPull();
-      $('syncMsg').textContent=(r.ok?'✓ ':'✗ ')+r.msg;if(r.ok){HUB=await api.getData();refreshAll();}return;}
+      $('syncMsg').textContent=(r.ok?'✓ ':'✗ ')+r.msg;if(r.ok){HUB=await api.getData();refreshAll();}refreshStatus();return;}
     case 'push':{$('syncMsg').textContent='推送中…';const r=await api.gitPush();
-      $('syncMsg').textContent=r.ok?'✓ 已推送':'✗ '+r.msg;return;}
+      $('syncMsg').textContent=(r.ok?'✓ ':'✗ ')+r.msg;refreshStatus();return;}
     case 'ob-clone':{const u=$('obUrl').value.trim(),d=$('obDest').value.trim()||'~/skills';
       if(!u){$('obMsg').textContent='请填 git 地址';return;}
       $('obMsg').textContent='克隆中…';const r=await api.cloneHub(u,d);
       if(r.ok)load();else $('obMsg').textContent='✗ '+r.err;return;}
     case 'ob-pick':{const p=await api.pickProject();if(!p)return;
-      try{await api.setHubPath(p);load();}catch(err){toast('✗ '+(err.message||err),'warn');}return;}
+      try{await api.setHubPath(p);load();}catch(err){$('obMsg').textContent='✗ '+(err.message||err);}return;}
+    case 'ob-init':{const p=await api.pickProject();if(!p)return;
+      $('obInitMsg').textContent='新建中…';const r=await api.initHub(p);
+      if(r.ok)load();else $('obInitMsg').textContent='✗ '+r.err;return;}
   }
 });
 $('modal-bg').addEventListener('click',e=>{if(e.target.id==='modal-bg')closeModal();});
