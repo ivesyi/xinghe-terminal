@@ -11,6 +11,8 @@ ipcMain.handle('projectInfo', (_e, proj) => E.projectInfo(proj));
 ipcMain.handle('recentProjects', () => E.recentProjects());
 ipcMain.handle('readSkillMd', (_e, name) => E.readSkillMd(name));
 ipcMain.handle('deleteSkill', (_e, name) => E.deleteSkill(name));
+ipcMain.handle('createLoadout', (_e, name, members) => E.createLoadout(name, members));
+ipcMain.handle('deleteLoadout', (_e, name) => E.deleteLoadout(name));
 ipcMain.handle('checkUpdates', () => E.checkUpdates());
 ipcMain.handle('getConfig', () => E.getConfig());
 ipcMain.handle('setHubPath', (_e, p) => E.setHubPath(p));
@@ -20,6 +22,7 @@ ipcMain.handle('setRemote', (_e, url) => E.setRemote(url));
 ipcMain.handle('validateRemote', () => E.validateRemote());
 ipcMain.handle('gitPull', () => E.gitPull());
 ipcMain.handle('gitPush', () => E.gitPush());
+ipcMain.handle('gitSyncStatus', () => E.gitSyncStatus());
 ipcMain.handle('pickProject', async () => {
   const r = await dialog.showOpenDialog({ properties: ['openDirectory'] });
   return r.canceled ? null : r.filePaths[0];
@@ -38,13 +41,25 @@ function createWindow() {
   // 自检截图:`electron . --screenshot /path/out.png` 渲染 1.5s 后截图退出(headless 验收用)
   const i = process.argv.indexOf('--screenshot');
   if (i > -1 && process.argv[i + 1]) {
+    const x = process.argv.indexOf('--exec'); // TEMP: 验收用,截图前执行 JS
     win.webContents.on('did-finish-load', () => setTimeout(async () => {
+      if (x > -1 && process.argv[x + 1]) { try { const rr = await win.webContents.executeJavaScript(process.argv[x + 1]); console.log('exec ok:', rr); } catch (e) { console.error('exec err:', e.message); } await new Promise(r => setTimeout(r, 800)); }
       const img = await win.webContents.capturePage();
       require('fs').writeFileSync(process.argv[i + 1], img.toPNG());
       app.quit();
     }, 1500));
   }
 }
+// registry 变更 → 通知渲染层刷新(启动取一次 + 变更刷新,不轮询)
+// ponytail: 原生 fs.watch 够用;hub 路径运行时切换后需重启才重挂 watcher
+let watchT;
+try {
+  require('fs').watch(path.join(E.getConfig().hubPath, 'registry.json'), () => {
+    clearTimeout(watchT);
+    watchT = setTimeout(() => BrowserWindow.getAllWindows().forEach(w => w.webContents.send('hubChanged')), 400);
+  });
+} catch {}
+
 app.whenReady().then(createWindow);
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
 app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });

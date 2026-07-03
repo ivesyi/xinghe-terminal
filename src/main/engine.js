@@ -16,7 +16,11 @@ function setPaths(h) { HUB = h; REG = path.join(h, 'registry.json'); SK = path.j
 setPaths(readCfg().hubPath || process.env.SKILL_HUB || path.join(os.homedir(), 'skills'));
 
 const readReg = () => JSON.parse(fs.readFileSync(REG, 'utf8'));
-const writeReg = r => fs.writeFileSync(REG, JSON.stringify(r, null, 2));
+// 写回保留原文件的尾随换行约定,保证「只改一个字段」时其余内容逐字节不变
+const writeReg = r => {
+  let nl = ''; try { if (fs.readFileSync(REG, 'utf8').endsWith('\n')) nl = '\n'; } catch {}
+  fs.writeFileSync(REG, JSON.stringify(r, null, 2) + nl);
+};
 
 // 文件锁:防 GUI 与 skillctl / 其他实例并发写 registry+软链(PRD: proper-lockfile)。
 // ponytail: 锁粒度=整个 registry,一把锁包一次操作;单人桌面场景足够。
@@ -150,9 +154,43 @@ function deleteSkill(name) {
   });
 }
 
+// 套装管理:用户主动的数据管理,允许写 loadouts 字段(带锁);skills/tier 等其余字段不动。
+// 读-改-写整个 registry 对象,writeReg 与 skillctl 同格式(2 空格缩进),其余键逐字节保持。
+function createLoadout(name, members) {
+  return withLock(() => {
+    const r = readReg();
+    name = String(name || '').trim();
+    if (!name) throw new Error('套装名不能为空');
+    r.loadouts = r.loadouts || {};
+    if (r.loadouts[name]) throw new Error('套装已存在: ' + name);
+    members = (members || []).filter(n => r.skills[n] && r.skills[n].tier !== 'global');
+    if (!members.length) throw new Error('至少选择一个按需技能');
+    r.loadouts[name] = members; writeReg(r);
+    return true;
+  });
+}
+function deleteLoadout(name) {
+  return withLock(() => {
+    const r = readReg();
+    if (!(r.loadouts || {})[name]) throw new Error('unknown loadout ' + name);
+    delete r.loadouts[name]; writeReg(r);
+    return true;
+  });
+}
+
 // ---- 多人使用:配置 / 远端 / 同步 ----
 const sh = (cmd, args) => new Promise(res => execFile(cmd, args, (e, o, er) => res({ ok: !e, out: (o || '').toString().trim(), err: (er || '').toString().trim() })));
 const git = args => sh('git', ['-C', HUB, ...args]);
+
+// 头部真状态:git 同步比对。dirty=未提交条数,ahead=领先 upstream 提交数;拿不到 upstream 视为本地仓库
+async function gitSyncStatus() {
+  const st = await git(['status', '--porcelain']);
+  if (!st.ok) return { repo: false };
+  const dirty = st.out ? st.out.split('\n').filter(Boolean).length : 0;
+  const ahead = await git(['rev-list', '--count', '@{u}..HEAD']);
+  if (!ahead.ok) return { repo: true, remote: false, dirty };
+  return { repo: true, remote: true, dirty, ahead: +ahead.out || 0 };
+}
 
 function getConfig() { return { hubPath: HUB, hasRegistry: hasHub() }; }
 function setHubPath(p) {
@@ -205,7 +243,8 @@ async function checkUpdates() {
 
 module.exports = {
   getData, setTier, useInProject, applyLoadout, projectInfo, recentProjects, readSkillMd, deleteSkill,
-  getConfig, setHubPath, cloneHub, getRemote, setRemote, validateRemote, gitPull, gitPush, checkUpdates,
+  createLoadout, deleteLoadout,
+  getConfig, setHubPath, cloneHub, getRemote, setRemote, validateRemote, gitPull, gitPush, checkUpdates, gitSyncStatus,
 };
 
 // ponytail: 自测 — `node engine.js --check`(只读,不改任何东西)
