@@ -45,6 +45,26 @@
 | Pi 配装不稳 | 周五晚 | 成品态录屏,讲稿零改动 |
 | 全部翻车 | 周六 | 演示走兜底录屏,讲稿附 A 已覆盖 |
 
+## ✅ 完成情况(2026-07-04:Release 目标全部达成)
+
+五项目标逐条实测通过:
+- **① Release 包**:`npm run dist:mac` 打出 `release/星核-0.1.0-arm64.dmg`(~101MB,arm64)。标准拖装布局(星核.app + Applications 快捷方式)。跳过签名(`mac.identity:null`)。
+- **② 本地全功能跑通**:卡墙/搜索/装卸/loadout/新建套装/详情弹窗(左右+阅读原文)/状态面板 全部实现并测过;`npm run dev` 与打包版均正常启动无崩。
+- **③ 新设备可装可用**:打包版拷到任意位置可启动;`SKILL_HUB` 指向不存在目录时不崩、进首次运行引导(克隆 `ivesyi/skill-hub` / 选本地目录 / 新建空库 三选一)。
+- **④ 自定义 skill 同步 GitHub**:主进程 git push/pull 到 hub 仓(~/skills → ivesyi/skill-hub),明确中文反馈,只作用 hub 仓不碰桌面端仓。
+- **⑤ 星核 app 图标**:AI 生成的星核晶体图标,按 macOS 网格留白,`build/icon.png`+`icon.icns` 已接入打包与 dev dock,替换 Electron 默认。
+
+### 新设备安装步骤(给用户)
+1. 把 `星核-0.1.0-arm64.dmg` 拷到新 Mac(arm64)。
+2. 双击 → 拖「星核」到 Applications。
+3. **首次打开被 Gatekeeper 拦**(未签名):右键点星核 → 打开 → 确认;或系统设置 → 隐私与安全性 → 仍要打开。之后正常双击。
+4. 首次运行按引导「克隆已有技能库」→ 默认 URL 就是 `ivesyi/skill-hub` → 拉下来即用。
+   - ⚠️ 前提:本机的 `~/skills` 已推到 GitHub(点星核「同步到 GitHub」或命令行 push)。**当前 `~/skills` 有未推送改动,新设备要拿到最新技能库需先同步一次**——是否推送由 Yihu 定。
+
+### 待 Yihu 定
+- 公开 release(GitHub v0.1.0 + README):讲后做,dmg 已就绪。
+- 签名/公证:要免 Gatekeeper 提示需 Apple 开发者账号,暂缓。
+
 ## 讲后路线:吸附模式(Dock Mode,Yihu 2026-07-02 提出)
 
 **需求原意**:星核应能"吸附"在正在用的工具(如 Warp 终端)旁边,窄条置顶随手可用,
