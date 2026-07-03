@@ -91,7 +91,9 @@ header{display:flex;align-items:center;gap:18px;padding:14px 26px 12px 86px;
 .commander .av i{display:block;width:100%;height:100%;border-radius:9px;
   background:radial-gradient(circle at 35% 30%,#1a2350,#0a0e1f);display:grid;place-items:center;font-size:17px;font-style:normal}
 .commander .nm{font-size:12px;font-weight:700;color:var(--ink)}
-.commander .lv{font-family:'Rajdhani';font-size:11px;color:var(--gold);letter-spacing:1px}
+.commander .lv{font-family:'Rajdhani';font-size:11px;color:var(--ink-faint);letter-spacing:1px}
+.commander[data-act]{cursor:pointer}
+.commander[data-act]:hover .nm{color:var(--cyan)}
 /* nav tabs */
 nav{display:flex;gap:6px;padding:10px 22px 0;border-bottom:1px solid var(--line);background:rgba(8,12,28,.4)}
 .tab{position:relative;font-family:'Rajdhani';font-weight:700;font-size:14px;letter-spacing:2px;
@@ -107,9 +109,11 @@ main{flex:1;overflow:hidden;position:relative}
 .screen{position:absolute;inset:0;overflow-y:auto;padding:22px 26px 40px;
   opacity:0;pointer-events:none;transform:translateY(10px);transition:.4s cubic-bezier(.2,.8,.2,1)}
 .screen.show{opacity:1;pointer-events:auto;transform:none}
-.screen::-webkit-scrollbar{width:9px}
-.screen::-webkit-scrollbar-thumb{background:linear-gradient(var(--cyan-d),var(--violet-d));border-radius:8px}
-.screen::-webkit-scrollbar-track{background:rgba(255,255,255,.03)}
+/* 滚动条全局统一(首页/弹窗/内部滚动区同一套) */
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:linear-gradient(var(--cyan-d),var(--violet-d));border-radius:8px}
+::-webkit-scrollbar-track{background:rgba(255,255,255,.03)}
+::-webkit-scrollbar-corner{background:transparent}
 /* section title */
 .sec-h{display:flex;align-items:center;gap:12px;margin:6px 0 16px}
 .sec-h h2{font-family:'Orbitron','Noto Sans SC',sans-serif;font-size:16px;letter-spacing:3px;color:var(--ink)}
@@ -246,6 +250,23 @@ main{flex:1;overflow:hidden;position:relative}
   color:var(--cyan);background:rgba(95,247,255,.08);border:1px solid var(--cyan);padding:8px;
   clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);transition:.2s}
 .lo-equip:hover{background:var(--cyan);color:#04121b;box-shadow:0 0 18px rgba(95,247,255,.5)}
+.lo-del{margin-left:auto;flex:0 0 auto;font-family:'Rajdhani';font-weight:700;letter-spacing:1px;font-size:10px;
+  color:var(--ink-faint);background:transparent;border:1px solid var(--line);padding:3px 9px;cursor:pointer;border-radius:3px;transition:.2s}
+.lo-del:hover{color:#ff8f7a;border-color:#ff8f7a}
+.lo-del.armed{color:#2a0a04;background:linear-gradient(180deg,#ff9b8a,#e7654a);border-color:transparent}
+.lo-new{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;
+  min-height:150px;border:1px dashed var(--line);background:rgba(10,15,36,.35);color:var(--ink-faint)}
+.lo-new::after{display:none}
+.lo-new:hover{border-color:var(--line-bright);color:var(--cyan);box-shadow:none;transform:translateY(-4px)}
+.lo-new .plus{font-family:'Orbitron';font-size:20px}
+.lo-new span:last-child{font-size:12px;letter-spacing:2px}
+/* 新建套装弹窗:技能勾选列表 */
+.lo-pick{max-height:250px;overflow:auto;border:1px solid var(--line);border-radius:8px;margin-top:10px;padding:6px;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:3px;background:rgba(0,0,0,.25)}
+.lo-opt{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:5px;cursor:pointer;font-size:11.5px;color:var(--ink-dim)}
+.lo-opt:hover{background:rgba(95,160,255,.08)}
+.lo-opt input{accent-color:var(--cyan-d);flex:0 0 auto}
+.lo-opt span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* global + lark shelves */
 .shelf{position:relative;padding:20px;border:1px solid rgba(139,149,201,.25);
   background:linear-gradient(160deg,rgba(28,26,58,.5),rgba(12,12,30,.5));
@@ -270,11 +291,12 @@ main{flex:1;overflow:hidden;position:relative}
 .modal-bg{position:fixed;inset:0;z-index:50;background:rgba(4,6,16,.78);backdrop-filter:blur(7px);
   display:grid;place-items:center;opacity:0;pointer-events:none;transition:.3s;padding:20px}
 .modal-bg.show{opacity:1;pointer-events:auto}
-.modal{position:relative;width:min(540px,94vw);max-height:90vh;overflow:auto;
+.modal{position:relative;width:min(540px,94vw);max-height:90vh;overflow:hidden;display:flex;flex-direction:column;
   background:linear-gradient(165deg,rgba(20,30,66,.96),rgba(9,13,32,.98));
   border:1px solid var(--line-bright);
   clip-path:polygon(0 0,calc(100% - 26px) 0,100% 26px,100% 100%,26px 100%,0 calc(100% - 26px));
   transform:scale(.9) translateY(14px);transition:.36s cubic-bezier(.2,1.1,.3,1);box-shadow:0 30px 90px rgba(0,0,0,.7)}
+.modal.doc{width:min(880px,94vw);height:min(660px,92vh)}
 .modal-bg.show .modal{transform:none}
 .modal .m-top{position:relative;padding:24px 26px 20px;overflow:hidden;
   background:radial-gradient(120% 120% at 80% -20%,var(--acc,rgba(95,247,255,.35)),transparent 55%)}
@@ -286,7 +308,34 @@ main{flex:1;overflow:hidden;position:relative}
 .m-id .meta{display:flex;gap:8px;margin-top:9px;flex-wrap:wrap;align-items:center}
 .m-id .src-tag{font-family:'Rajdhani';font-size:10px;font-weight:700;letter-spacing:1px;padding:3px 9px;border:1px solid currentColor;border-radius:3px}
 .m-id .grp-tag{font-size:11px;color:var(--ink-dim);padding:3px 9px;background:rgba(255,255,255,.06);border-radius:4px}
-.m-body{padding:6px 26px 24px}
+.m-body{padding:6px 26px 24px;overflow:auto;flex:1;min-height:0}
+/* 详情弹窗左右布局:左=元信息+操作,右=技能文档 */
+.m-cols{display:grid;grid-template-columns:300px 1fr;flex:1;min-height:0}
+.m-col-l{overflow:auto;min-height:0;padding:4px 20px 22px 26px;border-right:1px solid var(--line)}
+.m-col-r{display:flex;flex-direction:column;min-height:0;padding:14px 22px 18px}
+.m-rhead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.m-rhead .rt{font-family:'Rajdhani';font-size:11px;letter-spacing:2px;color:var(--ink-faint);text-transform:uppercase}
+.m-view{display:flex;gap:2px;border:1px solid var(--line);border-radius:6px;padding:2px;background:rgba(0,0,0,.25)}
+.m-view button{font-size:11px;color:var(--ink-faint);background:transparent;border:0;padding:4px 13px;cursor:pointer;
+  border-radius:4px;letter-spacing:2px;transition:.2s}
+.m-view button:hover{color:var(--ink-dim)}
+.m-view button.on{color:var(--cyan);background:rgba(95,247,255,.12)}
+.m-doc{flex:1;min-height:0;overflow:auto;font-size:12.5px;line-height:1.75;color:var(--ink-dim);user-select:text;
+  padding-right:6px;word-break:break-word}
+.m-doc.raw{font-family:ui-monospace,monospace;font-size:11.5px;white-space:pre-wrap;word-break:break-all}
+.m-doc h1,.m-doc h2,.m-doc h3,.m-doc h4{color:var(--ink);margin:15px 0 7px;line-height:1.4;font-weight:700}
+.m-doc h1{font-size:16px}.m-doc h2{font-size:14px}.m-doc h3,.m-doc h4{font-size:13px}
+.m-doc p{margin:7px 0}
+.m-doc ul,.m-doc ol{margin:7px 0;padding-left:20px}
+.m-doc li{margin:3px 0}
+.m-doc code{font-family:ui-monospace,monospace;font-size:11px;background:rgba(95,160,255,.1);
+  border:1px solid var(--line);border-radius:4px;padding:1px 5px;color:var(--cyan)}
+.m-doc pre{background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:10px 0;overflow:auto}
+.m-doc pre code{background:transparent;border:0;padding:0;display:block;white-space:pre;color:var(--ink-dim)}
+.m-doc a{color:var(--cyan);text-decoration:none;border-bottom:1px dashed rgba(95,247,255,.5);cursor:pointer}
+.m-doc blockquote{border-left:2px solid var(--violet);margin:9px 0;padding:2px 12px;color:var(--ink-faint)}
+.m-doc hr{border:0;border-top:1px solid var(--line);margin:13px 0}
+.m-doc strong{color:var(--ink)}
 .m-row{display:flex;justify-content:space-between;gap:14px;padding:13px 0;border-bottom:1px solid var(--line)}
 .m-row .k{font-family:'Rajdhani';font-size:11px;letter-spacing:2px;color:var(--ink-faint);text-transform:uppercase;flex:0 0 auto}
 .m-row .v{font-size:12.5px;color:var(--ink);text-align:right;font-weight:500;word-break:break-all;user-select:text}
@@ -318,12 +367,11 @@ main{flex:1;overflow:hidden;position:relative}
 .m-locknote .tx{font-size:11.5px;line-height:1.6;color:var(--lock)}
 .m-locknote.gold .tx{color:var(--gold)}
 .m-locknote .tx b{color:var(--ink-dim)}
-.m-close{position:sticky;top:14px;float:right;margin:14px 18px 0 0;z-index:3;width:30px;height:30px;cursor:pointer;
-  border:1px solid var(--line-bright);background:rgba(0,0,0,.3);color:var(--ink-dim);font-size:16px;
+/* 关闭钮:绝对定位在弹窗右上,可点热区=整个视觉区(36px),hover 即旋转 */
+.m-close{position:absolute;top:14px;right:16px;z-index:5;width:36px;height:36px;cursor:pointer;
+  border:1px solid var(--line-bright);background:rgba(0,0,0,.35);color:var(--ink-dim);font-size:16px;
   display:grid;place-items:center;border-radius:8px;transition:.2s}
 .m-close:hover{color:#ff8f7a;border-color:#ff8f7a;transform:rotate(90deg)}
-.m-md{font-size:11px;line-height:1.65;color:var(--ink-dim);background:rgba(0,0,0,.3);border:1px solid var(--line);
-  border-radius:8px;padding:12px;max-height:180px;overflow:auto;white-space:pre-wrap;user-select:text;margin-top:14px;word-break:break-all}
 /* sparkle / toast */
 .sparkles{position:fixed;inset:0;z-index:60;pointer-events:none}
 .spark{position:absolute;font-size:14px;animation:sparkfly .9s ease-out forwards}
@@ -393,9 +441,9 @@ main{flex:1;overflow:hidden;position:relative}
       <div class="stat-chip v"><b id="s-global">—</b><span>常驻出战</span></div>
       <div class="stat-chip g"><b id="s-ext">—</b><span>外部托管</span></div>
     </div>
-    <div class="commander">
-      <div class="av"><i>易</i></div>
-      <div><div class="nm">易虎 · 指挥官</div><div class="lv">星核终端 · 同步在线</div></div>
+    <div class="commander" id="commander">
+      <div class="av"><i></i></div>
+      <div><div class="nm" id="hub-stat">—</div><div class="lv" id="sync-stat">—</div></div>
     </div>
   </header>
 
@@ -510,7 +558,7 @@ const LO_META={
   xhs:{cn:"小红书突击队",acc:"#ff7a8a"},
   contracts:{cn:"合同审查组",acc:"#ffd27a"}
 };
-const LM=k=>LO_META[k]||{cn:k+" 小队",acc:"#6fe3ff"};
+const LM=k=>LO_META[k]||{cn:k,acc:"#6fe3ff"};
 
 /* 来源分类(平级,非优劣):update.channel → github / self / web */
 function source(s){const ch=(s.update||{}).channel;
@@ -550,7 +598,7 @@ async function load(){
   try{HUB=await api.getData();}catch(e){$('inv-grid').innerHTML='<div class="empty">读取 hub 失败:'+esc(CFG.hubPath)+'</div>';return;}
   S.recent=await api.recentProjects();
   if(!S.proj&&S.recent[0])await selectProject(S.recent[0],true);
-  refreshAll();
+  refreshAll();bootStatus();
 }
 function renderOnboard(){
   $('inv-grid').innerHTML=`<div class="onboard" style="grid-column:1/-1"><h2>还没有连接 Skill Hub</h2>
@@ -564,10 +612,36 @@ function renderOnboard(){
 }
 
 /* ---- header / nav counters ---- */
+/* 右上角真状态:第一行=能力数+待更新数(可点跳设置),第二行=hub git 同步态 */
+let UPD=null,GITST=null,BOOTED=false;
+function renderStatus(){
+  if(!HUB)return;
+  let one=inHub().length+' 项能力'; /* 口径=registry 管的技能,不含外部托管 */
+  if(UPD!==null)one+=UPD>0?` · <span style="color:var(--warn)">${UPD} 待更新</span>`:' · 全部最新';
+  $('hub-stat').innerHTML=one;
+  const c=$('commander');
+  if(UPD>0)c.dataset.act='goto-settings';else delete c.dataset.act;
+  const g=$('sync-stat');
+  if(!GITST)g.textContent='…';
+  else if(!GITST.repo||!GITST.remote)g.textContent='本地仓库';
+  else{const k=GITST.dirty+GITST.ahead;g.textContent=k===0?'已同步':k+' 项未推送';}
+}
+async function refreshStatus(){GITST=await api.gitSyncStatus();renderStatus();}
+function bootStatus(){ /* 启动一次:git 状态 + 上游更新检查(后台,不阻塞) */
+  if(BOOTED)return;BOOTED=true;
+  refreshStatus();
+  (async()=>{try{const u=await api.checkUpdates();UPD=u.filter(x=>x.hasUpdate).length;}catch{UPD=null;}renderStatus();})();
+  if(api.onHubChanged)api.onHubChanged(async()=>{
+    try{HUB=await api.getData();}catch{return;}
+    if(S.proj)S.installed=await api.projectInfo(S.proj);
+    refreshAll();refreshStatus();
+  });
+}
 function refreshAll(){
   const hub=inHub(),g=hub.filter(s=>s.tier==='global');
   $('s-total').textContent=hub.length;$('s-global').textContent=g.length;$('s-ext').textContent=HUB.stats.external;
   $('nav-inv').textContent=hub.length;$('nav-eq').textContent=S.installed.length;
+  renderStatus();
   renderInv();renderEquip();renderRecord();renderSettings();
 }
 
@@ -639,9 +713,11 @@ function renderEquip(){
     const m=LM(k),shown=arr.slice(0,4),extra=arr.length-shown.length;
     return `<div class="lo-card" style="--acc:${m.acc}">
       <div class="lo-top">
-        <div class="lo-name">${esc(m.cn)}<span class="en">${arr.length} 件</span></div></div>
+        <div class="lo-name">${esc(m.cn)}<span class="en">${arr.length} 件</span></div>
+        <button class="lo-del" data-lodel="${esc(k)}">删除</button></div>
       <div class="lo-chips">${shown.map(x=>`<span>${esc(x)}</span>`).join('')}${extra>0?`<span class="more">+${extra} 更多</span>`:''}</div>
-      <button class="lo-equip" data-lo="${esc(k)}">一键出战</button></div>`;}).join('');
+      <button class="lo-equip" data-lo="${esc(k)}">一键出战</button></div>`;}).join('')
+    +`<div class="lo-card lo-new" data-act="new-loadout"><span class="plus">＋</span><span>新建套装</span></div>`;
   /* global 常驻 */
   const g=inHub().filter(s=>s.tier==='global').sort((a,b)=>a.name.localeCompare(b.name));
   $('global-grid').innerHTML=g.map(s=>`<div class="lk-item gold" data-open="${esc(s.name)}"><span class="d"></span><span class="t">${esc(s.name)}</span><span class="auto">★5</span></div>`).join('');
@@ -678,7 +754,38 @@ function renderSettings(){
   if(api)api.getRemote().then(r=>{const i=$('remoteInp');if(i&&r)i.value=r;});
 }
 
-/* ---- detail modal ---- */
+/* ---- detail modal(左右布局:左=元信息+操作,右=技能文档)---- */
+/* 轻量 md→html:先整体转义再按规则渲染,防 XSS;标题/列表/代码块/引用/粗体/行内码/链接够用 */
+function stripFm(src){return src.replace(/^---\n[\s\S]*?\n---\n?/,'');}
+function mdToHtml(src){
+  const lines=esc(src).split('\n');let out='',inCode=false,inUl=false,inOl=false;
+  const closeLists=()=>{if(inUl){out+='</ul>';inUl=false;}if(inOl){out+='</ol>';inOl=false;}};
+  const inline=s=>s
+    .replace(/`([^`]+)`/g,'<code>$1</code>')
+    .replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>')
+    .replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g,'<a data-ext="$2">$1</a>');
+  for(const ln of lines){
+    if(/^```/.test(ln)){closeLists();out+=inCode?'</code></pre>':'<pre><code>';inCode=!inCode;continue;}
+    if(inCode){out+=ln+'\n';continue;}
+    const h=ln.match(/^(#{1,4})\s+(.*)/);
+    if(h){closeLists();out+=`<h${h[1].length}>${inline(h[2])}</h${h[1].length}>`;continue;}
+    if(/^\s*[-*]\s+/.test(ln)){if(!inUl){closeLists();out+='<ul>';inUl=true;}out+='<li>'+inline(ln.replace(/^\s*[-*]\s+/,''))+'</li>';continue;}
+    if(/^\s*\d+\.\s+/.test(ln)){if(!inOl){closeLists();out+='<ol>';inOl=true;}out+='<li>'+inline(ln.replace(/^\s*\d+\.\s+/,''))+'</li>';continue;}
+    if(/^\s*&gt;\s?/.test(ln)){closeLists();out+='<blockquote>'+inline(ln.replace(/^\s*&gt;\s?/,''))+'</blockquote>';continue;}
+    if(/^\s*(-{3,}|\*{3,})\s*$/.test(ln)){closeLists();out+='<hr>';continue;}
+    if(!ln.trim()){closeLists();continue;}
+    closeLists();out+='<p>'+inline(ln)+'</p>';
+  }
+  if(inCode)out+='</code></pre>';closeLists();
+  return out;
+}
+let MD_RAW='';
+function setDocView(mode){
+  const d=$('m-doc');if(!d)return;
+  document.querySelectorAll('.m-view button').forEach(b=>b.classList.toggle('on',b.dataset.view===mode));
+  if(mode==='raw'){d.classList.add('raw');d.textContent=MD_RAW||'(无 SKILL.md)';}
+  else{d.classList.remove('raw');d.innerHTML=mdToHtml(stripFm(MD_RAW))||'<p>(无 SKILL.md)</p>';}
+}
 async function openCard(n){
   const s=byName(n);if(!s)return;
   const m=GM(s.group),src=source(s),sm=SRC_META[src],pf=prof(s);
@@ -695,6 +802,11 @@ async function openCard(n){
     actions=`<div class="m-actions"><button class="act disabled">装入项目</button></div>
       <div class="msg" style="text-align:center">先到「出战 · 装配」选择一个项目目录</div>`;
   }
+  const rhead=s.external
+    ?`<div class="m-rhead"><span class="rt">技能文档</span></div>`
+    :`<div class="m-rhead"><span class="rt">技能文档</span>
+       <div class="m-view"><button class="on" data-view="read">阅读</button><button data-view="raw">原文</button></div></div>`;
+  $('modal').className='modal doc';
   $('modal').innerHTML=`
     <div class="m-close" data-act="close-modal">✕</div>
     <div class="m-top" style="--acc:${m.acc}"><div class="m-scan"></div>
@@ -705,26 +817,76 @@ async function openCard(n){
             ${!isG&&!s.external?'<span class="grp-tag" style="color:var(--violet)">★★★★ 按需</span>':''}
             ${inst?'<span class="grp-tag" style="color:var(--ok)">✓ 已装入项目</span>':''}
             ${s.external?'<span class="grp-tag" style="color:var(--lock)">只读</span>':''}</div></div></div></div>
-    <div class="m-body">
-      <div class="m-desc" style="--acc:${m.acc}">${esc(s.desc)||'(registry 未填描述)'}</div>
-      <div class="m-prof"><div class="lab"><span>熟练度(来自真实调用日志)</span><b>${pf.txt}</b></div>
-        <div class="track"><i style="width:0%" data-w="${pf.pct}"></i></div></div>
-      <div class="m-row"><span class="k">分组</span><span class="v">${esc(m.cn)}</span></div>
-      <div class="m-row"><span class="k">来源</span><span class="v" style="color:${sm.col}">${sm.cn}</span></div>
-      <div class="m-row"><span class="k">挂载层</span><span class="v">${s.external?'外部常驻':isG?'常驻':'按需'}</span></div>
-      <div class="m-row"><span class="k">分发对象</span><span class="v">${esc((s.agents||[]).join(' · '))||'—'}</span></div>
-      ${s.oss&&s.repo?`<div class="m-row"><span class="k">上游仓库</span><span class="v" style="color:var(--src-github);cursor:pointer" data-repo="${esc(s.repo)}">${esc(s.repo.replace('github.com/',''))}</span></div>`:''}
-      ${s.update?`<div class="m-row"><span class="k">更新方式</span><span class="v" style="max-width:320px;font-size:11px">${esc(s.update.how||s.update.channel)}</span></div>`:''}
-      <div class="m-row"><span class="k">最近使用</span><span class="v">${s.lastUsed===null?'未用过':s.lastUsed+' 天前'}</span></div>
-      <div class="m-md" id="m-md">SKILL.md 加载中…</div>
-      ${actions}
+    <div class="m-cols">
+      <div class="m-col-l">
+        <div class="m-prof"><div class="lab"><span>熟练度(真实调用日志)</span><b>${pf.txt}</b></div>
+          <div class="track"><i style="width:0%" data-w="${pf.pct}"></i></div></div>
+        <div class="m-row"><span class="k">分组</span><span class="v">${esc(m.cn)}</span></div>
+        <div class="m-row"><span class="k">来源</span><span class="v" style="color:${sm.col}">${sm.cn}</span></div>
+        <div class="m-row"><span class="k">挂载层</span><span class="v">${s.external?'外部常驻':isG?'常驻':'按需'}</span></div>
+        <div class="m-row"><span class="k">分发对象</span><span class="v">${esc((s.agents||[]).join(' · '))||'—'}</span></div>
+        ${s.oss&&s.repo?`<div class="m-row"><span class="k">上游仓库</span><span class="v" style="color:var(--src-github);cursor:pointer" data-repo="${esc(s.repo)}">${esc(s.repo.replace('github.com/',''))}</span></div>`:''}
+        ${s.update?`<div class="m-row"><span class="k">更新方式</span><span class="v" style="font-size:11px">${esc(s.update.how||s.update.channel)}</span></div>`:''}
+        <div class="m-row"><span class="k">最近使用</span><span class="v">${s.lastUsed===null?'未用过':s.lastUsed+' 天前'}</span></div>
+        ${actions}
+      </div>
+      <div class="m-col-r">
+        ${rhead}
+        <div class="m-doc" id="m-doc">文档加载中…</div>
+      </div>
     </div>`;
   $('modal-bg').classList.add('show');
   setTimeout(()=>{const t=document.querySelector('#modal .track i');if(t)t.style.width=t.dataset.w+'%';},80);
-  if(!s.external){const md=await api.readSkillMd(n);const el=$('m-md');if(el)el.textContent=(md||'—').slice(0,1500);}
-  else{const el=$('m-md');if(el)el.remove();}
+  if(s.external){
+    const d=$('m-doc');
+    d.innerHTML=`<p>${esc(s.desc)||'(无描述)'}</p><p style="color:var(--lock)">外部托管,无本地文档。</p>`;
+  }else{
+    MD_RAW=(await api.readSkillMd(n))||'';
+    setDocView('read');
+  }
 }
 function closeModal(){$('modal-bg').classList.remove('show');}
+
+/* ---- 新建套装 ---- */
+function openNewLoadout(){
+  const list=inHub().filter(s=>s.tier!=='global').sort((a,b)=>a.name.localeCompare(b.name));
+  $('modal').className='modal';
+  $('modal').innerHTML=`
+    <div class="m-close" data-act="close-modal">✕</div>
+    <div class="m-top"><div class="m-scan"></div><div class="row"><div class="m-id">
+      <div class="nm">新建套装</div>
+      <div class="meta"><span class="grp-tag">保存进 registry,skillctl load 同步可用</span></div></div></div></div>
+    <div class="m-body">
+      <div class="inrow" style="margin-top:14px"><input class="inp" id="loName" placeholder="套装名(中文可)" style="font-family:inherit"></div>
+      <div class="inrow"><input class="inp" id="loQ" placeholder="搜索技能…" style="font-family:inherit"></div>
+      <div class="lo-pick" id="loPick">${list.map(s=>`<label class="lo-opt" data-nm="${esc(s.name)}"><input type="checkbox" value="${esc(s.name)}"><span>${esc(s.name)}</span></label>`).join('')}</div>
+      <div class="msg">常驻技能已在全局层生效,无需入套装,不在此列表。</div>
+      <div class="m-actions"><button class="act primary" data-act="save-loadout">保存套装 · 已选 <span id="loCnt">0</span> 个</button></div>
+      <div class="msg" id="loMsg" style="text-align:center"></div>
+    </div>`;
+  $('modal-bg').classList.add('show');
+  $('loQ').addEventListener('input',e=>{const q=e.target.value.trim().toLowerCase();
+    document.querySelectorAll('#loPick .lo-opt').forEach(el=>{el.style.display=el.dataset.nm.toLowerCase().includes(q)?'':'none';});});
+  $('loPick').addEventListener('change',()=>{$('loCnt').textContent=document.querySelectorAll('#loPick input:checked').length;});
+}
+async function saveLoadout(){
+  const name=$('loName').value.trim();
+  const members=[...document.querySelectorAll('#loPick input:checked')].map(i=>i.value);
+  if(!name)return $('loMsg').textContent='请填写套装名';
+  if(HUB.loadouts&&HUB.loadouts[name])return $('loMsg').textContent='套装已存在:'+name;
+  if(!members.length)return $('loMsg').textContent='至少勾选一个技能';
+  try{await api.createLoadout(name,members);}catch(e){return $('loMsg').textContent='✗ '+(e.message||e);}
+  HUB=await api.getData();closeModal();
+  toast('套装「'+name+'」已建立 · '+members.length+' 个技能','gold');refreshAll();
+}
+async function deleteLoadoutUI(btn){
+  const k=btn.dataset.lodel;
+  if(!btn.classList.contains('armed')){ /* 两段确认,防误触 */
+    btn.classList.add('armed');btn.textContent='确认删除';
+    setTimeout(()=>{if(btn.isConnected){btn.classList.remove('armed');btn.textContent='删除';}},2600);return;}
+  try{await api.deleteLoadout(k);}catch(e){return toast('✗ '+(e.message||e),'warn');}
+  HUB=await api.getData();toast('已删除套装「'+LM(k).cn+'」','warn');refreshAll();
+}
 
 /* ---- actions(真软链) ---- */
 async function useSkill(n,on){
@@ -765,7 +927,10 @@ document.addEventListener('click',async e=>{
   const t=e.target;
   const open=t.closest('[data-open]');if(open)return openCard(open.dataset.open);
   const use=t.closest('[data-use]');if(use)return useSkill(use.dataset.use,use.dataset.on==='1');
+  const lodel=t.closest('[data-lodel]');if(lodel)return deleteLoadoutUI(lodel);
   const lo=t.closest('[data-lo]');if(lo)return equipLoadout(lo.dataset.lo);
+  const vw=t.closest('[data-view]');if(vw)return setDocView(vw.dataset.view);
+  const ext=t.closest('[data-ext]');if(ext)return api.openRepo(ext.dataset.ext.replace(/^https?:\/\//,''));
   const rp=t.closest('[data-proj]');if(rp){await selectProject(rp.dataset.proj);return refreshAll();}
   const src=t.closest('#src-filters .chip');if(src){document.querySelectorAll('#src-filters .chip').forEach(x=>x.classList.remove('on'));
     src.classList.add('on');S.src=src.dataset.src;return renderInv();}
@@ -774,8 +939,11 @@ document.addEventListener('click',async e=>{
   const act=t.closest('[data-act]');if(!act)return;
   switch(act.dataset.act){
     case 'close-modal':return closeModal();
+    case 'new-loadout':return openNewLoadout();
+    case 'save-loadout':return saveLoadout();
     case 'goto-inv':return S.proj?switchTo('inventory'):switchTo('equip');
     case 'goto-equip':return switchTo('equip');
+    case 'goto-settings':return switchTo('settings');
     case 'pick':{const p=await api.pickProject();if(p){await selectProject(p);refreshAll();switchTo('equip');}return;}
     case 'change-hub':{const p=await api.pickProject();if(!p)return;
       try{await api.setHubPath(p);S.proj=null;S.installed=[];await load();toast('已切换 hub','gold');}catch(err){toast('✗ '+(err.message||err),'warn');}return;}
