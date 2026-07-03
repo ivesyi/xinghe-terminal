@@ -61,6 +61,12 @@ try {
   });
 } catch {}
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  // dev/运行态 dock 也用星核图标(打包版走 icns,这里让 `npm run dev` 也换掉 Electron 默认图标)
+  if (process.platform === 'darwin' && app.dock) {
+    try { app.dock.setIcon(path.join(__dirname, '..', '..', 'build', 'icon.png')); } catch {}
+  }
+  createWindow();
+});
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
 app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
