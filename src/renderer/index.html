@@ -310,9 +310,9 @@ main{flex:1;overflow:hidden;position:relative}
 .m-id .grp-tag{font-size:11px;color:var(--ink-dim);padding:3px 9px;background:rgba(255,255,255,.06);border-radius:4px}
 .m-body{padding:6px 26px 24px;overflow:auto;flex:1;min-height:0}
 /* 详情弹窗左右布局:左=元信息+操作,右=技能文档 */
-.m-cols{display:grid;grid-template-columns:300px 1fr;flex:1;min-height:0}
-.m-col-l{overflow:auto;min-height:0;padding:4px 20px 22px 26px;border-right:1px solid var(--line)}
-.m-col-r{display:flex;flex-direction:column;min-height:0;padding:14px 22px 18px}
+.m-cols{display:grid;grid-template-columns:300px minmax(0,1fr);flex:1;min-height:0}
+.m-col-l{overflow:auto;min-width:0;min-height:0;padding:4px 20px 22px 26px;border-right:1px solid var(--line)}
+.m-col-r{display:flex;flex-direction:column;min-width:0;min-height:0;padding:14px 22px 18px}
 .m-rhead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
 .m-rhead .rt{font-family:'Rajdhani';font-size:11px;letter-spacing:2px;color:var(--ink-faint);text-transform:uppercase}
 .m-view{display:flex;gap:2px;border:1px solid var(--line);border-radius:6px;padding:2px;background:rgba(0,0,0,.25)}
