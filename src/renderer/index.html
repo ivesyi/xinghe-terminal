@@ -94,6 +94,13 @@ header{display:flex;align-items:center;gap:18px;padding:14px 26px 12px 86px;
 .commander .lv{font-family:'Rajdhani';font-size:11px;color:var(--ink-faint);letter-spacing:1px}
 .commander[data-act]{cursor:pointer}
 .commander[data-act]:hover .nm{color:var(--cyan)}
+.commander .av i{font-family:'Orbitron';font-weight:900;font-size:15px;color:var(--warn);
+  text-shadow:0 0 10px rgba(245,166,35,.55)}
+.copy-btn{background:none;border:1px solid var(--line);border-radius:6px;color:var(--ink-faint);
+  cursor:pointer;padding:3px 5px;line-height:0;vertical-align:middle}
+.copy-btn:hover{color:var(--cyan);border-color:var(--cyan)}
+.gh-link{cursor:pointer;line-height:0}
+.gh-link:hover{filter:brightness(1.5)}
 /* nav tabs */
 nav{display:flex;gap:6px;padding:10px 22px 0;border-bottom:1px solid var(--line);background:rgba(8,12,28,.4)}
 .tab{position:relative;font-family:'Rajdhani';font-weight:700;font-size:14px;letter-spacing:2px;
@@ -442,7 +449,7 @@ main{flex:1;overflow:hidden;position:relative}
       <div class="stat-chip g"><b id="s-ext">—</b><span>外部托管</span></div>
     </div>
     <div class="commander" id="commander">
-      <div class="av"><i></i></div>
+      <div class="av"><i id="av-core"></i></div>
       <div><div class="nm" id="hub-stat">—</div><div class="lv" id="sync-stat">—</div></div>
     </div>
   </header>
@@ -548,6 +555,7 @@ const GROUPS={
   yiqiai:{cn:"一起AI",acc:"#ffd27a"},
   workbuddy:{cn:"协作",acc:"#5fc9ff"},
   lark:{cn:"飞书",acc:"#8b95c9"},
+  cloudflare:{cn:"Cloudflare",acc:"#f6821f"},
   external:{cn:"外部",acc:"#8b95c9"}
 };
 const GM=g=>GROUPS[g]||{cn:g,acc:"#6fe3ff"};
@@ -556,7 +564,8 @@ const LO_META={
   media:{cn:"媒体生产队",acc:"#ffa94d"},
   jarvis:{cn:"贾维斯全军",acc:"#a88bff"},
   xhs:{cn:"小红书突击队",acc:"#ff7a8a"},
-  contracts:{cn:"合同审查组",acc:"#ffd27a"}
+  contracts:{cn:"合同审查组",acc:"#ffd27a"},
+  cloudflare:{cn:"Cloudflare 套件",acc:"#f6821f"}
 };
 const LM=k=>LO_META[k]||{cn:k,acc:"#6fe3ff"};
 
@@ -567,6 +576,10 @@ function source(s){const ch=(s.update||{}).channel;
 const SRC_META={github:{cn:"GitHub 开源",tag:"GitHub",col:"var(--src-github)"},
   self:{cn:"自制本地",tag:"自制",col:"var(--src-self)"},
   web:{cn:"网站/外部获取",tag:"网站",col:"var(--src-web)"}};
+const GH_SVG=`<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M12 .5C5.65.5.5 5.65.5 12.02c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.27-.01-1-.02-1.96-3.2.7-3.87-1.54-3.87-1.54-.52-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.58.23 2.75.12 3.04.74.81 1.18 1.84 1.18 3.1 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.06.78 2.13 0 1.54-.01 2.78-.01 3.16 0 .31.21.68.8.56 4.56-1.52 7.85-5.83 7.85-10.91C23.5 5.65 18.35.5 12 .5Z"/></svg>`;
+const COPY_SVG=`<svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" fill="none" stroke="currentColor" stroke-width="2"/></svg>`;
+/* 有仓库地址才给 GitHub 图标(可点跳原仓);manual-port 的从 update.source 里兜底解析 */
+function repoOf(s){return s.repo||(((s.update||{}).source||'').match(/github\.com\/[\w.-]+\/[\w.-]+/)||[null])[0];}
 
 /* 熟练度:唯一诚实的强度轴 = 真实使用日志(lastUsed 距今天数) */
 function prof(s){
@@ -620,9 +633,9 @@ function renderOnboard(){
 let UPD=null,GITST=null,BOOTED=false;
 function renderStatus(){
   if(!HUB)return;
-  let one=inHub().length+' 项能力'; /* 口径=registry 管的技能,不含外部托管 */
-  if(UPD!==null)one+=UPD>0?` · <span style="color:var(--warn)">${UPD} 待更新</span>`:' · 全部最新';
-  $('hub-stat').innerHTML=one;
+  /* 待更新数进旋转框(随框同转,醒目);能力总数左侧 stat-chip 已有,不再重复 */
+  const av=$('av-core');if(av)av.textContent=UPD>0?UPD:'';
+  $('hub-stat').innerHTML=UPD===null?'检查更新…':UPD>0?`<span style="color:var(--warn)">${UPD} 待更新</span>`:'全部最新';
   const c=$('commander');
   const g=$('sync-stat');
   let unpushed=0;
@@ -665,7 +678,9 @@ function card(s){
   const m=GM(s.group),src=source(s),sm=SRC_META[src],pf=prof(s);
   const inst=isInstalled(s.name);
   return `<div class="card${s.tier==='global'?' rare5':''}" style="--acc:${m.acc}" data-open="${esc(s.name)}">
-    <div class="top"><div class="nm">${esc(s.name)}</div><div class="src-tag src-${src}">${sm.tag}</div></div>
+    <div class="top"><div class="nm">${esc(s.name)}</div>
+      <button class="copy-btn" data-copy="${esc(s.name)}" title="复制名称">${COPY_SVG}</button>
+      <div class="src-tag src-${src}">${sm.tag}</div></div>
     <div class="grp">${esc(m.cn)}</div>
     ${starRow(s)}
     <div class="badges">
@@ -683,7 +698,8 @@ function renderInv(){
   let list=inHub();
   if(S.src!=='all')list=list.filter(s=>source(s)===S.src);
   if(S.grp!=='all')list=list.filter(s=>s.group===S.grp);
-  list=list.filter(matchQ).sort((a,b)=>(a.tier===b.tier?0:a.tier==='global'?-1:1)||a.name.localeCompare(b.name));
+  /* 排序=星级(常驻在前)+等级(Lv 高在前),同级按名 */
+  list=list.filter(matchQ).sort((a,b)=>(a.tier===b.tier?0:a.tier==='global'?-1:1)||(prof(b).pct-prof(a).pct)||a.name.localeCompare(b.name));
   $('inv-count').textContent=list.length+' 件藏品';
   $('inv-grid').innerHTML=list.map(card).join('')||'<div class="empty">⌀ 没有匹配的技能 — 调整筛选条件试试</div>';
   $('proj-hint').innerHTML=S.proj
@@ -800,12 +816,15 @@ async function openCard(n){
   if(s.external){
     actions=`<div class="m-locknote"><div class="tx"><b>外部托管 · 只读</b><br>由上游托管并自动更新(${esc((s.update||{}).how||'见来源目录')}),本终端不可装备 / 卸载。</div></div>`;
   }else if(isG){
-    actions=`<div class="m-locknote gold"><div class="tx"><b>五星常驻 · 全项目自带</b><br>已软链进 ~/.claude · ~/.codex · ~/.cursor 全局层,每个项目开箱即用,无需装入。</div></div>`;
+    actions=`<div class="m-locknote gold"><div class="tx"><b>五星常驻 · 全项目自带</b><br>已软链进 ~/.claude · ~/.codex · ~/.cursor 全局层,每个项目开箱即用,无需装入。</div></div>
+      <div class="m-actions"><button class="act" data-tier="${esc(n)}" data-to="on-demand">降为按需(摘出全局层)</button></div>`;
   }else if(S.proj){
-    actions=`<div class="m-actions"><button class="act primary${inst?' unequip':''}" data-use="${esc(n)}" data-on="${inst?0:1}">${inst?'从项目卸下':'装入当前项目'}</button></div>
+    actions=`<div class="m-actions"><button class="act primary${inst?' unequip':''}" data-use="${esc(n)}" data-on="${inst?0:1}">${inst?'从项目卸下':'装入当前项目'}</button>
+      <button class="act" data-tier="${esc(n)}" data-to="global">设为常驻</button></div>
       <div class="msg" style="text-align:center">目标项目:${esc(S.proj)}</div>`;
   }else{
-    actions=`<div class="m-actions"><button class="act disabled">装入项目</button></div>
+    actions=`<div class="m-actions"><button class="act disabled">装入项目</button>
+      <button class="act" data-tier="${esc(n)}" data-to="global">设为常驻</button></div>
       <div class="msg" style="text-align:center">先到「出战 · 装配」选择一个项目目录</div>`;
   }
   const rhead=s.external
@@ -817,8 +836,10 @@ async function openCard(n){
     <div class="m-close" data-act="close-modal">✕</div>
     <div class="m-top" style="--acc:${m.acc}"><div class="m-scan"></div>
       <div class="row">
-        <div class="m-id"><div class="nm">${esc(n)}</div>
-          <div class="meta"><span class="src-tag src-${src}">${sm.tag}</span>
+        <div class="m-id"><div class="nm">${esc(n)} <button class="copy-btn" data-copy="${esc(n)}" title="复制名称">${COPY_SVG}</button></div>
+          <div class="meta">${src==='github'&&repoOf(s)
+            ?`<span class="src-tag src-github gh-link" data-repo="${esc(repoOf(s))}" title="打开原始仓库 ${esc(repoOf(s))}">${GH_SVG}</span>`
+            :`<span class="src-tag src-${src}">${sm.tag}</span>`}
             ${isG&&!s.external?'<span class="grp-tag" style="color:var(--gold)">★★★★★ 常驻</span>':''}
             ${!isG&&!s.external?'<span class="grp-tag" style="color:var(--violet)">★★★★ 按需</span>':''}
             ${inst?'<span class="grp-tag" style="color:var(--ok)">✓ 已装入项目</span>':''}
@@ -931,6 +952,18 @@ document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>switchTo(t.dataset.sc
 /* ---- 全局事件委托 ---- */
 document.addEventListener('click',async e=>{
   const t=e.target;
+  /* data-copy 先于 data-open:卡片上的复制按钮不应触发开卡 */
+  const cp=t.closest('[data-copy]');if(cp){
+    try{await navigator.clipboard.writeText(cp.dataset.copy);}
+    catch{const ta=document.createElement('textarea');ta.value=cp.dataset.copy;
+      document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();}
+    toast('已复制 '+cp.dataset.copy,'gold');return;}
+  const tr=t.closest('[data-tier]');if(tr){
+    const nm=tr.dataset.tier,to=tr.dataset.to;tr.textContent='切换中…';
+    try{await api.setTier(nm,to);HUB=await api.getData();refreshAll();openCard(nm);
+      toast(to==='global'?'★★★★★ 已设为常驻':'已降为按需(已摘出全局层)','gold');}
+    catch(err){toast('✗ '+(err.message||err),'warn');}
+    return;}
   const open=t.closest('[data-open]');if(open)return openCard(open.dataset.open);
   const use=t.closest('[data-use]');if(use)return useSkill(use.dataset.use,use.dataset.on==='1');
   const lodel=t.closest('[data-lodel]');if(lodel)return deleteLoadoutUI(lodel);

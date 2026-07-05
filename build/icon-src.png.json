@@ -1,0 +1,12 @@
+{
+  "created_at": "2026-07-03T18:27:05.258Z",
+  "elapsed_ms": 57467,
+  "base_url": "https://llm.framemoe.cn/v1",
+  "endpoint": "/images/generations",
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "response_format": "b64_json",
+  "prompt": "A premium macOS app icon, rounded square shape filling the frame, deep near-black navy background (#0a0e1a), a glowing crystalline hexagonal star-core in the center emitting soft ice-blue light (#5b9dff), faint radiating energy lines, minimal, cinematic, high detail, no text, no letters",
+  "revised_prompt": null,
+  "output": "/Users/yihu/zero/WorkSpace/skillhub-desktop/build/icon-src.png"
+}
