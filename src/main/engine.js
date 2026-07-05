@@ -99,6 +99,20 @@ function setTier(name, tier) {
   });
 }
 
+// 提示词更新渠道:录入一条可执行提示词作为该 skill 的更新方式;摘除 upstream 让 bot 不再管
+function setUpdatePrompt(name, text) {
+  return withLock(() => {
+    const r = readReg();
+    if (!r.skills[name]) throw new Error('unknown skill ' + name);
+    if (!text || !text.trim()) throw new Error('提示词不能为空');
+    delete r.skills[name].upstream;
+    r.skills[name].update = { channel: 'prompt', prompt: text.trim(),
+      how: '提示词更新:agent 执行 update.prompt 即完成更新(/loop 管家可读)' };
+    writeReg(r);
+    return true;
+  });
+}
+
 const projectDirs = (r, root) => Object.values(r.project_dirs || {}).map(rel => path.join(root, rel));
 function logUse(name, proj) { try { fs.appendFileSync(USAGE, `${new Date().toISOString().slice(0, 19).replace('T', ' ')}\tuse\t${name}\t${proj}\n`); } catch {} }
 
@@ -286,7 +300,7 @@ async function checkUpdates() {
 }
 
 module.exports = {
-  getData, setTier, useInProject, applyLoadout, projectInfo, recentProjects, readSkillMd, deleteSkill,
+  getData, setTier, setUpdatePrompt, useInProject, applyLoadout, projectInfo, recentProjects, readSkillMd, deleteSkill,
   createLoadout, deleteLoadout,
   getConfig, setHubPath, cloneHub, initHub, getRemote, setRemote, validateRemote, gitPull, gitPush, checkUpdates, gitSyncStatus,
 };

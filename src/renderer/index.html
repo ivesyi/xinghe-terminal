@@ -17,7 +17,7 @@
   --ink:#eaf2ff; --ink-dim:#9fb0d8; --ink-faint:#5d6da0;
   --line:rgba(120,160,255,.16); --line-bright:rgba(120,200,255,.4);
   --panel:rgba(13,20,46,.66);
-  --src-github:#6fe3ff; --src-self:#ffb85c; --src-web:#9b8bff;
+  --src-github:#6fe3ff; --src-self:#ffb85c; --src-web:#9b8bff; --src-prompt:#ffd27a;
   --glow-c:0 0 18px rgba(95,247,255,.55);
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -173,7 +173,7 @@ main{flex:1;overflow:hidden;position:relative}
 .card .top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
 .card .src-tag{font-family:'Rajdhani';font-size:9.5px;font-weight:700;letter-spacing:1px;padding:3px 7px;
   border-radius:3px;white-space:nowrap;border:1px solid currentColor;line-height:1;flex:0 0 auto;margin-top:2px}
-.src-github{color:var(--src-github)}.src-self{color:var(--src-self)}.src-web{color:var(--src-web)}
+.src-github{color:var(--src-github)}.src-self{color:var(--src-self)}.src-web{color:var(--src-web)}.src-prompt{color:var(--src-prompt)}
 .card .nm{flex:1;min-width:0;font-size:15px;font-weight:700;color:#fff;line-height:1.35;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-all}
 .card .grp{font-size:10.5px;color:var(--ink-faint);margin-top:3px;letter-spacing:.5px}
@@ -340,6 +340,12 @@ main{flex:1;overflow:hidden;position:relative}
 .m-doc pre{background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:10px 0;overflow:auto}
 .m-doc pre code{background:transparent;border:0;padding:0;display:block;white-space:pre;color:var(--ink-dim)}
 .m-doc a{color:var(--cyan);text-decoration:none;border-bottom:1px dashed rgba(95,247,255,.5);cursor:pointer}
+.m-doc .tbl-wrap{overflow-x:auto;margin:10px 0}
+.m-doc table{border-collapse:collapse;font-size:12.5px}
+.m-doc th,.m-doc td{border:1px solid var(--line);padding:6px 10px;text-align:left}
+.m-doc th{color:var(--cyan);background:rgba(95,247,255,.06);font-weight:700}
+.m-prompt textarea{width:100%;background:rgba(10,16,36,.7);border:1px solid var(--line);color:var(--ink);
+  font-size:12px;line-height:1.5;padding:8px;border-radius:4px;resize:vertical;font-family:inherit}
 .m-doc blockquote{border-left:2px solid var(--violet);margin:9px 0;padding:2px 12px;color:var(--ink-faint)}
 .m-doc hr{border:0;border-top:1px solid var(--line);margin:13px 0}
 .m-doc strong{color:var(--ink)}
@@ -360,9 +366,10 @@ main{flex:1;overflow:hidden;position:relative}
 @keyframes shine{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
 .m-actions{display:flex;gap:10px;margin-top:20px}
 .act{flex:1;font-family:'Rajdhani';font-weight:700;letter-spacing:1.5px;font-size:13px;cursor:pointer;
-  padding:13px;border:1px solid;transition:.2s;
+  padding:13px;border:1px solid var(--line-bright);color:var(--ink);transition:.2s;
   clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%);background:transparent;
   display:flex;gap:7px;align-items:center;justify-content:center}
+.act:not(.primary):not(.disabled):hover{color:var(--cyan);border-color:var(--cyan)}
 .act.primary{color:#04121b;background:linear-gradient(180deg,var(--cyan),var(--cyan-d));border-color:transparent;
   box-shadow:0 0 20px rgba(95,247,255,.35)}
 .act.primary:hover{transform:translateY(-2px);box-shadow:0 8px 26px rgba(95,247,255,.5)}
@@ -471,6 +478,7 @@ main{flex:1;overflow:hidden;position:relative}
           <button class="chip on" data-src="all">全部</button>
           <button class="chip src-github" data-src="github"><span class="dot" style="background:var(--src-github)"></span>GitHub</button>
           <button class="chip src-self" data-src="self"><span class="dot" style="background:var(--src-self)"></span>自制</button>
+          <button class="chip src-prompt" data-src="prompt"><span class="dot" style="background:var(--src-prompt)"></span>提示词</button>
           <button class="chip src-web" data-src="web"><span class="dot" style="background:var(--src-web)"></span>网站</button>
         </div>
         <div class="proj-hint" id="proj-hint"></div>
@@ -572,9 +580,11 @@ const LM=k=>LO_META[k]||{cn:k,acc:"#6fe3ff"};
 /* 来源分类(平级,非优劣):update.channel → github / self / web */
 function source(s){const ch=(s.update||{}).channel;
   if(ch==='github'||ch==='manual-port')return'github';
+  if(ch==='prompt')return'prompt';
   if(ch==='local'||!ch)return'self';return'web';}
 const SRC_META={github:{cn:"GitHub 开源",tag:"GitHub",col:"var(--src-github)"},
   self:{cn:"自制本地",tag:"自制",col:"var(--src-self)"},
+  prompt:{cn:"提示词更新",tag:"提示词",col:"var(--src-prompt)"},
   web:{cn:"网站/外部获取",tag:"网站",col:"var(--src-web)"}};
 const GH_SVG=`<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M12 .5C5.65.5.5 5.65.5 12.02c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.27-.01-1-.02-1.96-3.2.7-3.87-1.54-3.87-1.54-.52-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.58.23 2.75.12 3.04.74.81 1.18 1.84 1.18 3.1 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.06.78 2.13 0 1.54-.01 2.78-.01 3.16 0 .31.21.68.8.56 4.56-1.52 7.85-5.83 7.85-10.91C23.5 5.65 18.35.5 12 .5Z"/></svg>`;
 const COPY_SVG=`<svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" fill="none" stroke="currentColor" stroke-width="2"/></svg>`;
@@ -678,9 +688,7 @@ function card(s){
   const m=GM(s.group),src=source(s),sm=SRC_META[src],pf=prof(s);
   const inst=isInstalled(s.name);
   return `<div class="card${s.tier==='global'?' rare5':''}" style="--acc:${m.acc}" data-open="${esc(s.name)}">
-    <div class="top"><div class="nm">${esc(s.name)}</div>
-      <button class="copy-btn" data-copy="${esc(s.name)}" title="复制名称">${COPY_SVG}</button>
-      <div class="src-tag src-${src}">${sm.tag}</div></div>
+    <div class="top"><div class="nm">${esc(s.name)}</div><div class="src-tag src-${src}">${sm.tag}</div></div>
     <div class="grp">${esc(m.cn)}</div>
     ${starRow(s)}
     <div class="badges">
@@ -780,15 +788,24 @@ function renderSettings(){
 /* 轻量 md→html:先整体转义再按规则渲染,防 XSS;标题/列表/代码块/引用/粗体/行内码/链接够用 */
 function stripFm(src){return src.replace(/^---\n[\s\S]*?\n---\n?/,'');}
 function mdToHtml(src){
-  const lines=esc(src).split('\n');let out='',inCode=false,inUl=false,inOl=false;
+  const lines=esc(src).split('\n');let out='',inCode=false,inUl=false,inOl=false,tbl=[];
   const closeLists=()=>{if(inUl){out+='</ul>';inUl=false;}if(inOl){out+='</ol>';inOl=false;}};
   const inline=s=>s
     .replace(/`([^`]+)`/g,'<code>$1</code>')
     .replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>')
     .replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g,'<a data-ext="$2">$1</a>');
+  const flushTbl=()=>{if(!tbl.length)return;
+    const rows=tbl.map(r=>r.trim().replace(/^\||\|$/g,'').split('|').map(c=>c.trim()));
+    const hasHead=tbl.length>1&&/^\s*:?-{2,}/.test(rows[1][0]);
+    let h='<div class="tbl-wrap"><table>';
+    if(hasHead)h+='<tr>'+rows[0].map(c=>'<th>'+inline(c)+'</th>').join('')+'</tr>';
+    for(const r of(hasHead?rows.slice(2):rows))h+='<tr>'+r.map(c=>'<td>'+inline(c)+'</td>').join('')+'</tr>';
+    out+=h+'</table></div>';tbl=[];};
   for(const ln of lines){
-    if(/^```/.test(ln)){closeLists();out+=inCode?'</code></pre>':'<pre><code>';inCode=!inCode;continue;}
+    if(/^```/.test(ln)){flushTbl();closeLists();out+=inCode?'</code></pre>':'<pre><code>';inCode=!inCode;continue;}
     if(inCode){out+=ln+'\n';continue;}
+    if(/^\s*\|/.test(ln)){closeLists();tbl.push(ln);continue;}
+    flushTbl();
     const h=ln.match(/^(#{1,4})\s+(.*)/);
     if(h){closeLists();out+=`<h${h[1].length}>${inline(h[2])}</h${h[1].length}>`;continue;}
     if(/^\s*[-*]\s+/.test(ln)){if(!inUl){closeLists();out+='<ul>';inUl=true;}out+='<li>'+inline(ln.replace(/^\s*[-*]\s+/,''))+'</li>';continue;}
@@ -798,7 +815,7 @@ function mdToHtml(src){
     if(!ln.trim()){closeLists();continue;}
     closeLists();out+='<p>'+inline(ln)+'</p>';
   }
-  if(inCode)out+='</code></pre>';closeLists();
+  if(inCode)out+='</code></pre>';flushTbl();closeLists();
   return out;
 }
 let MD_RAW='';
@@ -855,6 +872,12 @@ async function openCard(n){
         ${s.oss&&s.repo?`<div class="m-row"><span class="k">上游仓库</span><span class="v" style="color:var(--src-github);cursor:pointer" data-repo="${esc(s.repo)}">${esc(s.repo.replace('github.com/',''))}</span></div>`:''}
         ${s.update?`<div class="m-row"><span class="k">更新方式</span><span class="v" style="font-size:11px">${esc(s.update.how||s.update.channel)}</span></div>`:''}
         <div class="m-row"><span class="k">最近使用</span><span class="v">${s.lastUsed===null?'未用过':s.lastUsed+' 天前'}</span></div>
+        ${!s.external?`<div class="m-prompt" style="margin-top:14px">
+          <div style="color:var(--ink-faint);font-size:11px;letter-spacing:1px;margin-bottom:6px">更新提示词(/loop 管家读取执行)</div>
+          <textarea id="upd-prompt" rows="3" placeholder="录入一条可执行的更新提示词…">${esc((s.update||{}).prompt||'')}</textarea>
+          <div style="display:flex;gap:10px;align-items:center;margin-top:6px">
+            <button class="act" style="flex:0 0 auto;padding:7px 16px" data-saveprompt="${esc(n)}">保存</button>
+            <span style="color:var(--ink-faint);font-size:10.5px">保存后更新渠道=提示词,原自动更新(如 github)将摘除</span></div></div>`:''}
         ${actions}
       </div>
       <div class="m-col-r">
@@ -962,6 +985,14 @@ document.addEventListener('click',async e=>{
     const nm=tr.dataset.tier,to=tr.dataset.to;tr.textContent='切换中…';
     try{await api.setTier(nm,to);HUB=await api.getData();refreshAll();openCard(nm);
       toast(to==='global'?'★★★★★ 已设为常驻':'已降为按需(已摘出全局层)','gold');}
+    catch(err){toast('✗ '+(err.message||err),'warn');}
+    return;}
+  const sp=t.closest('[data-saveprompt]');if(sp){
+    const nm=sp.dataset.saveprompt,txt=(($('upd-prompt')||{}).value||'').trim();
+    if(!txt){toast('提示词不能为空','warn');return;}
+    sp.textContent='保存中…';
+    try{await api.setUpdatePrompt(nm,txt);HUB=await api.getData();refreshAll();openCard(nm);
+      toast('已录入更新提示词','gold');}
     catch(err){toast('✗ '+(err.message||err),'warn');}
     return;}
   const open=t.closest('[data-open]');if(open)return openCard(open.dataset.open);

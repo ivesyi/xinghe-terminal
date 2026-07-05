@@ -5,6 +5,7 @@ const E = require('./engine');
 
 ipcMain.handle('getData', () => E.getData());
 ipcMain.handle('setTier', (_e, name, tier) => E.setTier(name, tier));
+ipcMain.handle('setUpdatePrompt', (_e, name, text) => E.setUpdatePrompt(name, text));
 ipcMain.handle('useInProject', (_e, name, proj, on) => E.useInProject(name, proj, on));
 ipcMain.handle('applyLoadout', (_e, lo, proj) => E.applyLoadout(lo, proj));
 ipcMain.handle('projectInfo', (_e, proj) => E.projectInfo(proj));

@@ -4,6 +4,7 @@ const call = (ch, ...a) => ipcRenderer.invoke(ch, ...a);
 contextBridge.exposeInMainWorld('skapi', {
   getData: () => call('getData'),
   setTier: (n, t) => call('setTier', n, t),
+  setUpdatePrompt: (n, t) => call('setUpdatePrompt', n, t),
   useInProject: (n, p, on) => call('useInProject', n, p, on),
   applyLoadout: (lo, p) => call('applyLoadout', lo, p),
   projectInfo: p => call('projectInfo', p),
