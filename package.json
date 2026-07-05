@@ -46,7 +46,8 @@
         "AppImage"
       ],
       "category": "Development"
-    }
+    },
+    "artifactName": "xinghe-terminal-${version}-${arch}.${ext}"
   },
   "dependencies": {
     "proper-lockfile": "^4.1.2"
