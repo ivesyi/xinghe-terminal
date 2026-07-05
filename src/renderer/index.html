@@ -173,7 +173,7 @@ main{flex:1;overflow:hidden;position:relative}
 .card .top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
 .card .src-tag{font-family:'Rajdhani';font-size:9.5px;font-weight:700;letter-spacing:1px;padding:3px 7px;
   border-radius:3px;white-space:nowrap;border:1px solid currentColor;line-height:1;flex:0 0 auto;margin-top:2px}
-.src-github{color:var(--src-github)}.src-self{color:var(--src-self)}.src-web{color:var(--src-web)}.src-prompt{color:var(--src-prompt)}
+.src-github{color:var(--src-github)}.src-self{color:var(--src-self)}.src-web{color:var(--src-web)}.src-prompt{color:var(--src-prompt)}.src-port{color:var(--src-web)}.src-ext{color:var(--lock)}
 .card .nm{flex:1;min-width:0;font-size:15px;font-weight:700;color:#fff;line-height:1.35;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-all}
 .card .grp{font-size:10.5px;color:var(--ink-faint);margin-top:3px;letter-spacing:.5px}
@@ -479,7 +479,7 @@ main{flex:1;overflow:hidden;position:relative}
           <button class="chip src-github" data-src="github"><span class="dot" style="background:var(--src-github)"></span>GitHub</button>
           <button class="chip src-self" data-src="self"><span class="dot" style="background:var(--src-self)"></span>自制</button>
           <button class="chip src-prompt" data-src="prompt"><span class="dot" style="background:var(--src-prompt)"></span>提示词</button>
-          <button class="chip src-web" data-src="web"><span class="dot" style="background:var(--src-web)"></span>网站</button>
+          <button class="chip src-port" data-src="port"><span class="dot" style="background:var(--src-web)"></span>移植</button>
         </div>
         <div class="proj-hint" id="proj-hint"></div>
       </div>
@@ -577,15 +577,20 @@ const LO_META={
 };
 const LM=k=>LO_META[k]||{cn:k,acc:"#6fe3ff"};
 
-/* 来源分类(平级,非优劣):update.channel → github / self / web */
-function source(s){const ch=(s.update||{}).channel;
-  if(ch==='github'||ch==='manual-port')return'github';
+/* 更新体系单一真相:channel 1:1 映射 → pill / 一句话 / 提示词框显隐
+   执行者只有一个叙事:星核管家(/loop)。所有界面文案从这张表出,别处不再自写 */
+function source(s){if(s.external)return'ext';
+  const ch=(s.update||{}).channel;
+  if(ch==='github')return'github';
   if(ch==='prompt')return'prompt';
-  if(ch==='local'||!ch)return'self';return'web';}
-const SRC_META={github:{cn:"GitHub 开源",tag:"GitHub",col:"var(--src-github)"},
-  self:{cn:"自制本地",tag:"自制",col:"var(--src-self)"},
-  prompt:{cn:"提示词更新",tag:"提示词",col:"var(--src-prompt)"},
-  web:{cn:"网站/外部获取",tag:"网站",col:"var(--src-web)"}};
+  if(ch==='manual-port')return'port';
+  return'self';}
+const SRC_META={
+  github:{cn:"GitHub 开源",tag:"GitHub",col:"var(--src-github)",line:"管家定期对比上游自动更新",editor:"collapsed"},
+  self:{cn:"自制本地",tag:"自制",col:"var(--src-self)",line:"直接编辑本地文件",editor:"none"},
+  prompt:{cn:"提示词更新",tag:"提示词",col:"var(--src-prompt)",line:"管家执行更新提示词",editor:"open"},
+  port:{cn:"手工移植",tag:"移植",col:"var(--src-web)",line:"上游更新后手工搬运",editor:"collapsed"},
+  ext:{cn:"外部托管",tag:"外部",col:"var(--lock)",line:"外部工具自动更新",editor:"none"}};
 const GH_SVG=`<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M12 .5C5.65.5.5 5.65.5 12.02c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.27-.01-1-.02-1.96-3.2.7-3.87-1.54-3.87-1.54-.52-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.58.23 2.75.12 3.04.74.81 1.18 1.84 1.18 3.1 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.06.78 2.13 0 1.54-.01 2.78-.01 3.16 0 .31.21.68.8.56 4.56-1.52 7.85-5.83 7.85-10.91C23.5 5.65 18.35.5 12 .5Z"/></svg>`;
 const COPY_SVG=`<svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" fill="none" stroke="currentColor" stroke-width="2"/></svg>`;
 /* 有仓库地址才给 GitHub 图标(可点跳原仓);manual-port 的从 update.source 里兜底解析 */
@@ -779,7 +784,7 @@ function renderSettings(){
    <div class="set-row"><div class="si"><b>同步</b><p>拉取最新并重新分发常驻 skill · 或推送本机改动</p></div>
      <button class="sbtn" data-act="pull">⤓ 拉取</button><button class="sbtn gold" data-act="push">↥ 推送</button></div>
    <div class="msg" id="syncMsg"></div>
-   <div class="set-row"><div class="si"><b>每周自动更新</b><p>周一 10:00 headless 判定 OSS upstream(launchd + skill-update-bot)</p></div><span class="sv">launchd</span></div>
+   <div class="set-row"><div class="si"><b>自动更新</b><p>星核管家巡检时处理:GitHub 对比上游,提示词直接执行</p></div><span class="sv">管家</span></div>
    <div class="set-row"><div class="si"><b>装卸引擎</b><p>与 skillctl 同源:单一源 + 软链分发,registry 写入带文件锁</p></div><span class="sv">proper-lockfile</span></div>`;
   if(api)api.getRemote().then(r=>{const i=$('remoteInp');if(i&&r)i.value=r;});
 }
@@ -831,7 +836,7 @@ async function openCard(n){
   const inst=isInstalled(n),isG=s.tier==='global';
   let actions;
   if(s.external){
-    actions=`<div class="m-locknote"><div class="tx"><b>外部托管 · 只读</b><br>由上游托管并自动更新(${esc((s.update||{}).how||'见来源目录')}),本终端不可装备 / 卸载。</div></div>`;
+    actions=`<div class="m-locknote"><div class="tx"><b>外部托管 · 只读</b><br>由外部工具管理和更新,本终端不可装卸。</div></div>`;
   }else if(isG){
     actions=`<div class="m-locknote gold"><div class="tx"><b>五星常驻 · 全项目自带</b><br>已软链进 ~/.claude · ~/.codex · ~/.cursor 全局层,每个项目开箱即用,无需装入。</div></div>
       <div class="m-actions"><button class="act" data-tier="${esc(n)}" data-to="on-demand">降为按需(摘出全局层)</button></div>`;
@@ -870,14 +875,17 @@ async function openCard(n){
         <div class="m-row"><span class="k">挂载层</span><span class="v">${s.external?'外部常驻':isG?'常驻':'按需'}</span></div>
         <div class="m-row"><span class="k">分发对象</span><span class="v">${esc((s.agents||[]).join(' · '))||'—'}</span></div>
         ${s.oss&&s.repo?`<div class="m-row"><span class="k">上游仓库</span><span class="v" style="color:var(--src-github);cursor:pointer" data-repo="${esc(s.repo)}">${esc(s.repo.replace('github.com/',''))}</span></div>`:''}
-        ${s.update?`<div class="m-row"><span class="k">更新方式</span><span class="v" style="font-size:11px">${esc(s.update.how||s.update.channel)}</span></div>`:''}
+        <div class="m-row"><span class="k">更新方式</span><span class="v" style="font-size:11px">${sm.line}</span></div>
         <div class="m-row"><span class="k">最近使用</span><span class="v">${s.lastUsed===null?'未用过':s.lastUsed+' 天前'}</span></div>
-        ${!s.external?`<div class="m-prompt" style="margin-top:14px">
-          <div style="color:var(--ink-faint);font-size:11px;letter-spacing:1px;margin-bottom:6px">更新提示词(/loop 管家读取执行)</div>
-          <textarea id="upd-prompt" rows="3" placeholder="录入一条可执行的更新提示词…">${esc((s.update||{}).prompt||'')}</textarea>
-          <div style="display:flex;gap:10px;align-items:center;margin-top:6px">
-            <button class="act" style="flex:0 0 auto;padding:7px 16px" data-saveprompt="${esc(n)}">保存</button>
-            <span style="color:var(--ink-faint);font-size:10.5px">保存后更新渠道=提示词,原自动更新(如 github)将摘除</span></div></div>`:''}
+        ${(()=>{  /* 提示词框显隐跟渠道走:prompt=展开 / github,移植=折叠可换渠道 / 自制,外部=无 */
+          if(sm.editor==='none')return'';
+          const ed=`<textarea id="upd-prompt" rows="3" placeholder="录入更新提示词…">${esc((s.update||{}).prompt||'')}</textarea>
+            <div style="display:flex;gap:10px;align-items:center;margin-top:6px">
+              <button class="act" style="flex:0 0 auto;padding:7px 16px" data-saveprompt="${esc(n)}">保存</button>
+              <span style="color:var(--ink-faint);font-size:10.5px">保存后由管家执行该提示词完成更新</span></div>`;
+          return sm.editor==='open'
+            ?`<div class="m-prompt" style="margin-top:14px"><div style="color:var(--ink-faint);font-size:11px;margin-bottom:6px">更新提示词</div>${ed}</div>`
+            :`<details class="m-prompt" style="margin-top:14px"><summary style="color:var(--ink-faint);font-size:11px;cursor:pointer">改用提示词更新</summary><div style="margin-top:8px">${ed}</div></details>`;})()}
         ${actions}
       </div>
       <div class="m-col-r">
