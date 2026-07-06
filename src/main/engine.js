@@ -74,6 +74,22 @@ function externalSkills() {
       seen[name] = { name, tier: 'global', group: isLark ? 'lark' : 'external', oss: false, repo: '', desc, agents: [], lastUsed: null, external: true, source: tgt.replace(os.homedir(), '~'), update: { channel, source: tgt.replace(os.homedir(), '~'), how } };
     }
   }
+  // 插件通道(Claude Code plugin marketplace):只读展示;安装/启停/更新走 /plugin,星核不管
+  try {
+    const pj = JSON.parse(fs.readFileSync(path.join(os.homedir(), '.claude/plugins/installed_plugins.json'), 'utf8'));
+    let enabled = null;
+    try { enabled = JSON.parse(fs.readFileSync(path.join(os.homedir(), '.claude/settings.json'), 'utf8')).enabledPlugins || null; } catch {}
+    for (const [key, insts] of Object.entries(pj.plugins || {})) {
+      if (enabled && enabled[key] !== true) continue; // 只展示启用中的
+      const short = key.split('@')[0], inst = insts[0] || {};
+      if (seen[short]) continue;
+      let desc = '';
+      try { desc = (JSON.parse(fs.readFileSync(path.join(inst.installPath, '.claude-plugin', 'plugin.json'), 'utf8')).description || '').slice(0, 160); } catch {}
+      seen[short] = { name: short, tier: 'global', group: 'external', oss: false, repo: '', desc,
+        agents: [], lastUsed: null, external: true, source: `plugin:${key} v${inst.version || '?'}`,
+        update: { channel: 'plugin', source: key, how: 'Claude Code 插件,/plugin 市场管理' } };
+    }
+  } catch {}
   return Object.values(seen);
 }
 
