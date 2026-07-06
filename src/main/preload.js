@@ -5,6 +5,8 @@ contextBridge.exposeInMainWorld('skapi', {
   getData: () => call('getData'),
   setTier: (n, t) => call('setTier', n, t),
   setUpdatePrompt: (n, t) => call('setUpdatePrompt', n, t),
+  checkAppUpdate: () => call('checkAppUpdate'),
+  applyAppUpdate: u => call('applyAppUpdate', u),
   useInProject: (n, p, on) => call('useInProject', n, p, on),
   applyLoadout: (lo, p) => call('applyLoadout', lo, p),
   projectInfo: p => call('projectInfo', p),

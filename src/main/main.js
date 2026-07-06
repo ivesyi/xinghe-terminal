@@ -32,6 +32,54 @@ ipcMain.handle('pickProject', async () => {
 ipcMain.handle('openRepo', (_e, repo) => shell.openExternal('https://' + repo));
 ipcMain.handle('setTheme', (_e, t) => { nativeTheme.themeSource = t; return t; });
 
+// ---- 应用自更新(手动一键):启动查 GitHub latest → 右上角提示 → 点击自替换重启 ----
+// 未签名 app 用不了 electron-updater(mac 强制要求签名),走 dmg 自替换;失败由渲染层兜底开 release 页
+const UPDATE_REPO = 'ivesyi/xinghe-terminal';
+const cmpVer = (a, b) => {
+  const pa = String(a).replace(/^v/, '').split('.').map(Number), pb = String(b).replace(/^v/, '').split('.').map(Number);
+  for (let i = 0; i < 3; i++) { const d = (pa[i] || 0) - (pb[i] || 0); if (d) return d; }
+  return 0;
+};
+ipcMain.handle('checkAppUpdate', async () => {
+  try {
+    const r = await fetch(`https://api.github.com/repos/${UPDATE_REPO}/releases/latest`, { headers: { 'user-agent': 'xinghe-terminal' } });
+    if (!r.ok) return { hasUpdate: false };
+    const j = await r.json();
+    const latest = (j.tag_name || '').replace(/^v/, '');
+    const arch = process.arch === 'arm64' ? 'arm64' : 'x64';
+    const asset = (j.assets || []).find(a => a.name.endsWith(`-${arch}.dmg`));
+    return { hasUpdate: cmpVer(latest, app.getVersion()) > 0, current: app.getVersion(), latest,
+      dmgUrl: asset ? asset.browser_download_url : null, pageUrl: j.html_url };
+  } catch { return { hasUpdate: false }; }
+});
+ipcMain.handle('applyAppUpdate', async (_e, dmgUrl) => {
+  if (process.platform !== 'darwin' || !dmgUrl) return { ok: false, err: '此平台请到 release 页手动下载' };
+  const { execFileSync } = require('child_process'), fs = require('fs'), os = require('os');
+  let mnt;
+  try {
+    const buf = Buffer.from(await (await fetch(dmgUrl)).arrayBuffer());
+    const dmg = path.join(os.tmpdir(), 'xinghe-update.dmg');
+    fs.writeFileSync(dmg, buf);
+    const out = execFileSync('hdiutil', ['attach', dmg, '-nobrowse', '-readonly'], { encoding: 'utf8' });
+    mnt = (out.match(/\/Volumes\/[^\n]+/) || [])[0];
+    if (!mnt) throw new Error('dmg 挂载失败');
+    mnt = mnt.trim();
+    const appName = fs.readdirSync(mnt).find(n => n.endsWith('.app'));
+    if (!appName) throw new Error('dmg 内未找到 .app');
+    const dest = '/Applications/' + appName;
+    fs.rmSync(dest, { recursive: true, force: true }); // mac 允许删除运行中的 bundle,文件句柄仍有效
+    execFileSync('ditto', [path.join(mnt, appName), dest]);
+    try { execFileSync('xattr', ['-dr', 'com.apple.quarantine', dest]); } catch {}
+    try { execFileSync('hdiutil', ['detach', mnt, '-force']); } catch {}
+    app.relaunch();
+    app.exit(0);
+    return { ok: true };
+  } catch (err) {
+    if (mnt) try { execFileSync('hdiutil', ['detach', mnt, '-force']); } catch {}
+    return { ok: false, err: err.message || String(err) };
+  }
+});
+
 function createWindow() {
   const win = new BrowserWindow({
     width: 1200, height: 800, minWidth: 940, minHeight: 600,

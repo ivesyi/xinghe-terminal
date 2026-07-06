@@ -96,6 +96,11 @@ header{display:flex;align-items:center;gap:18px;padding:14px 26px 12px 86px;
 .commander[data-act]:hover .nm{color:var(--cyan)}
 .commander .av i{font-family:'Orbitron';font-weight:900;font-size:15px;color:var(--warn);
   text-shadow:0 0 10px rgba(245,166,35,.55)}
+.app-upd{font-family:'Rajdhani';font-weight:700;font-size:12px;letter-spacing:1px;cursor:pointer;
+  color:var(--warn);background:rgba(245,166,35,.08);border:1px solid var(--warn);border-radius:8px;
+  padding:7px 12px;margin-right:4px;text-shadow:0 0 8px rgba(245,166,35,.5)}
+.app-upd:hover{background:rgba(245,166,35,.18)}
+.app-upd:disabled{opacity:.6;cursor:wait}
 .copy-btn{background:none;border:1px solid var(--line);border-radius:6px;color:var(--ink-faint);
   cursor:pointer;padding:3px 5px;line-height:0;vertical-align:middle}
 .copy-btn:hover{color:var(--cyan);border-color:var(--cyan)}
@@ -455,6 +460,7 @@ main{flex:1;overflow:hidden;position:relative}
       <div class="stat-chip v"><b id="s-global">—</b><span>常驻出战</span></div>
       <div class="stat-chip g"><b id="s-ext">—</b><span>外部托管</span></div>
     </div>
+    <button id="app-upd" class="app-upd" style="display:none" data-act="app-update"></button>
     <div class="commander" id="commander">
       <div class="av"><i id="av-core"></i></div>
       <div><div class="nm" id="hub-stat">—</div><div class="lv" id="sync-stat">—</div></div>
@@ -642,7 +648,7 @@ function renderOnboard(){
 
 /* ---- header / nav counters ---- */
 /* 右上角真状态:第一行=能力数+待更新数(可点跳设置),第二行=hub git 同步态 */
-let UPD=null,GITST=null,BOOTED=false;
+let UPD=null,GITST=null,BOOTED=false,APPUPD=null;
 function renderStatus(){
   if(!HUB)return;
   /* 待更新数进旋转框(随框同转,醒目);能力总数左侧 stat-chip 已有,不再重复 */
@@ -658,10 +664,12 @@ function renderStatus(){
   if(UPD>0||unpushed>0)c.dataset.act='goto-settings';else delete c.dataset.act;
 }
 async function refreshStatus(){GITST=await api.gitSyncStatus();renderStatus();}
-function bootStatus(){ /* 启动一次:git 状态 + 上游更新检查(后台,不阻塞) */
+function bootStatus(){ /* 启动一次:git 状态 + 上游更新检查 + 应用新版检查(后台,不阻塞) */
   if(BOOTED)return;BOOTED=true;
   refreshStatus();
   (async()=>{try{const u=await api.checkUpdates();UPD=u.filter(x=>x.hasUpdate).length;}catch{UPD=null;}renderStatus();})();
+  (async()=>{try{const u=await api.checkAppUpdate();
+    if(u&&u.hasUpdate){APPUPD=u;const b=$('app-upd');b.textContent='↑ 新版 v'+u.latest;b.style.display='';}}catch{}})();
   if(api.onHubChanged)api.onHubChanged(async()=>{
     try{HUB=await api.getData();}catch{return;}
     if(S.proj)S.installed=await api.projectInfo(S.proj);
@@ -1013,6 +1021,13 @@ document.addEventListener('click',async e=>{
   const repo=t.closest('[data-repo]');if(repo)return api.openRepo(repo.dataset.repo);
   const act=t.closest('[data-act]');if(!act)return;
   switch(act.dataset.act){
+    case 'app-update':{if(!APPUPD)return;const b=$('app-upd');
+      b.textContent='⟳ 下载更新中…';b.disabled=true;
+      const r=await api.applyAppUpdate(APPUPD.dmgUrl); /* 成功时 app 自替换重启,走不到下面 */
+      if(r&&!r.ok){toast('✗ '+r.err+' — 已打开下载页','warn');
+        api.openRepo((APPUPD.pageUrl||'github.com/ivesyi/xinghe-terminal/releases').replace(/^https?:\/\//,''));
+        b.textContent='↑ 新版 v'+APPUPD.latest;b.disabled=false;}
+      return;}
     case 'close-modal':return closeModal();
     case 'new-loadout':return openNewLoadout();
     case 'save-loadout':return saveLoadout();
