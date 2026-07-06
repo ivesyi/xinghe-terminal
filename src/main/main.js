@@ -103,12 +103,13 @@ function createWindow() {
 // registry 变更 → 通知渲染层刷新(启动取一次 + 变更刷新,不轮询)
 // ponytail: 原生 fs.watch 够用;hub 路径运行时切换后需重启才重挂 watcher
 let watchT;
-try {
-  require('fs').watch(path.join(E.getConfig().hubPath, 'registry.json'), () => {
-    clearTimeout(watchT);
-    watchT = setTimeout(() => BrowserWindow.getAllWindows().forEach(w => w.webContents.send('hubChanged')), 400);
-  });
-} catch {}
+const pokeRenderer = () => {
+  clearTimeout(watchT);
+  watchT = setTimeout(() => BrowserWindow.getAllWindows().forEach(w => w.webContents.send('hubChanged')), 400);
+};
+try { require('fs').watch(path.join(E.getConfig().hubPath, 'registry.json'), pokeRenderer); } catch {}
+// 管家状态文件:巡检"无发现"轮次只动它不动 registry,也要能刷新 UI 的在岗指示
+try { require('fs').watch(path.join(E.getConfig().hubPath, '.steward-state.json'), pokeRenderer); } catch {}
 
 app.whenReady().then(() => {
   // dev/运行态 dock 也用星核图标(打包版走 icns,这里让 `npm run dev` 也换掉 Electron 默认图标)

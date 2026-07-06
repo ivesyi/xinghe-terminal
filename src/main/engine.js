@@ -93,6 +93,12 @@ function externalSkills() {
   return Object.values(seen);
 }
 
+// 管家状态:steward /loop 每轮巡检写 hub 根 .steward-state.json,这里只读展示
+function stewardState() {
+  try { return JSON.parse(fs.readFileSync(path.join(path.dirname(REG), '.steward-state.json'), 'utf8')); }
+  catch { return null; }
+}
+
 function getData() {
   const r = readReg(), last = lastUsedMap(), skills = [];
   for (const [name, e] of Object.entries(r.skills)) {
@@ -102,7 +108,7 @@ function getData() {
   const ext = externalSkills();
   for (const s of ext) skills.push(s);
   const groups = [...new Set(skills.map(s => s.group))].sort();
-  return { skills, loadouts: r.loadouts || {}, stats: { total: skills.length, global: skills.filter(s => s.tier === 'global').length, oss: skills.filter(s => s.oss).length, external: ext.length, groups } };
+  return { skills, loadouts: r.loadouts || {}, steward: stewardState(), stats: { total: skills.length, global: skills.filter(s => s.tier === 'global').length, oss: skills.filter(s => s.oss).length, external: ext.length, groups } };
 }
 
 function setTier(name, tier) {
