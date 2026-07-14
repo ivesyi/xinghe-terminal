@@ -12,6 +12,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+      - name: Guard tag matches package.json version
+        shell: bash
+        run: |
+          PKG=$(node -p "require('./package.json').version")
+          TAG=${GITHUB_REF_NAME#v}
+          [ "$PKG" = "$TAG" ] || { echo "::error::tag v$TAG ≠ package.json $PKG — 先 bump 版本再打 tag"; exit 1; }
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
       - run: npm install --no-audit --no-fund
