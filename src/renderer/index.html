@@ -643,7 +643,7 @@ function renderOnboard(){
   $('inv-grid').innerHTML=`<div class="onboard" style="grid-column:1/-1"><h2>还没有连接 Skill Hub</h2>
    <p>hub 是一个 git 仓库,集中管理你的全部 skill。选一种方式接入星核:</p>
    <div class="ob-card"><b>① 克隆已有技能库</b><p>拿到 git 地址,克隆到本地即可使用同一套 skill。</p>
-     <div class="inrow"><input class="inp" id="obUrl" value="https://github.com/ivesyi/skill-hub.git" placeholder="git@github.com:org/skill-hub.git"></div>
+     <div class="inrow"><input class="inp" id="obUrl" value="git@github.com:ivesyi/skill-hub.git" placeholder="git@github.com:org/skill-hub.git"></div>
      <div class="inrow"><input class="inp" id="obDest" value="~/skills"><button class="sbtn gold" data-act="ob-clone">克隆并连接</button></div>
      <div class="msg" id="obMsg"></div></div>
    <div class="ob-card"><b>② 指向本地已有 hub</b><p>本机已有 skill hub 目录,直接选中它。</p>
